@@ -38,6 +38,7 @@ def train_epoch(cur_epoch, model, dataloader, loss, opt, lr_scheduler=None, prin
         out = loss.forward(y, tgt)
 
         out.backward()
+        out.detach()
         opt.step()
 
         if(lr_scheduler is not None):
