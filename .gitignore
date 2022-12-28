@@ -161,6 +161,6 @@ logs/*
 # Scripts for private access
 private_scripts/*
 # Dataset
-dataset/midi/*/*.midi
-dataset/midi/*/*.mid
-datsaet/encoded/*/*.pickle
+dataset/midi/*/
+!dataset/midi/.keep
+dataset/encoded/*/*.pickle
