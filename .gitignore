@@ -157,7 +157,7 @@ models/*
 .DS_Store
 # Logs
 logs/*
-!logs/placeholder
+!logs/.keep
 # Scripts for private access
 private_scripts/*
 # Dataset

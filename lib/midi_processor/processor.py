@@ -1,4 +1,5 @@
 import pretty_midi
+import logging
 
 
 RANGE_NOTE_ON = 128
@@ -106,7 +107,7 @@ def _merge_note(snote_sequence):
     result_array = []
 
     for snote in snote_sequence:
-        # print(note_on_dict)
+        # logging.info(note_on_dict)
         if snote.type == 'note_on':
             note_on_dict[snote.value] = snote
         elif snote.type == 'note_off':
@@ -118,7 +119,7 @@ def _merge_note(snote_sequence):
                 result = pretty_midi.Note(on.velocity, snote.value, on.time, off.time)
                 result_array.append(result)
             except:
-                print('info removed pitch: {}'.format(snote.value))
+                logging.info('info removed pitch: {}'.format(snote.value))
     return result_array
 
 
@@ -218,10 +219,10 @@ def encode_midi(file_path):
 
     dnotes = _divide_note(notes)
 
-    # print(dnotes)
+    # logging.info(dnotes)
     dnotes.sort(key=lambda x: x.time)
-    # print('sorted:')
-    # print(dnotes)
+    # logging.info('sorted:')
+    # logging.info(dnotes)
     cur_time = 0
     cur_vel = 0
     for snote in dnotes:
@@ -237,7 +238,7 @@ def encode_midi(file_path):
 
 def decode_midi(idx_array, file_path=None):
     event_sequence = [Event.from_int(idx) for idx in idx_array]
-    # print(event_sequence)
+    # logging.info(event_sequence)
     snote_seq = _event_seq2snote_seq(event_sequence)
     note_seq = _merge_note(snote_seq)
     note_seq.sort(key=lambda x:x.start)
@@ -255,13 +256,13 @@ def decode_midi(idx_array, file_path=None):
 
 if __name__ == '__main__':
     encoded = encode_midi('bin/ADIG04.mid')
-    print(encoded)
+    logging.info(encoded)
     decided = decode_midi(encoded,file_path='bin/test.mid')
 
     ins = pretty_midi.PrettyMIDI('bin/ADIG04.mid')
-    print(ins)
-    print(ins.instruments[0])
+    logging.info(ins)
+    logging.info(ins.instruments[0])
     for i in ins.instruments:
-        print(i.control_changes)
-        print(i.notes)
+        logging.info(i.control_changes)
+        logging.info(i.notes)
 

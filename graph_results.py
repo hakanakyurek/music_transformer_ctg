@@ -3,6 +3,7 @@ import os
 import csv
 import math
 import matplotlib.pyplot as plt
+import logging
 
 RESULTS_FILE = "results.csv"
 EPOCH_IDX = 0
@@ -27,7 +28,7 @@ def graph_results(input_dirs="./saved_models/results", output_dir=None, model_na
     if(model_names is not None):
         model_names = model_names.split(SPLITTER)
         if(len(model_names) != len(input_dirs)):
-            print("Error: len(model_names) != len(input_dirs)")
+            logging.error("Error: len(model_names) != len(input_dirs)")
             return
 
     #Initialize Loss and Accuracy arrays
@@ -159,7 +160,7 @@ def graph_results_legacy(input_dirs="./saved_models/results", output_dir=None, m
     if(model_names is not None):
         model_names = model_names.split(SPLITTER)
         if(len(model_names) != len(input_dirs)):
-            print("Error: len(model_names) != len(input_dirs)")
+            logging.error("Error: len(model_names) != len(input_dirs)")
             return
 
     #Initialize Loss and Accuracy arrays

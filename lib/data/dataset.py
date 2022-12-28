@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 
+import logging
+
 from lib.utilities.constants import *
 from lib.utilities.device import cpu_device
 
@@ -107,8 +109,8 @@ def process_midi(raw_mid, max_seq, random_seq):
         tgt = data[1:full_seq]
 
 
-    # print("x:",x)
-    # print("tgt:",tgt)
+    # logging.info("x:",x)
+    # logging.info("tgt:",tgt)
 
     return x, tgt
 

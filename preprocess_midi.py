@@ -4,6 +4,7 @@ import pickle
 import json
 import random
 
+import logging
 from tqdm import tqdm
 
 import lib.midi_processor.processor as midi_processor
@@ -30,12 +31,12 @@ def prep_maestro_midi(maestro_root, output_dir):
 
     maestro_json_file = os.path.join(maestro_root, JSON_FILE)
     if(not os.path.isfile(maestro_json_file)):
-        print("ERROR: Could not find file:", maestro_json_file)
+        logging.error("ERROR: Could not find file:", maestro_json_file)
         return False
 
     maestro_json = json.load(open(maestro_json_file, "r"))
-    print("Found", len(maestro_json), "pieces")
-    print("Preprocessing...")
+    logging.info("Found", len(maestro_json), "pieces")
+    logging.info("Preprocessing...")
 
     total_count = 0
     train_count = 0
@@ -57,7 +58,7 @@ def prep_maestro_midi(maestro_root, output_dir):
             o_file = os.path.join(test_dir, f_name)
             test_count += 1
         else:
-            print("ERROR: Unrecognized split type:", split_type)
+            logging.error("ERROR: Unrecognized split type:", split_type)
             return False
 
         prepped = midi_processor.encode_midi(mid)
@@ -68,11 +69,11 @@ def prep_maestro_midi(maestro_root, output_dir):
 
         total_count += 1
         if(total_count % 50 == 0):
-            print(total_count, "/", len(maestro_json))
+            logging.info(total_count, "/", len(maestro_json))
 
-    print("Num Train:", train_count)
-    print("Num Val:", val_count)
-    print("Num Test:", test_count)
+    logging.info("Num Train:", train_count)
+    logging.info("Num Val:", val_count)
+    logging.info("Num Test:", test_count)
     return True
 
 def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
@@ -104,8 +105,8 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
             piece = os.path.join(subdir, file)
             pieces.append(piece)
 
-    print("Found", len(pieces), "pieces")
-    print("Preprocessing data...")
+    logging.info("Found", len(pieces), "pieces")
+    logging.info("Preprocessing data...")
 
 
     for piece in tqdm(pieces):
@@ -143,9 +144,9 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
 
         total_count += 1
 
-    print("Num Train:", train_count)
-    print("Num Val:", val_count)
-    print("Num Test:", test_count)
+    logging.info("Num Train:", train_count)
+    logging.info("Num Val:", val_count)
+    logging.info("Num Test:", test_count)
     return True
 
 
@@ -180,10 +181,10 @@ def main():
     root = args.root
     output_dir = args.output_dir
 
-    print("Preprocessing midi files and saving to", output_dir)
+    logging.info("Preprocessing midi files and saving to", output_dir)
     prep_custom_midi(root, output_dir)
-    print("Done!")
-    print("")
+    logging.info("Done!")
+    
 
 if __name__ == "__main__":
     main()

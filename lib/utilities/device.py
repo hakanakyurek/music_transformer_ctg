@@ -2,14 +2,15 @@
 #### ONLY USE PROVIDED FUNCTIONS, DO NOT USE GLOBAL CONSTANTS ####
 
 import torch
+import logging
 
 TORCH_CPU_DEVICE = torch.device("cpu")
 
 if(torch.cuda.device_count() > 0):
     TORCH_CUDA_DEVICE = torch.device("cuda")
 else:
-    print("----- WARNING: CUDA devices not detected. This will cause the model to run very slow! -----")
-    print("")
+    logging.warning("----- WARNING: CUDA devices not detected. This will cause the model to run very slow! -----")
+    
     TORCH_CUDA_DEVICE = None
 
 USE_CUDA = True

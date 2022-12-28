@@ -10,6 +10,7 @@ from lib.utilities.constants import *
 from lib.utilities.device import get_device, use_cuda
 from lib.utilities.argument_funcs import parse_eval_args, print_eval_args
 from lib.utilities.run_model import eval_model
+import logging 
 
 # main
 def main():
@@ -26,8 +27,7 @@ def main():
 
     if(args.force_cpu):
         use_cuda(False)
-        print("WARNING: Forced CPU usage, expect model to perform slower")
-        print("")
+        logging.warning("WARNING: Forced CPU usage, expect model to perform slower")
 
     # Test dataset
     _, _, test_dataset = create_datasets(args.dataset_dir, args.max_sequence)
@@ -43,15 +43,15 @@ def main():
     # No smoothed loss
     loss = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
 
-    print("Evaluating:")
+    logging.info("Evaluating:")
     model.eval()
 
     avg_loss, avg_acc = eval_model(model, test_loader, loss)
 
-    print("Avg loss:", avg_loss)
-    print("Avg acc:", avg_acc)
-    print(SEPERATOR)
-    print("")
+    logging.info("Avg loss:", avg_loss)
+    logging.info("Avg acc:", avg_acc)
+    logging.info(SEPERATOR)
+    
 
 
 if __name__ == "__main__":

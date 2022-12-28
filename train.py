@@ -7,6 +7,8 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
+import logging
+
 from lib.data.dataset import create_datasets
 
 from lib.model.music_transformer import MusicTransformer
@@ -36,10 +38,18 @@ def main():
     args = parse_train_args()
     print_train_args(args)
 
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler("debug.log"),
+            logging.StreamHandler()
+        ]
+    )
+
     if(args.force_cpu):
         use_cuda(False)
-        print("WARNING: Forced CPU usage, expect model to perform slower")
-        print("")
+        logging.info('WARNING: Forced CPU usage, expect model to perform slower \n')
 
     os.makedirs(args.output_dir, exist_ok=True)
 
@@ -82,13 +92,13 @@ def main():
     start_epoch = BASELINE_EPOCH
     if(args.continue_weights is not None):
         if(args.continue_epoch is None):
-            print("ERROR: Need epoch number to continue from (-continue_epoch) when using continue_weights")
+            logging.error("ERROR: Need epoch number to continue from (-continue_epoch) when using continue_weights")
             return
         else:
             model.load_state_dict(torch.load(args.continue_weights))
             start_epoch = args.continue_epoch
     elif(args.continue_epoch is not None):
-        print("ERROR: Need continue weights (-continue_weights) when using continue_epoch")
+        logging.error("ERROR: Need continue weights (-continue_weights) when using continue_epoch")
         return
 
     ##### Lr Scheduler vs static lr #####
@@ -137,19 +147,15 @@ def main():
     for epoch in range(start_epoch, args.epochs):
         # Baseline has no training and acts as a base loss and accuracy (epoch 0 in a sense)
         if(epoch > BASELINE_EPOCH):
-            print(SEPERATOR)
-            print("NEW EPOCH:", epoch+1)
-            print(SEPERATOR)
-            print("")
+            logging.info("NEW EPOCH:", epoch+1)
 
             # Train
             train_epoch(epoch+1, model, train_loader, train_loss_func, opt, lr_scheduler, args.print_modulus)
 
-            print(SEPERATOR)
-            print("Evaluating:")
+            logging.info("Evaluating:")
         else:
-            print(SEPERATOR)
-            print("Baseline model evaluation (Epoch 0):")
+            logging.info(SEPERATOR)
+            logging.info("Baseline model evaluation (Epoch 0):")
 
         # Eval
         train_loss, train_acc = eval_model(model, train_loader, train_loss_func)
@@ -158,13 +164,12 @@ def main():
         # Learn rate
         lr = get_lr(opt)
 
-        print("Epoch:", epoch+1)
-        print("Avg train loss:", train_loss)
-        print("Avg train acc:", train_acc)
-        print("Avg eval loss:", eval_loss)
-        print("Avg eval acc:", eval_acc)
-        print(SEPERATOR)
-        print("")
+        logging.info("Epoch:", epoch+1)
+        logging.info("Avg train loss:", train_loss)
+        logging.info("Avg train acc:", train_acc)
+        logging.info("Avg eval loss:", eval_loss)
+        logging.info("Avg eval acc:", eval_acc)
+        logging.info(SEPERATOR)
 
         new_best = False
 
@@ -183,11 +188,10 @@ def main():
         # Writing out new bests
         if(new_best):
             with open(best_text, "w") as o_stream:
-                print("Best eval acc epoch:", best_eval_acc_epoch, file=o_stream)
-                print("Best eval acc:", best_eval_acc, file=o_stream)
-                print("")
-                print("Best eval loss epoch:", best_eval_loss_epoch, file=o_stream)
-                print("Best eval loss:", best_eval_loss, file=o_stream)
+                logging.info("Best eval acc epoch:", best_eval_acc_epoch, file=o_stream)
+                logging.info("Best eval acc:", best_eval_acc, file=o_stream)
+                logging.info("Best eval loss epoch:", best_eval_loss_epoch, file=o_stream)
+                logging.info("Best eval loss:", best_eval_loss, file=o_stream)
 
 
         if(not args.no_tensorboard):
