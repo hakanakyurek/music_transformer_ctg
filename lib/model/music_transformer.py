@@ -125,7 +125,7 @@ class MusicTransformer(nn.Module):
 
         assert (not self.training), "Cannot generate while in training mode"
 
-        logging.info("Generating sequence of max length:", target_seq_length)
+        logging.info(f"Generating sequence of max length: {target_seq_length}")
 
         gen_seq = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
 
@@ -165,12 +165,12 @@ class MusicTransformer(nn.Module):
 
                 # Let the transformer decide to end if it wants to
                 if(next_token == TOKEN_END):
-                    logging.info("Model called end of sequence at:", cur_i, "/", target_seq_length)
+                    logging.info(f"Model called end of sequence at: {cur_i}/{target_seq_length}")
                     break
 
             cur_i += 1
             if(cur_i % 50 == 0):
-                logging.info(cur_i, "/", target_seq_length)
+                logging.info(f"{cur_i}/{target_seq_length}")
 
         return gen_seq[:, :cur_i]
 

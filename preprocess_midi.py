@@ -36,7 +36,7 @@ def prep_maestro_midi(maestro_root, output_dir):
         return False
 
     maestro_json = json.load(open(maestro_json_file, "r"))
-    logging.info("Found", len(maestro_json), "pieces")
+    logging.info(f"Found {len(maestro_json)} pieces")
     logging.info("Preprocessing...")
 
     total_count = 0
@@ -72,9 +72,9 @@ def prep_maestro_midi(maestro_root, output_dir):
         if(total_count % 50 == 0):
             logging.info(total_count, "/", len(maestro_json))
 
-    logging.info("Num Train:", train_count)
-    logging.info("Num Val:", val_count)
-    logging.info("Num Test:", test_count)
+    logging.info(f"Num Train: {train_count}")
+    logging.info(f"Num Val: {val_count}")
+    logging.info(f"Num Test: {test_count}")
     return True
 
 def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
@@ -106,7 +106,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
             piece = os.path.join(subdir, file)
             pieces.append(piece)
 
-    logging.info("Found", len(pieces), "pieces")
+    logging.info(f"Found {len(pieces)} pieces")
     logging.info("Preprocessing data...")
 
 
@@ -145,9 +145,9 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
 
         total_count += 1
 
-    logging.info("Num Train:", train_count)
-    logging.info("Num Val:", val_count)
-    logging.info("Num Test:", test_count)
+    logging.info(f"Num Train: {train_count}")
+    logging.info(f"Num Val: {val_count}")
+    logging.info(f"Num Test: {test_count}")
     return True
 
 
@@ -183,7 +183,7 @@ def main():
     root = args.root
     output_dir = args.output_dir
 
-    logging.info("Preprocessing midi files and saving to", output_dir)
+    logging.info(f"Preprocessing midi files and saving to {output_dir}")
     prep_custom_midi(root, output_dir)
     logging.info("Done!")
     

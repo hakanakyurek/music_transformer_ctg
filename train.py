@@ -141,7 +141,7 @@ def main():
     for epoch in range(start_epoch, args.epochs):
         # Baseline has no training and acts as a base loss and accuracy (epoch 0 in a sense)
         if(epoch > BASELINE_EPOCH):
-            logging.info("NEW EPOCH:", epoch+1)
+            logging.info(f"NEW EPOCH: {epoch+1}")
 
             # Train
             train_epoch(epoch+1, model, train_loader, train_loss_func, opt, lr_scheduler, args.print_modulus)
@@ -158,11 +158,11 @@ def main():
         # Learn rate
         lr = get_lr(opt)
 
-        logging.info("Epoch:", epoch+1)
-        logging.info("Avg train loss:", train_loss)
-        logging.info("Avg train acc:", train_acc)
-        logging.info("Avg eval loss:", eval_loss)
-        logging.info("Avg eval acc:", eval_acc)
+        logging.info(f"Epoch: {epoch+1}")
+        logging.info(f"Avg train loss: {train_loss}")
+        logging.info(f"Avg train acc: {train_acc}")
+        logging.info(f"Avg eval loss: {eval_loss}")
+        logging.info(f"Avg eval acc: {eval_acc}")
         logging.info(SEPERATOR)
 
         new_best = False
@@ -182,10 +182,10 @@ def main():
         # Writing out new bests
         if(new_best):
             with open(best_text, "w") as o_stream:
-                logging.info("Best eval acc epoch:", best_eval_acc_epoch, file=o_stream)
-                logging.info("Best eval acc:", best_eval_acc, file=o_stream)
-                logging.info("Best eval loss epoch:", best_eval_loss_epoch, file=o_stream)
-                logging.info("Best eval loss:", best_eval_loss, file=o_stream)
+                print("Best eval acc epoch:", best_eval_acc_epoch, file=o_stream)
+                print("Best eval acc:", best_eval_acc, file=o_stream)
+                print("Best eval loss epoch:", best_eval_loss_epoch, file=o_stream)
+                print("Best eval loss:", best_eval_loss, file=o_stream)
 
 
         if(not args.no_tensorboard):

@@ -53,18 +53,18 @@ def main():
         primer, _  = dataset[idx]
         primer = primer.to(get_device())
 
-        logging.info("Using primer index:", idx, "(", dataset.data_files[idx], ")")
+        logging.info(f"Using primer index: {idx} ( {dataset.data_files[idx]} )")
 
     else:
         raw_mid = encode_midi(f)
         if(len(raw_mid) == 0):
-            logging.error("Error: No midi messages in primer file:", f)
+            logging.error(f"Error: No midi messages in primer file: {f}")
             return
 
         primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False)
         primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
 
-        logging.info("Using primer file:", f)
+        logging.infof"Using primer file: {f}")
 
     model = MusicTransformer(n_layers=args.n_layers, num_heads=args.num_heads,
                 d_model=args.d_model, dim_feedforward=args.dim_feedforward,
@@ -80,7 +80,7 @@ def main():
     model.eval()
     with torch.set_grad_enabled(False):
         if(args.beam > 0):
-            logging.info("BEAM:", args.beam)
+            logging.info(f"BEAM: {args.beam}")
             beam_seq = model.generate(primer[:args.num_prime], args.target_seq_length, beam=args.beam)
 
             f_path = os.path.join(args.output_dir, "beam.mid")

@@ -53,8 +53,8 @@ def main():
 
     avg_loss, avg_acc = eval_model(model, test_loader, loss)
 
-    logging.info("Avg loss:", avg_loss)
-    logging.info("Avg acc:", avg_acc)
+    logging.info(f"Avg loss: {avg_loss}")
+    logging.info(f"Avg acc: {avg_acc}")
     logging.info(SEPERATOR)
     
 

@@ -48,11 +48,11 @@ def train_epoch(cur_epoch, model, dataloader, loss, opt, lr_scheduler=None, prin
 
         if((batch_num+1) % print_modulus == 0):
             logging.info(SEPERATOR)
-            logging.info("Epoch", cur_epoch, " Batch", batch_num+1, "/", len(dataloader))
-            logging.info("LR:", get_lr(opt))
-            logging.info("Train loss:", float(out))
+            logging.info(f"Epoch {cur_epoch} Batch {batch_num+1}/{len(dataloader)}")
+            logging.info(f"LR: {get_lr(opt)}")
+            logging.info(f"Train loss: {float(out)}")
             
-            logging.info("Time (s):", time_took)
+            logging.info(f"Time (s): {time_took}")
             logging.info(SEPERATOR)
             
 
