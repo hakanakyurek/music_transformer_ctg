@@ -8,7 +8,7 @@ def config_logging():
         format="%(asctime)s [%(levelname)s] %(message)s",
         level=logging.INFO,
         handlers=[
-            logging.FileHandler("logs/debug.log"),
+            logging.FileHandler("logs/debug.log", mode='w'),
             logging.StreamHandler(sys.stdout)
     ]
     )
