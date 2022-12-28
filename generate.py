@@ -64,7 +64,7 @@ def main():
         primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False)
         primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
 
-        logging.infof"Using primer file: {f}")
+        logging.info(f"Using primer file: {f}")
 
     model = MusicTransformer(n_layers=args.n_layers, num_heads=args.num_heads,
                 d_model=args.d_model, dim_feedforward=args.dim_feedforward,
