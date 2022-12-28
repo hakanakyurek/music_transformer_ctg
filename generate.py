@@ -26,6 +26,15 @@ def main():
     ----------
     """
 
+
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler("debug.log"),
+            logging.StreamHandler()
+        ]
+    )
+
     args = parse_generate_args()
     print_generate_args(args)
 

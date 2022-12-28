@@ -177,6 +177,15 @@ def main():
     ----------
     """
 
+
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler("debug.log"),
+            logging.StreamHandler()
+        ]
+    )
+    
     args = parse_args()
     root = args.root
     output_dir = args.output_dir
