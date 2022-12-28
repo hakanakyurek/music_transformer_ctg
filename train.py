@@ -35,11 +35,11 @@ def main():
     Entry point. Trains a model specified by command line arguments
     ----------
     """
+    config_logging()
 
     args = parse_train_args()
     print_train_args(args)
 
-    config_logging()
 
     if(args.force_cpu):
         use_cuda(False)
