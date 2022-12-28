@@ -10,8 +10,7 @@ from utilities.device import cpu_device
 
 SEQUENCE_START = 0
 
-# EPianoDataset
-class EPianoDataset(Dataset):
+class MidiDataset(Dataset):
     """
     ----------
     Author: Damon Gwinn
@@ -115,7 +114,7 @@ def process_midi(raw_mid, max_seq, random_seq):
 
 
 # create_epiano_datasets
-def create_epiano_datasets(dataset_root, max_seq, random_seq=True):
+def create_datasets(dataset_root, max_seq, random_seq=True):
     """
     ----------
     Author: Damon Gwinn
@@ -129,14 +128,14 @@ def create_epiano_datasets(dataset_root, max_seq, random_seq=True):
     val_root = os.path.join(dataset_root, "val")
     test_root = os.path.join(dataset_root, "test")
 
-    train_dataset = EPianoDataset(train_root, max_seq, random_seq)
-    val_dataset = EPianoDataset(val_root, max_seq, random_seq)
-    test_dataset = EPianoDataset(test_root, max_seq, random_seq)
+    train_dataset = MidiDataset(train_root, max_seq, random_seq)
+    val_dataset = MidiDataset(val_root, max_seq, random_seq)
+    test_dataset = MidiDataset(test_root, max_seq, random_seq)
 
     return train_dataset, val_dataset, test_dataset
 
 # compute_epiano_accuracy
-def compute_epiano_accuracy(out, tgt):
+def compute_accuracy(out, tgt):
     """
     ----------
     Author: Damon Gwinn

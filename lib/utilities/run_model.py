@@ -5,7 +5,7 @@ from .constants import *
 from utilities.device import get_device
 from .lr_scheduling import get_lr
 
-from lib.data.e_piano import compute_epiano_accuracy
+from lib.data.dataset import compute_accuracy
 
 
 # train_epoch
@@ -80,7 +80,7 @@ def eval_model(model, dataloader, loss):
 
             y = model(x)
 
-            sum_acc += float(compute_epiano_accuracy(y, tgt))
+            sum_acc += float(compute_accuracy(y, tgt))
 
             y   = y.reshape(y.shape[0] * y.shape[1], -1)
             tgt = tgt.flatten()

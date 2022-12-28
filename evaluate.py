@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from lib.data.e_piano import create_epiano_datasets, compute_epiano_accuracy
+from lib.data.dataset import create_datasets
 
 from lib.model.music_transformer import MusicTransformer
 
@@ -30,7 +30,7 @@ def main():
         print("")
 
     # Test dataset
-    _, _, test_dataset = create_epiano_datasets(args.dataset_dir, args.max_sequence)
+    _, _, test_dataset = create_datasets(args.dataset_dir, args.max_sequence)
 
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, num_workers=args.n_workers)
 

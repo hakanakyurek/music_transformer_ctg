@@ -7,7 +7,7 @@ from lib.midi_processor.processor import decode_midi, encode_midi
 
 from lib.utilities.argument_funcs import parse_generate_args, print_generate_args
 from lib.model.music_transformer import MusicTransformer
-from lib.data.e_piano import create_epiano_datasets, compute_epiano_accuracy, process_midi
+from lib.data.dataset import create_epiano_datasets, process_midi
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
