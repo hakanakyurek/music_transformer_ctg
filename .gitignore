@@ -160,7 +160,3 @@ logs/*
 !logs/placeholder
 # Scripts for private access
 private_scripts/*
-# Dataset
-dataset/*
-!dataset/scripts/*
-!dataset/raw_data/*
