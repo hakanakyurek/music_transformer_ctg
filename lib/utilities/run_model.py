@@ -2,7 +2,7 @@ import torch
 import time
 
 from .constants import *
-from utilities.device import get_device
+from .device import get_device
 from .lr_scheduling import get_lr
 
 from lib.data.dataset import compute_accuracy

@@ -3,8 +3,8 @@ import torch.nn as nn
 from torch.nn.modules.normalization import LayerNorm
 import random
 
-from utilities.constants import *
-from utilities.device import get_device
+from lib.utilities.constants import *
+from lib.utilities.device import get_device
 
 from .positional_encoding import PositionalEncoding
 from .rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR

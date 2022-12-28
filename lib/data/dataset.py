@@ -5,8 +5,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 
-from utilities.constants import *
-from utilities.device import cpu_device
+from lib.utilities.constants import *
+from lib.utilities.device import cpu_device
 
 SEQUENCE_START = 0
 
