@@ -6,6 +6,5 @@ def config_logging():
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[
             logging.FileHandler("logs/debug.log"),
-            logging.StreamHandler(sys.stdout)
         ]
     )
