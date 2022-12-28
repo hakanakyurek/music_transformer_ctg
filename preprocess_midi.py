@@ -5,6 +5,7 @@ import json
 import random
 
 import logging
+from lib.utilities.logging_config import config_logging
 from tqdm import tqdm
 
 import lib.midi_processor.processor as midi_processor
@@ -176,15 +177,7 @@ def main():
     Entry point. Preprocesses maestro and saved midi to specified output folder.
     ----------
     """
-
-
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler("debug.log"),
-            logging.StreamHandler()
-        ]
-    )
+    config_logging()
     
     args = parse_args()
     root = args.root

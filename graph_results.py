@@ -4,6 +4,8 @@ import csv
 import math
 import matplotlib.pyplot as plt
 import logging
+from lib.utilities.logging_config import config_logging
+
 
 RESULTS_FILE = "results.csv"
 EPOCH_IDX = 0
@@ -282,13 +284,7 @@ def main():
     ----------
     """
 
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler("debug.log"),
-            logging.StreamHandler()
-        ]
-    )
+    config_logging()
 
     args = parse_args()
 

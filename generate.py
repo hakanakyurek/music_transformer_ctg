@@ -4,6 +4,7 @@ import os
 import random
 
 import logging
+from lib.utilities.logging_config import config_logging
 
 from lib.midi_processor.processor import decode_midi, encode_midi
 
@@ -27,13 +28,7 @@ def main():
     """
 
 
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler("debug.log"),
-            logging.StreamHandler()
-        ]
-    )
+    config_logging()
 
     args = parse_generate_args()
     print_generate_args(args)

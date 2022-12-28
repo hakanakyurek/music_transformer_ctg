@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 
 import logging
+from lib.utilities.logging_config import config_logging
 
 from lib.data.dataset import create_datasets
 
@@ -38,13 +39,7 @@ def main():
     args = parse_train_args()
     print_train_args(args)
 
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler("debug.log"),
-            logging.StreamHandler()
-        ]
-    )
+    config_logging()
 
     if(args.force_cpu):
         use_cuda(False)

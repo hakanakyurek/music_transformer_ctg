@@ -10,7 +10,9 @@ from lib.utilities.constants import *
 from lib.utilities.device import get_device, use_cuda
 from lib.utilities.argument_funcs import parse_eval_args, print_eval_args
 from lib.utilities.run_model import eval_model
+
 import logging 
+from lib.utilities.logging_config import config_logging
 
 # main
 def main():
@@ -23,13 +25,7 @@ def main():
     """
 
 
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[
-            logging.FileHandler("debug.log"),
-            logging.StreamHandler()
-        ]
-    )
+    config_logging()
 
     args = parse_eval_args()
     print_eval_args(args)
