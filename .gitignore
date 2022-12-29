@@ -150,9 +150,6 @@ fabric.properties
 # Data 
 *.zip 
 *.tar.gz
-# Models
-models/*
-!models/placeholder
 # DS_Store
 .DS_Store
 # Logs
@@ -164,3 +161,10 @@ private_scripts/*
 dataset/midi/*/
 !dataset/midi/.keep
 dataset/encoded/*/*.pickle
+# Training and Inference output folders
+graphs/*
+!graphs/.keep
+models/*
+!models/.keep
+output/*
+!output/.keep
