@@ -10,7 +10,7 @@ from lib.midi_processor.processor import decode_midi, encode_midi
 
 from lib.utilities.argument_funcs import parse_generate_args, print_generate_args
 from lib.model.music_transformer import MusicTransformer
-from lib.data.dataset import create_epiano_datasets, process_midi
+from lib.data.dataset import process_midi, create_datasets
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 
@@ -28,7 +28,7 @@ def main():
     """
 
 
-    config_logging()
+    config_logging('generate')
 
     args = parse_generate_args()
     print_generate_args(args)
@@ -40,7 +40,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Grabbing dataset if needed
-    _, _, dataset = create_epiano_datasets(args.midi_root, args.num_prime, random_seq=False)
+    _, _, dataset = create_datasets(args.midi_root, args.num_prime, random_seq=False)
 
     # Can be None, an integer index to dataset, or a file path
     if(args.primer_file is None):
@@ -70,7 +70,7 @@ def main():
                 d_model=args.d_model, dim_feedforward=args.dim_feedforward,
                 max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
-    model.load_state_dict(torch.load(args.model_weights))
+    model.load_state_dict(torch.load(args.model_weights, map_location=get_device()))
 
     # Saving primer first
     f_path = os.path.join(args.output_dir, "primer.mid")

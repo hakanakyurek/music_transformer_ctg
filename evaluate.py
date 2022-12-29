@@ -25,7 +25,7 @@ def main():
     """
 
 
-    config_logging()
+    config_logging('eval')
 
     args = parse_eval_args()
     print_eval_args(args)

@@ -35,7 +35,7 @@ def main():
     Entry point. Trains a model specified by command line arguments
     ----------
     """
-    config_logging()
+    config_logging('train')
 
     args = parse_train_args()
     print_train_args(args)
