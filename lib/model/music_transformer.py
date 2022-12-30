@@ -11,6 +11,8 @@ from .rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
 
 import logging
 
+from lib.utilities.top_p_top_k import top_k_top_p_filtering
+
 # MusicTransformer
 class MusicTransformer(nn.Module):
     """
@@ -113,7 +115,7 @@ class MusicTransformer(nn.Module):
         return y
 
     # generate
-    def generate(self, primer=None, target_seq_length=1024, beam=0, beam_chance=1.0):
+    def generate(self, primer=None, target_seq_length=1024, temperature=1.0, top_p=0.0, top_k=0):
         """
         ----------
         Author: Damon Gwinn
@@ -134,39 +136,31 @@ class MusicTransformer(nn.Module):
 
 
         # logging.info("primer:",primer)
-        # logging.info(gen_seq)
+        # print(gen_seq.shape)
+        # Here cur_i is the current token index
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            y = self.softmax(self.forward(gen_seq[..., :cur_i]))[..., :TOKEN_END]
-            token_probs = y[:, cur_i-1, :]
+            logits = self.forward(gen_seq[..., :cur_i])
+            
+            logits = logits[:, cur_i-1, :] / temperature
 
-            if(beam == 0):
-                beam_ran = 2.0
-            else:
-                beam_ran = random.uniform(0,1)
+            if top_p != 0.0 and top_k != 0:
+                logits = top_k_top_p_filtering(logits, top_k, top_p)
 
-            if(beam_ran <= beam_chance):
-                token_probs = token_probs.flatten()
-                top_res, top_i = torch.topk(token_probs, beam)
+            token_probs = self.softmax(logits)[..., :TOKEN_END]
 
-                beam_rows = top_i // VOCAB_SIZE
-                beam_cols = top_i % VOCAB_SIZE
-
-                gen_seq = gen_seq[beam_rows, :]
-                gen_seq[..., cur_i] = beam_cols
-
-            else:
-                distrib = torch.distributions.categorical.Categorical(probs=token_probs)
-                next_token = distrib.sample()
-                # logging.info("next token:",next_token)
-                gen_seq[:, cur_i] = next_token
+            
+            distrib = torch.distributions.categorical.Categorical(probs=token_probs)
+            next_token = distrib.sample()
+            # logging.info("next token:",next_token)
+            gen_seq[:, cur_i] = next_token
 
 
-                # Let the transformer decide to end if it wants to
-                if(next_token == TOKEN_END):
-                    logging.info(f"Model called end of sequence at: {cur_i}/{target_seq_length}")
-                    break
+            # Let the transformer decide to end if it wants to
+            if(next_token == TOKEN_END):
+                logging.info(f"Model called end of sequence at: {cur_i}/{target_seq_length}")
+                break
 
             cur_i += 1
             if(cur_i % 50 == 0):

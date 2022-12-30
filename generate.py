@@ -79,18 +79,12 @@ def main():
     # GENERATION
     model.eval()
     with torch.set_grad_enabled(False):
-        if(args.beam > 0):
-            logging.info(f"BEAM: {args.beam}")
-            beam_seq = model.generate(primer[:args.num_prime], args.target_seq_length, beam=args.beam)
+        logging.info("RAND DIST")
+        rand_seq = model.generate(primer[:args.num_prime], args.target_seq_length, 
+                                  temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)
 
-            f_path = os.path.join(args.output_dir, "beam.mid")
-            decode_midi(beam_seq[0].cpu().numpy(), file_path=f_path)
-        else:
-            logging.info("RAND DIST")
-            rand_seq = model.generate(primer[:args.num_prime], args.target_seq_length, beam=0)
-
-            f_path = os.path.join(args.output_dir, "rand.mid")
-            decode_midi(rand_seq[0].cpu().numpy(), file_path=f_path)
+        f_path = os.path.join(args.output_dir, "rand.mid")
+        decode_midi(rand_seq[0].cpu().numpy(), file_path=f_path)
 
 
 

@@ -161,7 +161,6 @@ def parse_generate_args():
     parser.add_argument("-target_seq_length", type=int, default=1024, help="Target length you'd like the midi to be")
     parser.add_argument("-num_prime", type=int, default=256, help="Amount of messages to prime the generator with")
     parser.add_argument("-model_weights", type=str, default="./saved_models/model.pickle", help="Pickled model weights file saved with torch.save and model.state_dict()")
-    parser.add_argument("-beam", type=int, default=0, help="Beam search k. 0 for random probability sample and 1 for greedy")
 
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
     parser.add_argument("-max_sequence", type=int, default=2048, help="Maximum midi sequence to consider")
@@ -170,6 +169,10 @@ def parse_generate_args():
     parser.add_argument("-d_model", type=int, default=512, help="Dimension of the model (output dim of embedding layers, etc.)")
 
     parser.add_argument("-dim_feedforward", type=int, default=1024, help="Dimension of the feedforward layer")
+
+    parser.add_argument('--temperature', type=float, default=1.0, help='Creativeness setting for the logits')
+    parser.add_argument('--top_k', type=int, default=0, help='Top k for the filtering')
+    parser.add_argument('--top_p', type=float, default=0.0, help='Top p for the filtering')
 
     return parser.parse_args()
 
@@ -192,7 +195,9 @@ def print_generate_args(args):
     logging.info(f"target_seq_length:{args.target_seq_length}")
     logging.info(f"num_prime:{args.num_prime}")
     logging.info(f"model_weights:{args.model_weights}")
-    logging.info(f"beam:{args.beam}")
+    logging.info(f'temperature:{args.temperature}')
+    logging.info(f'top_k:{args.top_k}')
+    logging.info(f'top_p:{args.top_p}')
     logging.info(f"")
     logging.info(f"rpr:{args.rpr}")
     logging.info(f"max_sequence:{args.max_sequence}")
