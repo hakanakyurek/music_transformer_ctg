@@ -92,7 +92,7 @@ def main():
                          callbacks=[checkpoint_callback, 
                                     EarlyStopping(monitor="validation loss", mode="min"),
                                     LearningRateMonitor(logging_interval='epoch')],
-                         precision=16, log_every_n_steps=10)
+                         log_every_n_steps=10)
 
     trainer.fit(model=model, datamodule=data_module)
     logger.experiment.log_artifact("checkpoints/", name=f'{EXPERIMENT_NAME}_model', type='model')
