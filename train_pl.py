@@ -36,10 +36,8 @@ def main():
     Entry point. Trains a model specified by command line arguments
     ----------
     """
-    config_logging('train')
 
     args = parse_train_args()
-    print_train_args(args)
 
     os.environ['WANDB_API_KEY'] = wandb_key
 
@@ -51,7 +49,7 @@ def main():
 
     if(args.force_cpu):
         accelerator = 'cpu'
-        logging.info('WARNING: Forced CPU usage, expect model to perform slower \n')
+        print('WARNING: Forced CPU usage, expect model to perform slower \n')
     else:
         accelerator = 'gpu'
 
@@ -63,8 +61,6 @@ def main():
         loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
     else:
         loss_func = SmoothCrossEntropyLoss(args.ce_smoothing, VOCAB_SIZE, ignore_index=TOKEN_PAD)
-
-
 
     ##### Model #####
 
