@@ -67,7 +67,7 @@ class MidiDataset(Dataset):
         # All data on cpu to allow for the Dataloader to multithread
         i_stream    = open(self.data_files[idx], "rb")
         # return pickle.load(i_stream), None
-        raw_mid     = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE, device=cpu_device())
+        raw_mid     = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
         i_stream.close()
 
         x, tgt = process_midi(raw_mid, self.max_seq, self.random_seq)
@@ -85,8 +85,8 @@ def process_midi(raw_mid, max_seq, random_seq):
     ----------
     """
 
-    x   = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=cpu_device())
-    tgt = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=cpu_device())
+    x   = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
+    tgt = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
 
     raw_len     = len(raw_mid)
     full_seq    = max_seq + 1 # Performing seq2seq

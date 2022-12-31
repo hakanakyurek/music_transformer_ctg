@@ -1,7 +1,6 @@
 import pytorch_lightning as pl
 from .dataset import MidiDataset
 from torch.utils.data import DataLoader
-from lib.utilities.device import get_device 
 import torch
 
 class MidiDataModule(pl.LightningDataModule):
@@ -23,7 +22,7 @@ class MidiDataModule(pl.LightningDataModule):
         x = torch.stack(x)
         tgt = torch.stack(tgt)
         
-        return x.to(get_device()), tgt.to(get_device())
+        return x, tgt
 
     def train_dataloader(self):
         self.train = MidiDataset(f'{self.data_dir}train/', self.max_seq, self.random_seq, self.dataset_percentage)

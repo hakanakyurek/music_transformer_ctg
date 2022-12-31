@@ -23,11 +23,6 @@ from pytorch_lightning.callbacks import LearningRateMonitor
 import wandb
 
 
-CSV_HEADER = ["Epoch", "Learn rate", "Avg Train loss", "Train Accuracy", "Avg Eval loss", "Eval accuracy"]
-
-# Baseline is an untrained epoch that we evaluate as a baseline loss and accuracy
-BASELINE_EPOCH = -1
-
 # main
 def main():
     """
