@@ -49,6 +49,7 @@ def main():
 
     if(args.force_cpu):
         accelerator = 'cpu'
+        use_cuda(False)
         print('WARNING: Forced CPU usage, expect model to perform slower \n')
     else:
         accelerator = 'gpu'
