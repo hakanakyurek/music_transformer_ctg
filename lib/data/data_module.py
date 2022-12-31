@@ -35,7 +35,7 @@ class MidiDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         self.val = MidiDataset(f'{self.data_dir}val/', self.max_seq, self.random_seq, self.dataset_percentage)
-        print('Val dataset size:', len(self.train))
+        print('Val dataset size:', len(self.val))
         return  DataLoader(self.val, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers,
@@ -43,7 +43,7 @@ class MidiDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         self.test = MidiDataset(f'{self.data_dir}test/', self.max_seq, self.random_seq, self.dataset_percentage)
-        print('Test dataset size:', len(self.train))
+        print('Test dataset size:', len(self.test))
         return  DataLoader(self.test, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers,
