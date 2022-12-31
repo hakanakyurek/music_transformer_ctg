@@ -170,3 +170,5 @@ output/*
 !output/.keep
 # Private constants
 private_constants.py
+# Wandb
+wandb/*
