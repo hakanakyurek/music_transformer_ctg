@@ -4,7 +4,6 @@ from torch.nn.modules.normalization import LayerNorm
 from torch.optim.lr_scheduler import LambdaLR
 
 from lib.utilities.constants import *
-from lib.utilities.device import get_device
 from lib.utilities.lr_scheduling import LrStepTracker, get_lr
 
 from .positional_encoding import PositionalEncoding
@@ -98,7 +97,7 @@ class MusicTransformer(pl.LightningModule):
         """
 
         if(mask is True):
-            mask = self.transformer.generate_square_subsequent_mask(x.shape[1]).to(get_device())
+            mask = self.transformer.generate_square_subsequent_mask(x.shape[1])
         else:
             mask = None
 
@@ -139,10 +138,10 @@ class MusicTransformer(pl.LightningModule):
 
         logging.info(f"Generating sequence of max length: {target_seq_length}")
 
-        gen_seq = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
+        gen_seq = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
 
         num_primer = len(primer)
-        gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
+        gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE)
 
 
         # logging.info("primer:",primer)
