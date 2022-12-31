@@ -44,7 +44,7 @@ class MusicAccuracy(tm.Metric):
         self.predictions.append(pred)
 
     def compute(self):
-        self.gt = torch.stack(self.gt)
-        self.predictions = torch.stack(self.predictions)
-        accuracy = self.__compute_accuracy(self.gt, self.predictions)
+        gt = torch.stack(self.gt)
+        predictions = torch.stack(self.predictions)
+        accuracy = self.__compute_accuracy(gt, predictions)
         return accuracy
