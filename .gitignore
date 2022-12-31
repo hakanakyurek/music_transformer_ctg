@@ -168,3 +168,5 @@ models/*
 !models/.keep
 output/*
 !output/.keep
+# Private constants
+private_constants.py
