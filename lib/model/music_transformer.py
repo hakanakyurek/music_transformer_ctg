@@ -203,7 +203,7 @@ class MusicTransformer(pl.LightningModule):
 
         return loss
 
-    def training_epoch_end(self):
+    def training_epoch_end(self, outs):
         accuracy = self.train_acc.compute()
         self.log('train accuracy', accuracy)
 
@@ -213,7 +213,7 @@ class MusicTransformer(pl.LightningModule):
 
         return loss
     
-    def validation_epoch_end(self):
+    def validation_epoch_end(self, outs):
         accuracy = self.val_acc.compute()
         self.log('validation accuracy', accuracy)
 
