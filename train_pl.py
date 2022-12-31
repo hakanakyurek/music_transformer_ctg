@@ -14,6 +14,7 @@ from lib.model.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
 from lib.utilities.constants import *
 from lib.utilities.argument_funcs import parse_train_args, print_train_args
 from lib.utilities.private_constants import wandb_key
+from lib.utilities.device import use_cuda
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
