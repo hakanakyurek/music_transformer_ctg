@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 from .dataset import MidiDataset
 from torch.utils.data import DataLoader
 from lib.utilities.device import get_device 
-
+import torch
 
 class MidiDataModule(pl.LightningDataModule):
     
@@ -20,10 +20,14 @@ class MidiDataModule(pl.LightningDataModule):
     def collate(self, batch):
         x, tgt = zip(*batch)
 
+        x = torch.stack(x)
+        tgt = torch.stack(tgt)
+        
         return x.to(get_device()), tgt.to(get_device())
 
     def train_dataloader(self):
         self.train = MidiDataset(f'{self.data_dir}train/', self.max_seq, self.random_seq, self.dataset_percentage)
+        print('Train dataset size:', len(self.train))
         return  DataLoader(self.train, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers, shuffle=True,
@@ -31,6 +35,7 @@ class MidiDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         self.val = MidiDataset(f'{self.data_dir}val/', self.max_seq, self.random_seq, self.dataset_percentage)
+        print('Val dataset size:', len(self.train))
         return  DataLoader(self.val, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers,
@@ -38,6 +43,7 @@ class MidiDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         self.test = MidiDataset(f'{self.data_dir}test/', self.max_seq, self.random_seq, self.dataset_percentage)
+        print('Test dataset size:', len(self.train))
         return  DataLoader(self.test, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers,
