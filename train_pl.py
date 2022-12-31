@@ -1,10 +1,5 @@
 import os
-import csv
-import shutil
-import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-from torch.optim import Adam
 
 import logging
 from lib.utilities.logging_config import config_logging
@@ -17,9 +12,7 @@ from lib.model.music_transformer import MusicTransformer
 from lib.model.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
 
 from lib.utilities.constants import *
-from lib.utilities.device import get_device, use_cuda
-from lib.utilities.argument_funcs import parse_train_args, print_train_args, write_model_params
-from lib.utilities.run_model import train_epoch, eval_model
+from lib.utilities.argument_funcs import parse_train_args, print_train_args
 from lib.utilities.private_constants import wandb_key
 
 import pytorch_lightning as pl
