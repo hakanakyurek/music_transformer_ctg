@@ -23,21 +23,21 @@ class MidiDataModule(pl.LightningDataModule):
         return x.to(get_device()), tgt.to(get_device())
 
     def train_dataloader(self):
-        self.train = MidiDataset(f'{self.data_dir}/train/', self.max_seq, self.random_seq, self.dataset_percentage)
+        self.train = MidiDataset(f'{self.data_dir}train/', self.max_seq, self.random_seq, self.dataset_percentage)
         return  DataLoader(self.train, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers, shuffle=True,
                            drop_last=True)
 
     def val_dataloader(self):
-        self.val = MidiDataset(f'{self.data_dir}/val/', self.max_seq, self.random_seq, self.dataset_percentage)
+        self.val = MidiDataset(f'{self.data_dir}val/', self.max_seq, self.random_seq, self.dataset_percentage)
         return  DataLoader(self.val, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers,
                            drop_last=True)
 
     def test_dataloader(self):
-        self.test = MidiDataset(f'{self.data_dir}/test/', self.max_seq, self.random_seq, self.dataset_percentage)
+        self.test = MidiDataset(f'{self.data_dir}test/', self.max_seq, self.random_seq, self.dataset_percentage)
         return  DataLoader(self.test, batch_size=self.batch_size, 
                            collate_fn=self.collate,
                            num_workers=self.n_workers,

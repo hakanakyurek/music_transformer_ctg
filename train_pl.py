@@ -93,9 +93,9 @@ def main():
 
     trainer = pl.Trainer(accelerator=accelerator, max_epochs=args.epochs, logger=logger, 
                          callbacks=[checkpoint_callback, 
-                                    EarlyStopping(monitor="val_loss", mode="min"),
+                                    EarlyStopping(monitor="validation loss", mode="min"),
                                     LearningRateMonitor(logging_interval='epoch')],
-                         devices=1)
+                         devices=-1)
 
     trainer.fit(model=model, datamodule=data_module)
     logger.experiment.log_artifact("checkpoints/", name=f'{EXPERIMENT_NAME}_model', type='model')
