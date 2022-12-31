@@ -2,7 +2,6 @@ import os
 import pickle
 import random
 import torch
-import torch.nn as nn
 from torch.utils.data import Dataset
 
 import logging
@@ -137,34 +136,3 @@ def create_datasets(dataset_root, max_seq, random_seq=True):
     return train_dataset, val_dataset, test_dataset
 
 # compute_epiano_accuracy
-def compute_accuracy(out, tgt):
-    """
-    ----------
-    Author: Damon Gwinn
-    ----------
-    Computes the average accuracy for the given input and output batches. Accuracy uses softmax
-    of the output.
-    ----------
-    """
-
-    softmax = nn.Softmax(dim=-1)
-    out = torch.argmax(softmax(out), dim=-1)
-
-    out = out.flatten()
-    tgt = tgt.flatten()
-
-    mask = (tgt != TOKEN_PAD)
-
-    out = out[mask]
-    tgt = tgt[mask]
-
-    # Empty
-    if(len(tgt) == 0):
-        return 1.0
-
-    num_right = (out == tgt)
-    num_right = torch.sum(num_right).type(TORCH_FLOAT)
-
-    acc = num_right / len(tgt)
-
-    return acc

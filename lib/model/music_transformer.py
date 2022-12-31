@@ -1,20 +1,24 @@
 import torch
 import torch.nn as nn
 from torch.nn.modules.normalization import LayerNorm
-import random
+from torch.optim.lr_scheduler import LambdaLR
 
 from lib.utilities.constants import *
 from lib.utilities.device import get_device
+from lib.utilities.lr_scheduling import LrStepTracker, get_lr
 
 from .positional_encoding import PositionalEncoding
 from .rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
 
 import logging
+import random
 
 from lib.utilities.top_p_top_k import top_k_top_p_filtering
+import pytorch_lightning as pl
+
 
 # MusicTransformer
-class MusicTransformer(nn.Module):
+class MusicTransformer(pl.LightningModule):
     """
     ----------
     Author: Damon Gwinn
@@ -31,19 +35,21 @@ class MusicTransformer(nn.Module):
     ----------
     """
 
-    def __init__(self, n_layers=6, num_heads=8, d_model=512, dim_feedforward=1024,
-                 dropout=0.1, max_sequence=2048, rpr=False):
+    def __init__(self, loss_fn, acc_metric, n_layers=6, num_heads=8, d_model=512, dim_feedforward=1024,
+                 dropout=0.1, max_sequence=2048, rpr=False, lr=1.0):
         super(MusicTransformer, self).__init__()
-        logging.info(f"Creating the msic transformer")
-        self.dummy      = DummyDecoder()
+        logging.info(f"Creating the music transformer")
+        self.dummy        = DummyDecoder()
 
-        self.nlayers    = n_layers
-        self.nhead      = num_heads
-        self.d_model    = d_model
-        self.d_ff       = dim_feedforward
-        self.dropout    = dropout
-        self.max_seq    = max_sequence
-        self.rpr        = rpr
+        self.nlayers      = n_layers
+        self.nhead        = num_heads
+        self.d_model      = d_model
+        self.d_ff         = dim_feedforward
+        self.dropout      = dropout
+        self.max_seq      = max_sequence
+        self.rpr          = rpr
+        self.loss_fn      = loss_fn
+        self.lr           = lr
 
         # Input embedding
         self.embedding = nn.Embedding(VOCAB_SIZE, self.d_model)
@@ -74,6 +80,10 @@ class MusicTransformer(nn.Module):
         # Final output is a softmaxed linear layer
         self.Wout       = nn.Linear(self.d_model, VOCAB_SIZE)
         self.softmax    = nn.Softmax(dim=-1)
+
+        self.train_acc = acc_metric()
+        self.val_acc = acc_metric()
+        self.test_acc = acc_metric()
 
     # forward
     def forward(self, x, mask=True):
@@ -167,6 +177,63 @@ class MusicTransformer(nn.Module):
                 logging.info(f"{cur_i}/{target_seq_length}")
 
         return gen_seq[:, :cur_i]
+
+    def step(self, batch, acc_metric):
+        
+        x, tgt = batch
+
+        y = self.forward(x)
+
+        y   = y.reshape(y.shape[0] * y.shape[1], -1)
+        tgt = tgt.flatten()
+
+        loss = self.loss_fn.forward(y, tgt)
+
+        acc_metric.update(y, tgt)
+
+        return loss, y
+
+    def training_step(self, batch):
+        loss, _ = self.step(batch, self.train_acc)
+
+        if(self.lr_scheduler is not None):
+            self.lr_scheduler.step()
+
+        self.log('training loss', loss)
+
+        return loss
+
+    def training_epoch_end(self):
+        accuracy = self.train_acc.compute()
+        self.log('train accuracy', accuracy)
+
+    def validation_step(self, batch):
+        loss, _ = self.step(batch, self.val_acc)
+        self.log('validation loss', loss)
+
+        return loss
+    
+    def validation_epoch_end(self):
+        accuracy = self.val_acc.compute()
+        self.log('validation accuracy', accuracy)
+
+    def test_step(self, batch):
+        loss, y = self.step(batch, self.test_acc)
+        return loss, y
+
+    def test_epoch_end(self, outs):
+        accuracy = self.test_acc.compute()
+        self.log('test accuracy', accuracy)
+
+    def configure_optimizers(self):
+        opt = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
+
+        lr_stepper = LrStepTracker(self.d_model, SCHEDULER_WARMUP_STEPS, 0)
+
+        lr_scheduler = LambdaLR(opt, lr_stepper.step)
+
+        return [opt], [lr_scheduler]
+
 
 # Used as a dummy to nn.Transformer
 # DummyDecoder

@@ -13,7 +13,7 @@ from lib.utilities.logging_config import config_logging
 from lib.data.dataset import create_datasets
 
 from lib.model.music_transformer import MusicTransformer
-from lib.model.loss import SmoothCrossEntropyLoss
+from lib.model.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
 
 from lib.utilities.constants import *
 from lib.utilities.device import get_device, use_cuda

@@ -81,6 +81,33 @@ class TransformerEncoderLayerRPR(Module):
         src = self.norm2(src)
         return src
 
+
+class TransformerDecoderLayerRPR(Module):
+
+    def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1, er_len=None):
+        super(TransformerDecoderLayerRPR, self).__init__()
+        self.self_attn = MultiheadAttentionRPR(d_model, nhead, dropout=dropout, er_len=er_len)
+        # Implementation of Feedforward model
+        self.linear1 = Linear(d_model, dim_feedforward)
+        self.dropout = Dropout(dropout)
+        self.linear2 = Linear(dim_feedforward, d_model)
+
+        self.norm1 = LayerNorm(d_model)
+        self.norm2 = LayerNorm(d_model)
+        self.dropout1 = Dropout(dropout)
+        self.dropout2 = Dropout(dropout)
+
+    def forward(self, src, src_mask=None, src_key_padding_mask=None):
+        src2 = self.self_attn(src, src, src, attn_mask=src_mask,
+                              key_padding_mask=src_key_padding_mask)[0]
+        src = src + self.dropout1(src2)
+        src = self.norm1(src)
+        src2 = self.linear2(self.dropout(F.relu(self.linear1(src))))
+        src = src + self.dropout2(src2)
+        src = self.norm2(src)
+        return src
+
+
 # MultiheadAttentionRPR
 class MultiheadAttentionRPR(Module):
     """
