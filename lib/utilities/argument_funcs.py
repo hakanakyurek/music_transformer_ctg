@@ -43,6 +43,8 @@ def parse_train_args():
 
     parser.add_argument("-dropout", type=float, default=0.1, help="Dropout rate")
 
+    parser.add_argument('--dataset_percentage', type=int, default=100, help='Set how much of the dataset should be used')
+
     return parser.parse_args()
 
 # print_train_args
@@ -81,6 +83,7 @@ def print_train_args(args):
     logging.info(f"")
     logging.info(f"dim_feedforward:{args.dim_feedforward}")
     logging.info(f"dropout:{args.dropout}")
+    logging.info(f'dataset_percentage:{args.dataset_percentage}')
     logging.info(SEPERATOR)
     logging.info(f"")
 

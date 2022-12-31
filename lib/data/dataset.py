@@ -10,6 +10,8 @@ import logging
 from lib.utilities.constants import *
 from lib.utilities.device import cpu_device
 
+import numpy as np
+
 SEQUENCE_START = 0
 
 class MidiDataset(Dataset):
@@ -25,13 +27,18 @@ class MidiDataset(Dataset):
     ----------
     """
 
-    def __init__(self, root, max_seq=2048, random_seq=True):
+    def __init__(self, root, max_seq=2048, random_seq=True, percentage=100):
         self.root       = root
         self.max_seq    = max_seq
         self.random_seq = random_seq
+        self.percentage = percentage
+
+        self.rng = np.random.default_rng()
 
         fs = [os.path.join(root, f) for f in os.listdir(self.root)]
         self.data_files = [f for f in fs if os.path.isfile(f)]
+
+        self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
 
     # __len__
     def __len__(self):
