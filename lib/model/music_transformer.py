@@ -193,7 +193,7 @@ class MusicTransformer(pl.LightningModule):
 
         return loss, y
 
-    def training_step(self, batch):
+    def training_step(self, batch, batch_idx):
         loss, _ = self.step(batch, self.train_acc)
 
         if(self.lr_scheduler is not None):
@@ -207,7 +207,7 @@ class MusicTransformer(pl.LightningModule):
         accuracy = self.train_acc.compute()
         self.log('train accuracy', accuracy)
 
-    def validation_step(self, batch):
+    def validation_step(self, batch, batch_idx):
         loss, _ = self.step(batch, self.val_acc)
         self.log('validation loss', loss)
 
@@ -217,7 +217,7 @@ class MusicTransformer(pl.LightningModule):
         accuracy = self.val_acc.compute()
         self.log('validation accuracy', accuracy)
 
-    def test_step(self, batch):
+    def test_step(self, batch, batch_idx):
         loss, y = self.step(batch, self.test_acc)
         return loss, y
 
