@@ -196,9 +196,6 @@ class MusicTransformer(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         loss, _ = self.step(batch, self.train_acc)
 
-        if(self.lr_scheduler is not None):
-            self.lr_scheduler.step()
-
         self.log('training loss', loss)
 
         return loss
