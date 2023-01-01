@@ -27,7 +27,7 @@ class MidiDataset(Dataset):
     ----------
     """
 
-    def __init__(self, root, max_seq=2048, random_seq=True, percentage=100):
+    def __init__(self, root, max_seq=2048, random_seq=True, percentage=100.0):
         self.root       = root
         self.max_seq    = max_seq
         self.random_seq = random_seq

@@ -43,7 +43,7 @@ def parse_train_args():
 
     parser.add_argument("-dropout", type=float, default=0.1, help="Dropout rate")
 
-    parser.add_argument('--dataset_percentage', type=int, default=100, help='Set how much of the dataset should be used')
+    parser.add_argument('--dataset_percentage', type=float, default=100.0, help='Set how much of the dataset should be used')
 
     return parser.parse_args()
 
