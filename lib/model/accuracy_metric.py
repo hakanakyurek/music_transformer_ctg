@@ -2,7 +2,7 @@ import torchmetrics as tm
 import torch
 import torch.nn as nn
 from lib.utilities.constants import TOKEN_PAD, TORCH_FLOAT
-
+from lib.utilities.device import cpu_device
 
 class MusicAccuracy(tm.Metric):
     def __init__(self) -> None:
@@ -40,8 +40,8 @@ class MusicAccuracy(tm.Metric):
         return acc
 
     def update(self, gt, pred):
-        self.gt.append(gt)
-        self.predictions.append(pred)
+        self.gt.append(gt.to(cpu_device))
+        self.predictions.append(pred.to(cpu_device))
 
     def compute(self):
         gt = torch.stack(self.gt)
