@@ -8,7 +8,7 @@ from lib.data.data_module import MidiDataModule
 
 from lib.model.accuracy_metric import MusicAccuracy
 
-from lib.model.music_transformer import MusicTransformer
+from lib.model.music_transformer_ed import MusicTransformerEncoderDecoder
 from lib.model.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
 
 from lib.utilities.constants import *
@@ -61,7 +61,7 @@ def main():
 
     ##### Model #####
 
-    model = MusicTransformer(n_layers=args.n_layers, 
+    model = MusicTransformerEncoderDecoder(n_layers=args.n_layers, 
                              num_heads=args.num_heads,
                              d_model=args.d_model, 
                              dim_feedforward=args.dim_feedforward, 
@@ -93,7 +93,7 @@ def main():
                                     EarlyStopping(monitor="validation loss", mode="min", patience=3),
                                     LearningRateMonitor(logging_interval='epoch')],
                          log_every_n_steps=10,
-                         check_val_every_n_epoch=5)
+                         check_val_every_n_epoch=3)
 
     trainer.fit(model=model, datamodule=data_module)
     logger.experiment.log_artifact("checkpoints/", name=f'{EXPERIMENT_NAME}_model', type='model')

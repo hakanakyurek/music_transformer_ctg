@@ -87,25 +87,69 @@ class TransformerDecoderLayerRPR(Module):
     def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1, er_len=None):
         super(TransformerDecoderLayerRPR, self).__init__()
         self.self_attn = MultiheadAttentionRPR(d_model, nhead, dropout=dropout, er_len=er_len)
+        self.norm1 = LayerNorm(d_model)
+        self.dropout1 = Dropout(dropout)
+        
+        self.enc_dec_attention = MultiheadAttentionRPR(d_model, nhead, dropout=dropout, er_len=er_len)
+        self.norm2 = LayerNorm(d_model=d_model)
+        self.dropout2 = nn.Dropout(p=dropout)
+
         # Implementation of Feedforward model
         self.linear1 = Linear(d_model, dim_feedforward)
-        self.dropout = Dropout(dropout)
+        self.dropout3 = Dropout(dropout)
         self.linear2 = Linear(dim_feedforward, d_model)
 
-        self.norm1 = LayerNorm(d_model)
-        self.norm2 = LayerNorm(d_model)
-        self.dropout1 = Dropout(dropout)
-        self.dropout2 = Dropout(dropout)
+        self.norm3 = LayerNorm(d_model)
+        self.dropout4 = Dropout(dropout)
 
-    def forward(self, src, src_mask=None, src_key_padding_mask=None):
-        src2 = self.self_attn(src, src, src, attn_mask=src_mask,
-                              key_padding_mask=src_key_padding_mask)[0]
-        src = src + self.dropout1(src2)
-        src = self.norm1(src)
-        src2 = self.linear2(self.dropout(F.relu(self.linear1(src))))
-        src = src + self.dropout2(src2)
-        src = self.norm2(src)
-        return src
+    def forward(self, dec, enc_src, t_mask, s_mask):
+        # 1. compute self attention
+        _x = dec
+        x = self.self_attn(q=dec, k=dec, v=dec, mask=t_mask)
+        
+        # 2. add and norm
+        x = self.dropout1(x)
+        x = self.norm1(x + _x)
+
+        if enc_src is not None:
+            # 3. compute encoder - decoder attention
+            _x = x
+            x = self.enc_dec_attention(q=x, k=enc_src, v=enc_src, mask=s_mask)
+            
+            # 4. add and norm
+            x = self.dropout2(x)
+            x = self.norm2(x + _x)
+
+        # 5. positionwise feed forward network
+        _x = x
+        x = self.linear1(x)
+        x = self.dropout3(x)
+        x = self.linear2(x)
+        
+        # 6. add and norm
+        x = self.dropout4(x)
+        x = self.norm3(x + _x)
+        return 
+
+
+class TransformerDecoderRPR(Module):
+    def __init__(self, decoder_layer, num_layers, norm) -> None:
+        super(TransformerDecoderRPR).__init__()
+        self.layers = _get_clones(decoder_layer, num_layers)
+        self.num_layers = num_layers
+        self.norm = norm
+
+    def forward(self, trg, enc_src, trg_mask, src_mask):
+
+        for layer in self.layers:
+            trg = layer(trg, enc_src, trg_mask, src_mask)
+
+        output = trg
+
+        if self.norm:
+            output = self.norm(output)
+        
+        return output
 
 
 # MultiheadAttentionRPR
@@ -122,7 +166,8 @@ class MultiheadAttentionRPR(Module):
     ----------
     """
 
-    def __init__(self, embed_dim, num_heads, dropout=0., bias=True, add_bias_kv=False, add_zero_attn=False, kdim=None, vdim=None, er_len=None):
+    def __init__(self, embed_dim, num_heads, dropout=0., bias=True, add_bias_kv=False,
+                 add_zero_attn=False, kdim=None, vdim=None, er_len=None):
         super(MultiheadAttentionRPR, self).__init__()
         self.embed_dim = embed_dim
         self.kdim = kdim if kdim is not None else embed_dim
