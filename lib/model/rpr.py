@@ -106,7 +106,7 @@ class TransformerDecoderLayerRPR(Module):
         # 1. compute self attention
         _x = tgt
         x = self.self_attn(query=tgt, key=tgt, value=tgt, attn_mask=tgt_mask,
-                           key_padding_mask=tgt_key_padding_mask)
+                           key_padding_mask=tgt_key_padding_mask)[0]
         
         # 2. add and norm
         x = self.dropout1(x)
@@ -116,7 +116,7 @@ class TransformerDecoderLayerRPR(Module):
             # 3. compute encoder - decoder attention
             _x = x
             x = self.enc_dec_attention(query=x, key=memory, value=memory, attn_mask=memory_mask,
-                                       key_padding_mask=memory_key_padding_mask)
+                                       key_padding_mask=memory_key_padding_mask)[0]
             
             # 4. add and norm
             x = self.dropout2(x)
