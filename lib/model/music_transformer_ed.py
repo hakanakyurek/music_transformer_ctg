@@ -90,7 +90,7 @@ class MusicTransformerEncoderDecoder(pl.LightningModule):
         self.test_acc = acc_metric()
 
     # forward
-    def forward(self, x, tgt):
+    def forward(self, x, tgt, mask=True):
         """
         ----------
         Author: Damon Gwinn
