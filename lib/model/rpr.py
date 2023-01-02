@@ -141,12 +141,13 @@ class TransformerDecoderRPR(Module):
         self.num_layers = num_layers
         self.norm = norm
 
-    def forward(self, trg, enc_src=None, trg_mask=None, src_mask=None):
+    def forward(self, tgt, memory, tgt_mask=None, memory_mask=None, 
+                tgt_key_padding_mask=None, memory_key_padding_mask=None):
 
         for layer in self.layers:
-            trg = layer(trg, enc_src, trg_mask, src_mask)
+            tgt = layer(tgt, memory, tgt_mask, memory_mask, tgt_key_padding_mask, memory_key_padding_mask)
 
-        output = trg
+        output = tgt
 
         if self.norm:
             output = self.norm(output)
