@@ -94,6 +94,7 @@ def process_midi(raw_mid, max_seq, random_seq):
     if(raw_len == 0):
         return x, tgt
 
+    # Shift to the right by one
     if(raw_len < full_seq):
         x[:raw_len]         = raw_mid
         tgt[:raw_len-1]     = raw_mid[1:]
