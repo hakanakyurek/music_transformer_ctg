@@ -102,19 +102,21 @@ class TransformerDecoderLayerRPR(Module):
         self.norm3 = LayerNorm(d_model)
         self.dropout4 = Dropout(dropout)
 
-    def forward(self, dec, enc_src, t_mask, s_mask):
+    def forward(self, tgt, memory, src_mask, tgt_mask, src_key_padding_mask, tgt_key_padding_mask):
         # 1. compute self attention
-        _x = dec
-        x = self.self_attn(q=dec, k=dec, v=dec, mask=t_mask)
+        _x = tgt
+        x = self.self_attn(q=tgt, k=tgt, v=tgt, attn_mask=tgt_mask,
+                           key_padding_mask=tgt_key_padding_mask)
         
         # 2. add and norm
         x = self.dropout1(x)
         x = self.norm1(x + _x)
 
-        if enc_src is not None:
+        if memory is not None:
             # 3. compute encoder - decoder attention
             _x = x
-            x = self.enc_dec_attention(q=x, k=enc_src, v=enc_src, mask=s_mask)
+            x = self.enc_dec_attention(q=x, k=memory, v=memory, attn_mask=src_mask,
+                                       key_padding_mask=src_key_padding_mask)
             
             # 4. add and norm
             x = self.dropout2(x)
