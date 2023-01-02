@@ -91,7 +91,7 @@ class TransformerDecoderLayerRPR(Module):
         self.dropout1 = Dropout(dropout)
         
         self.enc_dec_attention = MultiheadAttentionRPR(d_model, nhead, dropout=dropout, er_len=er_len)
-        self.norm2 = LayerNorm(d_model=d_model)
+        self.norm2 = LayerNorm(d_model)
         self.dropout2 = nn.Dropout(p=dropout)
 
         # Implementation of Feedforward model
