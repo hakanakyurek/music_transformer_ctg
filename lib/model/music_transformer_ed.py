@@ -107,11 +107,14 @@ class MusicTransformerEncoderDecoder(pl.LightningModule):
             src_mask, tgt_mask, src_pad_mask, tgt_pad_mask = None, None, None, None
 
         x = self.embedding(x)
+        tgt = self.embedding(tgt)
 
         # Input shape is (max_seq, batch_size, d_model)
-        x = x.permute(1,0,2)
+        x = x.permute(1, 0, 2)
+        tgt = tgt.permute(1, 0 ,2)
 
         x = self.positional_encoding(x)
+        tgt = self.positional_encoding(tgt)
 
         # Pytorch wants src and tgt to have some equal dims however
         x_out = self.transformer(src=x, tgt=tgt, 
