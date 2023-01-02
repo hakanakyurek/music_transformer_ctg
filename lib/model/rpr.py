@@ -115,7 +115,7 @@ class TransformerDecoderLayerRPR(Module):
         if memory is not None:
             # 3. compute encoder - decoder attention
             _x = x
-            x = self.enc_dec_attention(q=x, k=memory, v=memory, attn_mask=memory_mask,
+            x = self.enc_dec_attention(query=x, key=memory, value=memory, attn_mask=memory_mask,
                                        key_padding_mask=memory_key_padding_mask)
             
             # 4. add and norm
