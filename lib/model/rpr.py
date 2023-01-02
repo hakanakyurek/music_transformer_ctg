@@ -134,12 +134,12 @@ class TransformerDecoderLayerRPR(Module):
 
 class TransformerDecoderRPR(Module):
     def __init__(self, decoder_layer, num_layers, norm) -> None:
-        super(TransformerDecoderRPR).__init__()
+        super().__init__()
         self.layers = _get_clones(decoder_layer, num_layers)
         self.num_layers = num_layers
         self.norm = norm
 
-    def forward(self, trg, enc_src, trg_mask, src_mask):
+    def forward(self, trg, enc_src=None, trg_mask=None, src_mask=None):
 
         for layer in self.layers:
             trg = layer(trg, enc_src, trg_mask, src_mask)
