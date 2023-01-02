@@ -105,7 +105,7 @@ class TransformerDecoderLayerRPR(Module):
     def forward(self, tgt, memory, tgt_mask, memory_mask, tgt_key_padding_mask, memory_key_padding_mask):
         # 1. compute self attention
         _x = tgt
-        x = self.self_attn(q=tgt, k=tgt, v=tgt, attn_mask=tgt_mask,
+        x = self.self_attn(query=tgt, key=tgt, value=tgt, attn_mask=tgt_mask,
                            key_padding_mask=tgt_key_padding_mask)
         
         # 2. add and norm
