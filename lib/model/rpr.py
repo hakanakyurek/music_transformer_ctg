@@ -131,7 +131,7 @@ class TransformerDecoderLayerRPR(Module):
         # 6. add and norm
         x = self.dropout4(x)
         x = self.norm3(x + _x)
-        return 
+        return x
 
 
 class TransformerDecoderRPR(Module):
