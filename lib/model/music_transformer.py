@@ -8,7 +8,7 @@ from lib.utilities.device import get_device
 from lib.utilities.lr_scheduling import LrStepTracker, get_lr
 
 from .positional_encoding import PositionalEncoding
-from .rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
+from .encoder_rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
 
 import logging
 import random
@@ -230,6 +230,21 @@ class MusicTransformer(pl.LightningModule):
         lr_scheduler = LambdaLR(opt, lr_stepper.step)
 
         return [opt], [lr_scheduler]
+   
+    # def _init_weights(self, module):
+    #     if isinstance(module, nn.Embedding):
+    #         module.weight.data.normal_(mean=0.0, std=1.0)
+    #         if module.padding_idx is not None:
+    #             module.weight.data[module.padding_idx].zero_()
+    #     elif isinstance(module, nn.LayerNorm):
+    #         module.bias.data.zero_()
+    #         module.weight.data.fill_(1.0)
+    #     elif isinstance(module, nn.Linear):
+    #         module.weight.data.normal_(mean=0.0, std=1.0)
+    #         if module.bias is not None:
+    #             module.bias.data.zero_()
+    #     elif
+
 
 
 # Used as a dummy to nn.Transformer

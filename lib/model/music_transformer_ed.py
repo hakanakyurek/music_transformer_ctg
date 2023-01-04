@@ -8,9 +8,8 @@ from lib.utilities.device import get_device
 from lib.utilities.lr_scheduling import LrStepTracker, get_lr
 
 from .positional_encoding import PositionalEncoding
-from .rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR, \
-                 TransformerDecoderRPR, TransformerDecoderLayerRPR
-
+from .encoder_rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
+from .decoder_rpr import TransformerDecoderRPR, TransformerDecoderLayerRPR
 import logging
 import random
 
