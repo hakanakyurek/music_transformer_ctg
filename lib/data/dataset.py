@@ -164,8 +164,8 @@ def process_midi_ed(raw_mid, max_seq, random_seq):
 
         x = data[:max_seq]
         tgt[0] = TOKEN_START
-        tgt[1:full_seq-1] = data[1:full_seq-1]
-        tgt[full_seq-1] = TOKEN_END
+        tgt[1:full_seq-2] = data[1:full_seq-2]
+        tgt[full_seq-2] = TOKEN_END
 
 
     # logging.info("x:",x)
