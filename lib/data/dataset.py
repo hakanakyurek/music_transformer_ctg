@@ -158,7 +158,7 @@ def process_midi_ed(raw_mid, max_seq, random_seq):
         else:
             start = SEQUENCE_START
 
-        end = start + full_seq - 1
+        end = start + full_seq
 
         data = raw_mid[start:end]
 
