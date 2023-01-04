@@ -76,7 +76,7 @@ class MusicTransformerEncoderDecoder(pl.LightningModule):
             decoder = TransformerDecoderRPR(decoder_layer, self.nlayers, decoder_norm)
             self.transformer = nn.Transformer(
                 d_model=self.d_model, nhead=self.nhead, num_encoder_layers=self.nlayers,
-                num_decoder_layers=0, dropout=self.dropout, # activation=self.ff_activ,
+                num_decoder_layers=self.nlayers, dropout=self.dropout, # activation=self.ff_activ,
                 dim_feedforward=self.d_ff, custom_decoder=decoder, custom_encoder=encoder
             )
 
