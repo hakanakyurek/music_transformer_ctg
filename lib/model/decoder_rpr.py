@@ -10,7 +10,7 @@ from .multihead_attention import MultiheadAttentionRPR
 
 
 class TransformerDecoderRPR(Module):
-    def __init__(self, decoder_layer, num_layers, norm) -> None:
+    def __init__(self, decoder_layer, num_layers) -> None:
         super().__init__()
         self.layers = _get_clones(decoder_layer, num_layers)
         self.num_layers = num_layers
