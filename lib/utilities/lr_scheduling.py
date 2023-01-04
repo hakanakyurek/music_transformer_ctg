@@ -23,7 +23,7 @@ class LrStepTracker:
     ----------
     """
 
-    def __init__(self, model_dim=512, warmup_steps=4000, init_steps=0):
+    def __init__(self, model_dim=512, warmup_steps=4000, init_steps=1):
         # Store Values
         self.warmup_steps = warmup_steps
         self.model_dim = model_dim

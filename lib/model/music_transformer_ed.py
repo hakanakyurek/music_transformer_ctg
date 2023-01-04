@@ -267,7 +267,7 @@ class MusicTransformerEncoderDecoder(pl.LightningModule):
     def configure_optimizers(self):
         opt = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
 
-        lr_stepper = LrStepTracker(self.d_model, SCHEDULER_WARMUP_STEPS, 0)
+        lr_stepper = LrStepTracker(self.d_model, SCHEDULER_WARMUP_STEPS, 1)
 
         lr_scheduler = LambdaLR(opt, lr_stepper.step)
 
