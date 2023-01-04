@@ -163,7 +163,9 @@ def process_midi_ed(raw_mid, max_seq, random_seq):
         data = raw_mid[start:end]
 
         x = data[:max_seq]
-        tgt = torch.concatenate(TOKEN_START, data[1:full_seq], TOKEN_END)
+        tgt = torch.concatenate(torch.Tensor([TOKEN_START], dtype=TORCH_LABEL_TYPE), 
+                                data[1:full_seq], 
+                                torch.Tensor([TOKEN_END], dtype=TORCH_LABEL_TYPE))
 
 
     # logging.info("x:",x)
