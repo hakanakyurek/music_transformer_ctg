@@ -25,6 +25,7 @@ import wandb
 
 # main
 def main():
+    torch.autograd.set_detect_anomaly(True)
     """
     ----------
     Author: Damon Gwinn
