@@ -70,7 +70,7 @@ class MidiDataset(Dataset):
         raw_mid     = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
         i_stream.close()
 
-        x, tgt = process_midi(raw_mid, self.max_seq, self.random_seq)
+        x, tgt = process_midi_ed(raw_mid, self.max_seq, self.random_seq)
 
         return x, tgt
 
@@ -122,6 +122,54 @@ def process_midi(raw_mid, max_seq, random_seq):
 
     return x, tgt
 
+# process_midi for ed arch
+def process_midi_ed(raw_mid, max_seq, random_seq):
+    """
+    ----------
+    Author: Damon Gwinn
+    ----------
+    Takes in pre-processed raw midi and returns the input and target. Can use a random sequence or
+    go from the start based on random_seq.
+    ----------
+    """
+
+    x   = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
+    tgt = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
+
+    raw_len     = len(raw_mid)
+    full_seq    = max_seq + 2 # Performing seq2seq for ed arch
+
+    if(raw_len == 0):
+        return x, tgt
+
+    # Shift to the right by one
+    if(raw_len < full_seq):
+        x[:raw_len] = raw_mid
+        tgt[0] = TOKEN_START
+        tgt[1:raw_len-1] = raw_mid[1:]
+        tgt[raw_len-1] = TOKEN_END
+    else:
+        # Randomly selecting a range
+        if(random_seq):
+            end_range = raw_len - full_seq
+            start = random.randint(SEQUENCE_START, end_range)
+
+        # Always taking from the start to as far as we can
+        else:
+            start = SEQUENCE_START
+
+        end = start + full_seq - 1
+
+        data = raw_mid[start:end]
+
+        x = data[:max_seq]
+        tgt = torch.concatenate(TOKEN_START, data[1:full_seq], TOKEN_END)
+
+
+    # logging.info("x:",x)
+    # logging.info("tgt:",tgt)
+
+    return x, tgt
 
 # create_epiano_datasets
 def create_datasets(dataset_root, max_seq, random_seq=True):
