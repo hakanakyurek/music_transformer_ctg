@@ -9,6 +9,23 @@ from torch.nn.modules.normalization import LayerNorm
 from .multihead_attention import MultiheadAttentionRPR
 
 
+class TransformerDecoderRPR(Module):
+    def __init__(self, decoder_layer, num_layers, norm) -> None:
+        super().__init__()
+        self.layers = _get_clones(decoder_layer, num_layers)
+        self.num_layers = num_layers
+
+    def forward(self, tgt, memory, tgt_mask=None, memory_mask=None, 
+                tgt_key_padding_mask=None, memory_key_padding_mask=None):
+
+        for layer in self.layers:
+            tgt = layer(tgt, memory, tgt_mask, memory_mask, tgt_key_padding_mask, memory_key_padding_mask)
+
+        output = tgt
+        
+        return output
+
+
 class TransformerDecoderLayerRPR(Module):
 
     def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1, er_len=None):
@@ -60,23 +77,3 @@ class TransformerDecoderLayerRPR(Module):
         x = self.norm3(x + _x)
         return x
 
-
-class TransformerDecoderRPR(Module):
-    def __init__(self, decoder_layer, num_layers, norm) -> None:
-        super().__init__()
-        self.layers = _get_clones(decoder_layer, num_layers)
-        self.num_layers = num_layers
-        self.norm = norm
-
-    def forward(self, tgt, memory, tgt_mask=None, memory_mask=None, 
-                tgt_key_padding_mask=None, memory_key_padding_mask=None):
-
-        for layer in self.layers:
-            tgt = layer(tgt, memory, tgt_mask, memory_mask, tgt_key_padding_mask, memory_key_padding_mask)
-
-        output = tgt
-
-        if self.norm:
-            output = self.norm(output)
-        
-        return output
