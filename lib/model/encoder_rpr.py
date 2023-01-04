@@ -72,7 +72,7 @@ class TransformerEncoderLayerRPR(Module):
                               key_padding_mask=src_key_padding_mask)[0]
         src = src + self.dropout1(src2)
         src = self.norm1(src)
-        src2 = self.linear2(self.dropout(F.relu(self.linear1(src))))
+        src2 = self.linear2(self.dropout(F.silu(self.linear1(src))))
         src = src + self.dropout2(src2)
         src = self.norm2(src)
         return src
