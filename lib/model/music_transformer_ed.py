@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn.modules.normalization import LayerNorm
 from torch.optim.lr_scheduler import LambdaLR
+from torch.nn.init import xavier_normal_
 
 from lib.utilities.constants import *
 from lib.utilities.device import get_device
@@ -87,6 +88,8 @@ class MusicTransformerEncoderDecoder(pl.LightningModule):
         self.train_acc = acc_metric()
         self.val_acc = acc_metric()
         self.test_acc = acc_metric()
+
+        self._reset_parameters()
 
     # forward
     def forward(self, x, tgt, mask=True):
@@ -272,3 +275,6 @@ class MusicTransformerEncoderDecoder(pl.LightningModule):
         lr_scheduler = LambdaLR(opt, lr_stepper.step)
 
         return [opt], [lr_scheduler]
+
+    def _reset_parameters(self):
+        xavier_normal_(self.Wout)
