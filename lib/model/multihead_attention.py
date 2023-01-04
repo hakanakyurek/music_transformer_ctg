@@ -3,6 +3,7 @@ from torch.nn import Module
 from torch.nn.functional import linear, softmax, dropout
 from torch.nn.parameter import Parameter
 from torch.nn.modules.linear import Linear
+from torch.nn import functional as F
 from torch.nn.init import *
 
 
