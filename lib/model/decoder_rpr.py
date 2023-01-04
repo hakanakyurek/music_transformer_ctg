@@ -52,7 +52,7 @@ class TransformerDecoderLayerRPR(Module):
         # 5. positionwise feed forward network
         _x = x
         x = self.linear1(x)
-        x = self.dropout3(x)
+        x = self.dropout3(F.silu(x))
         x = self.linear2(x)
         
         # 6. add and norm
