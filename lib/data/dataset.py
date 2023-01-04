@@ -70,9 +70,9 @@ class MidiDataset(Dataset):
         raw_mid     = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
         i_stream.close()
 
-        x, tgt = process_midi_ed(raw_mid, self.max_seq, self.random_seq)
+        x, tgt_input, tgt_output = process_midi_ed(raw_mid, self.max_seq, self.random_seq)
 
-        return x, tgt
+        return x, tgt_input, tgt_output
 
 # process_midi
 def process_midi(raw_mid, max_seq, random_seq):
@@ -134,20 +134,24 @@ def process_midi_ed(raw_mid, max_seq, random_seq):
     """
 
     x   = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
-    tgt = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
+    tgt_input = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
+    tgt_output = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
 
     raw_len     = len(raw_mid)
     full_seq    = max_seq + 1 # Performing seq2seq for ed arch
 
     if(raw_len == 0):
-        return x, tgt
+        return x, tgt_input, tgt_output
 
     # Shift to the right by one
     if(raw_len < full_seq):
         x[:raw_len] = raw_mid
-        tgt[0] = TOKEN_START
-        tgt[1:raw_len-1] = raw_mid[1:raw_len-1]
-        tgt[raw_len-1] = TOKEN_END
+        
+        tgt_input[0] = TOKEN_START
+        tgt_input[1:raw_len] = raw_mid[1:raw_len]
+
+        tgt_output[:raw_len - 1] = raw_mid[:raw_len - 1]
+        tgt_output[-1] = TOKEN_END
     else:
         # Randomly selecting a range
         if(random_seq):
@@ -163,15 +167,18 @@ def process_midi_ed(raw_mid, max_seq, random_seq):
         data = raw_mid[start:end]
 
         x = data[:max_seq]
-        tgt[0] = TOKEN_START
-        tgt[1:full_seq-2] = data[1:full_seq-2]
-        tgt[full_seq-2] = TOKEN_END
+        
+        tgt_input[0] = TOKEN_START
+        tgt_input[1:full_seq - 1] = data[1:full_seq - 1]
+
+        tgt_output[:full_seq - 2] = data[:full_seq - 2]
+        tgt_output[-1] = TOKEN_END
 
 
     # logging.info("x:",x)
     # logging.info("tgt:",tgt)
 
-    return x, tgt
+    return x, tgt_input, tgt_output
 
 # create_epiano_datasets
 def create_datasets(dataset_root, max_seq, random_seq=True):

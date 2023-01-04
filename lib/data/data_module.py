@@ -17,12 +17,13 @@ class MidiDataModule(pl.LightningDataModule):
         self.dataset_percentage = dataset_percentage
 
     def collate(self, batch):
-        x, tgt = zip(*batch)
+        x, tgt_input, tgt_output = zip(*batch)
 
         x = torch.stack(x)
-        tgt = torch.stack(tgt)
+        tgt_input = torch.stack(tgt_input)
+        tgt_output = torch.stack(tgt_output)
         
-        return x, tgt
+        return x, tgt_input, tgt_output
 
     def train_dataloader(self):
         self.train = MidiDataset(f'{self.data_dir}train/', self.max_seq, self.random_seq, self.dataset_percentage)

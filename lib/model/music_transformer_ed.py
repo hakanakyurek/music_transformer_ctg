@@ -222,16 +222,16 @@ class MusicTransformerEncoderDecoder(pl.LightningModule):
 
     def step(self, batch, acc_metric):
         
-        x, tgt = batch
+        x, tgt_input, tgt_output = batch
         # tgt is shifted to the right by 1
-        y = self.forward(x, tgt)
+        y = self.forward(x, tgt_input)
 
         y   = y.reshape(y.shape[0] * y.shape[1], -1)
-        tgt = tgt.flatten()
+        tgt_output = tgt_output.flatten()
 
-        loss = self.loss_fn.forward(y, tgt)
+        loss = self.loss_fn.forward(y, tgt_output)
 
-        acc_metric.update(y, tgt)
+        acc_metric.update(y, tgt_output)
 
         return loss, y
 
