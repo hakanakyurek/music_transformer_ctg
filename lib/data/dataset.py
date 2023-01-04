@@ -137,7 +137,7 @@ def process_midi_ed(raw_mid, max_seq, random_seq):
     tgt = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
 
     raw_len     = len(raw_mid)
-    full_seq    = max_seq + 2 # Performing seq2seq for ed arch
+    full_seq    = max_seq + 1 # Performing seq2seq for ed arch
 
     if(raw_len == 0):
         return x, tgt
