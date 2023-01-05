@@ -27,11 +27,12 @@ class MidiDataset(Dataset):
 
     """
 
-    def __init__(self, root, max_seq=2048, random_seq=True, percentage=100.0):
+    def __init__(self, root, arch, max_seq=2048, random_seq=True, percentage=100.0):
         self.root       = root
         self.max_seq    = max_seq
         self.random_seq = random_seq
         self.percentage = percentage
+        self.model_arch = arch
 
         self.rng = np.random.default_rng(seed=2486)
 
@@ -70,9 +71,14 @@ class MidiDataset(Dataset):
         raw_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
         i_stream.close()
         aug_midi = self.__transpose(raw_mid)
-        x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
+        
+        if self.arch == 2:
+            x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
+            return x, tgt_input, tgt_output
+        elif self.arch == 1:
+            x, tgt = process_midi(aug_midi, self.max_seq, self.random_seq)
+            return x, tgt
 
-        return x, tgt_input, tgt_output
 
     def __transpose(self, midi: torch.tensor) -> torch.tensor:
         """

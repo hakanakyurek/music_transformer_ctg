@@ -48,7 +48,7 @@ def main():
         accelerator = 'gpu'
 
     ##### Data Module #####
-    data_module = MidiDataModule(args.batch_size, args.input_dir, args.dataset_percentage, args.max_sequence, args.n_workers)
+    data_module = MidiDataModule(args.batch_size, args.input_dir, args.dataset_percentage, args.max_sequence, args.n_workers, args.arch)
 
     ##### SmoothCrossEntropyLoss or CrossEntropyLoss for training #####
     if(args.ce_smoothing is None):
