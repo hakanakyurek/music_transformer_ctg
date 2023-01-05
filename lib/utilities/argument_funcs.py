@@ -23,7 +23,7 @@ def parse_train_args():
     parser.add_argument('--resume', action='store_true', help='Resume the training from checkpoint')
     parser.add_argument('--checkpoint_path', action=str, help='Checkpoint path for training resume, resume flag should be up')
     # Training parameters
-    parser.add_argument("-lr", type=float, default=None, help="Constant learn rate. Leave as None for a custom scheduler.")
+    parser.add_argument("--lr", type=float, default=None, help="Constant learn rate. Leave as None for a custom scheduler.")
     parser.add_argument("--ce_smoothing", type=float, default=None, help="Smoothing parameter for smoothed cross entropy loss (defaults to no smoothing)")
     parser.add_argument("--batch_size", type=int, default=2, help="Batch size to use")
     parser.add_argument("--epochs", type=int, default=100, help="Number of epochs to use")
@@ -139,26 +139,3 @@ def print_generate_args(args):
     print(f"dim_feedforward: {args.dim_feedforward}")
     print(SEPERATOR)
     print(f"")
-
-# write_model_params
-def write_model_params(args, output_file):
-    """
-
-    Writes given training parameters to text file
-
-    """
-
-    o_stream = open(output_file, "w")
-
-    o_stream.write("rpr: " + str(args.rpr) + "\n")
-    o_stream.write("lr: " + str(args.lr) + "\n")
-    o_stream.write("ce_smoothing: " + str(args.ce_smoothing) + "\n")
-    o_stream.write("batch_size: " + str(args.batch_size) + "\n")
-    o_stream.write("max_sequence: " + str(args.max_sequence) + "\n")
-    o_stream.write("n_layers: " + str(args.n_layers) + "\n")
-    o_stream.write("num_heads: " + str(args.num_heads) + "\n")
-    o_stream.write("d_model: " + str(args.d_model) + "\n")
-    o_stream.write("dim_feedforward: " + str(args.dim_feedforward) + "\n")
-    o_stream.write("dropout: " + str(args.dropout) + "\n")
-
-    o_stream.close()

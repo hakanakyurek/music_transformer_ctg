@@ -76,7 +76,7 @@ def main():
 
     ##### Init wandb #####
 
-    wandb.init(project=PROJECT, name=EXPERIMENT_NAME, job_type="train")
+    wandb.init(project=PROJECT, name=EXPERIMENT_NAME, job_type="train", config=args)
 
     ##### Logger #####
 
