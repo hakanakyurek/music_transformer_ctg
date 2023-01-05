@@ -145,7 +145,7 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
         # tgt is shifted to the right by 1
         y = self.forward(x, tgt_input)
         
-        pp_metric.update(tgt_output, y)
+        pp_metric.update(y, tgt_output)
 
         y   = y.reshape(y.shape[0] * y.shape[1], -1)
         tgt_output = tgt_output.flatten()

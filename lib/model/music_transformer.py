@@ -101,7 +101,7 @@ class MusicTransformerEncoder(MusicTransformerBase):
 
         y = self.forward(x)
 
-        pp_metric.update(tgt, y)
+        pp_metric.update(y, tgt)
 
         y   = y.reshape(y.shape[0] * y.shape[1], -1)
         tgt = tgt.flatten()
