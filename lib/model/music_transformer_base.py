@@ -94,7 +94,7 @@ class MusicTransformerBase(pl.LightningModule):
 
         return gen_seq[:, :cur_i]
 
-    def step(self, batch, acc_metric):
+    def step(self, batch, acc_metric, pp_metric):
         raise NotImplementedError()
 
     def training_step(self, batch, batch_idx):
@@ -137,3 +137,7 @@ class MusicTransformerBase(pl.LightningModule):
         lr_scheduler = LambdaLR(opt, lr_stepper.step)
 
         return [opt], [lr_scheduler]
+
+    def metric_update(self, acc_metric, pp_metric, y, y_star):
+        acc_metric.update(y, y_star)
+        pp_metric.update(y, y_star)

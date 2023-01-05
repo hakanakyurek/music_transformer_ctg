@@ -106,6 +106,6 @@ class MusicTransformerEncoder(MusicTransformerBase):
 
         loss = self.loss_fn.forward(y, tgt)
 
-        acc_metric.update(y, tgt)
-
+        self.metric_update(y, tgt)
+        
         return loss, y

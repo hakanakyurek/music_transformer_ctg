@@ -139,7 +139,7 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
                src_pad_mask.to(get_device()), \
                tgt_pad_mask.to(get_device())
 
-    def step(self, batch, acc_metric):
+    def step(self, batch, acc_metric, pp_metric):
         
         x, tgt_input, tgt_output = batch
         # tgt is shifted to the right by 1
@@ -150,6 +150,6 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
 
         loss = self.loss_fn.forward(y, tgt_output)
 
-        acc_metric.update(y, tgt_output)
+        self.metric_update(y, tgt_output)
 
         return loss, y
