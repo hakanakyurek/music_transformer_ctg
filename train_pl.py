@@ -30,7 +30,7 @@ def main():
     """
 
     args = parse_train_args()
-    print_train_args()
+    print_train_args(args)
 
     os.environ['WANDB_API_KEY'] = wandb_key
 
