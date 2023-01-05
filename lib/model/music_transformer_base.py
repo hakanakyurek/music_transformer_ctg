@@ -28,8 +28,7 @@ class MusicTransformerBase(pl.LightningModule):
     kept up to date with Pytorch revisions only as necessary.
     """
 
-    def __init__(self, loss_fn, acc_metric, n_layers=6, num_heads=8, d_model=512, dim_feedforward=1024,
-                 dropout=0.1, max_sequence=2048, rpr=False, lr=1.0):
+    def __init__(self, acc_metric):
         super(MusicTransformerBase, self).__init__()
         print(f"Creating the music transformer")
 
