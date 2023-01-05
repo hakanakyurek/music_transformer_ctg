@@ -72,10 +72,10 @@ class MidiDataset(Dataset):
         i_stream.close()
         aug_midi = self.__transpose(raw_mid)
         
-        if self.arch == 2:
+        if self.model_arch == 2:
             x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
             return x, tgt_input, tgt_output
-        elif self.arch == 1:
+        elif self.model_arch == 1:
             x, tgt = process_midi(aug_midi, self.max_seq, self.random_seq)
             return x, tgt
 
