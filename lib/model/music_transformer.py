@@ -101,11 +101,13 @@ class MusicTransformerEncoder(MusicTransformerBase):
 
         y = self.forward(x)
 
+        pp_metric.update(tgt, y)
+
         y   = y.reshape(y.shape[0] * y.shape[1], -1)
         tgt = tgt.flatten()
 
         loss = self.loss_fn.forward(y, tgt)
 
-        self.metric_update(acc_metric, pp_metric, y, tgt)
+        acc_metric.update(y, tgt)
 
         return loss, y
