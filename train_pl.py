@@ -1,12 +1,9 @@
 import os
 import torch.nn as nn
 
-import logging
-from lib.utilities.logging_config import config_logging
-
 from lib.data.data_module import MidiDataModule
 
-from lib.metrics.accuracy_metric import MusicAccuracy
+from lib.metrics.accuracy import MusicAccuracy
 
 from lib.model.music_transformer_ed import MusicTransformerEncoderDecoder
 from lib.losses.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
@@ -26,16 +23,14 @@ import wandb
 # main
 def main():
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Entry point. Trains a model specified by command line arguments
-    ----------
+
     """
 
     args = parse_train_args()
+    print_train_args()
 
-    torch.autograd.set_detect_anomaly(True)
     os.environ['WANDB_API_KEY'] = wandb_key
 
     PROJECT = 'music_transformer'

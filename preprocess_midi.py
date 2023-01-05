@@ -15,12 +15,10 @@ JSON_FILE = "maestro-v2.0.0.json"
 # prep_midi
 def prep_maestro_midi(maestro_root, output_dir):
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Pre-processes the maestro dataset, putting processed midi data (train, eval, test) into the
     given output folder
-    ----------
+
     """
 
     train_dir = os.path.join(output_dir, "train")
@@ -36,8 +34,8 @@ def prep_maestro_midi(maestro_root, output_dir):
         return False
 
     maestro_json = json.load(open(maestro_json_file, "r"))
-    logging.info(f"Found {len(maestro_json)} pieces")
-    logging.info("Preprocessing...")
+    print(f"Found {len(maestro_json)} pieces")
+    print("Preprocessing...")
 
     total_count = 0
     train_count = 0
@@ -70,21 +68,21 @@ def prep_maestro_midi(maestro_root, output_dir):
 
         total_count += 1
         if(total_count % 50 == 0):
-            logging.info(total_count, "/", len(maestro_json))
+            print(total_count, "/", len(maestro_json))
 
-    logging.info(f"Num Train: {train_count}")
-    logging.info(f"Num Val: {val_count}")
-    logging.info(f"Num Test: {test_count}")
+    print(f"Num Train: {train_count}")
+    print(f"Num Val: {val_count}")
+    print(f"Num Test: {test_count}")
     return True
 
 def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
     """
-    ----------
+
     Author: Corentin Nelias
-    ----------
+
     Pre-processes custom midi files that are not part of the maestro dataset, putting processed midi data (train, eval, test) into the
     given output folder. 
-    ----------
+
     """
     train_dir = os.path.join(output_dir, "train")
     os.makedirs(train_dir, exist_ok=True)
@@ -106,8 +104,8 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
             piece = os.path.join(subdir, file)
             pieces.append(piece)
 
-    logging.info(f"Found {len(pieces)} pieces")
-    logging.info("Preprocessing data...")
+    print(f"Found {len(pieces)} pieces")
+    print("Preprocessing data...")
 
 
     for piece in tqdm(pieces):
@@ -145,20 +143,18 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
 
         total_count += 1
 
-    logging.info(f"Num Train: {train_count}")
-    logging.info(f"Num Val: {val_count}")
-    logging.info(f"Num Test: {test_count}")
+    print(f"Num Train: {train_count}")
+    print(f"Num Val: {val_count}")
+    print(f"Num Test: {test_count}")
     return True
 
 
 # parse_args
 def parse_args():
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Parses arguments for preprocess_midi using argparse
-    ----------
+
     """
 
     parser = argparse.ArgumentParser()
@@ -171,11 +167,9 @@ def parse_args():
 # main
 def main():
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Entry point. Preprocesses maestro and saved midi to specified output folder.
-    ----------
+
     """
     config_logging()
     
@@ -183,9 +177,9 @@ def main():
     root = args.root
     output_dir = args.output_dir
 
-    logging.info(f"Preprocessing midi files and saving to {output_dir}")
+    print(f"Preprocessing midi files and saving to {output_dir}")
     prep_custom_midi(root, output_dir)
-    logging.info("Done!")
+    print("Done!")
     
 
 if __name__ == "__main__":

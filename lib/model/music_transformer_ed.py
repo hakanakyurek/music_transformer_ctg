@@ -64,13 +64,13 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
     # forward
     def forward(self, x, tgt, mask=True):
         """
-        ----------
+    
         Author: Damon Gwinn
-        ----------
+    
         Takes an input sequence and outputs predictions using a sequence to sequence method.
 
         A prediction at one index is the "next" prediction given all information seen previously.
-        ----------
+    
         """
 
         if(mask is True):

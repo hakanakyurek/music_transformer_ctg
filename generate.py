@@ -20,11 +20,9 @@ from lib.utilities.device import get_device, use_cuda
 # main
 def main():
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Entry point. Generates music from a model specified by command line arguments
-    ----------
+
     """
 
 
@@ -53,7 +51,7 @@ def main():
         primer, _  = dataset[idx]
         primer = primer.to(get_device())
 
-        logging.info(f"Using primer index: {idx} ( {dataset.data_files[idx]} )")
+        print(f"Using primer index: {idx} ( {dataset.data_files[idx]} )")
 
     else:
         raw_mid = encode_midi(f)
@@ -64,7 +62,7 @@ def main():
         primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False)
         primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
 
-        logging.info(f"Using primer file: {f}")
+        print(f"Using primer file: {f}")
 
     model = MusicTransformer(n_layers=args.n_layers, num_heads=args.num_heads,
                 d_model=args.d_model, dim_feedforward=args.dim_feedforward,
@@ -79,7 +77,7 @@ def main():
     # GENERATION
     model.eval()
     with torch.set_grad_enabled(False):
-        logging.info("RAND DIST")
+        print("RAND DIST")
         rand_seq = model.generate(primer[:args.num_prime], args.target_seq_length, 
                                   temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)
 

@@ -11,14 +11,14 @@ from .multihead_attention import MultiheadAttentionRPR
 # TransformerEncoderRPR
 class TransformerEncoderRPR(Module):
     """
-    ----------
+
     Author: Pytorch
-    ----------
+
     For Relative Position Representation support (https://arxiv.org/abs/1803.02155)
     https://pytorch.org/docs/1.2.0/_modules/torch/nn/modules/transformer.html#TransformerEncoder
 
     No modification. Copied here to ensure continued compatibility with other edits.
-    ----------
+
     """
 
     def __init__(self, encoder_layer, num_layers, norm=None):
@@ -43,15 +43,15 @@ class TransformerEncoderRPR(Module):
 # TransformerEncoderLayerRPR
 class TransformerEncoderLayerRPR(Module):
     """
-    ----------
+
     Author: Pytorch
     Modified: Damon Gwinn
-    ----------
+
     For Relative Position Representation support (https://arxiv.org/abs/1803.02155)
     https://pytorch.org/docs/1.2.0/_modules/torch/nn/modules/transformer.html#TransformerEncoderLayer
 
     Modification to create and call custom MultiheadAttentionRPR
-    ----------
+
     """
 
     def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1, er_len=None):

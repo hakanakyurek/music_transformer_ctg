@@ -7,11 +7,9 @@ import logging
 # parse_train_args
 def parse_train_args():
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Argparse arguments for training a model
-    ----------
+
     """
 
     parser = argparse.ArgumentParser()
@@ -50,108 +48,47 @@ def parse_train_args():
 # print_train_args
 def print_train_args(args):
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Prints training arguments
-    ----------
+
     """
 
-    logging.info(SEPERATOR)
-    logging.info(f"input_dir:{args.input_dir}")
-    logging.info(f"output_dir:{args.output_dir}")
-    logging.info(f"weight_modulus:{args.weight_modulus}")
-    logging.info(f"print_modulus:{args.print_modulus}")
-    logging.info(f"")
-    logging.info(f"n_workers:{args.n_workers}")
-    logging.info(f"force_cpu:{args.force_cpu}")
-    logging.info(f"tensorboard:{not args.no_tensorboard}")
-    logging.info(f"")
-    logging.info(f"continue_weights:{args.continue_weights}")
-    logging.info(f"continue_epoch:{args.continue_epoch}")
-    logging.info(f"")
-    logging.info(f"lr:{args.lr}")
-    logging.info(f"ce_smoothing:{args.ce_smoothing}")
-    logging.info(f"batch_size:{args.batch_size}")
-    logging.info(f"epochs:{args.epochs}")
-    logging.info(f"")
-    logging.info(f"rpr:{args.rpr}")
-    logging.info(f"max_sequence:{args.max_sequence}")
-    logging.info(f"n_layers:{args.n_layers}")
-    logging.info(f"num_heads:{args.num_heads}")
-    logging.info(f"d_model:{args.d_model}")
-    logging.info(f"")
-    logging.info(f"dim_feedforward:{args.dim_feedforward}")
-    logging.info(f"dropout:{args.dropout}")
-    logging.info(f'dataset_percentage:{args.dataset_percentage}')
-    logging.info(SEPERATOR)
-    logging.info(f"")
-
-# parse_eval_args
-def parse_eval_args():
-    """
-    ----------
-    Author: Damon Gwinn
-    ----------
-    Argparse arguments for evaluating a model
-    ----------
-    """
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("-dataset_dir", type=str, default="./dataset/e_piano", help="Folder of preprocessed and pickled midi files")
-    parser.add_argument("-model_weights", type=str, default="./saved_models/model.pickle", help="Pickled model weights file saved with torch.save and model.state_dict()")
-    parser.add_argument("-n_workers", type=int, default=1, help="Number of threads for the dataloader")
-    parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")
-
-    parser.add_argument("-batch_size", type=int, default=2, help="Batch size to use")
-
-    parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
-    parser.add_argument("-max_sequence", type=int, default=2048, help="Maximum midi sequence to consider in the model")
-    parser.add_argument("-n_layers", type=int, default=6, help="Number of decoder layers to use")
-    parser.add_argument("-num_heads", type=int, default=8, help="Number of heads to use for multi-head attention")
-    parser.add_argument("-d_model", type=int, default=512, help="Dimension of the model (output dim of embedding layers, etc.)")
-
-    parser.add_argument("-dim_feedforward", type=int, default=1024, help="Dimension of the feedforward layer")
-
-    return parser.parse_args()
-
-# print_eval_args
-def print_eval_args(args):
-    """
-    ----------
-    Author: Damon Gwinn
-    ----------
-    Prints evaluation arguments
-    ----------
-    """
-
-    logging.info(SEPERATOR)
-    logging.info(f"dataset_dir:{args.dataset_dir}")
-    logging.info(f"model_weights:{args.model_weights}")
-    logging.info(f"n_workers:{args.n_workers}")
-    logging.info(f"force_cpu:{args.force_cpu}")
-    logging.info(f"")
-    logging.info(f"batch_size:{args.batch_size}")
-    logging.info(f"")
-    logging.info(f"rpr:{args.rpr}")
-    logging.info(f"max_sequence:{args.max_sequence}")
-    logging.info(f"n_layers:{args.n_layers}")
-    logging.info(f"num_heads:{args.num_heads}")
-    logging.info(f"d_model:{args.d_model}")
-    logging.info(f"")
-    logging.info(f"dim_feedforward:{args.dim_feedforward}")
-    logging.info(SEPERATOR)
-    logging.info(f"")
+    print(SEPERATOR)
+    print(f"input_dir:{args.input_dir}")
+    print(f"output_dir:{args.output_dir}")
+    print(f"weight_modulus:{args.weight_modulus}")
+    print(f"print_modulus:{args.print_modulus}")
+    print(f"")
+    print(f"n_workers:{args.n_workers}")
+    print(f"force_cpu:{args.force_cpu}")
+    print(f"tensorboard:{not args.no_tensorboard}")
+    print(f"")
+    print(f"continue_weights:{args.continue_weights}")
+    print(f"continue_epoch:{args.continue_epoch}")
+    print(f"")
+    print(f"lr:{args.lr}")
+    print(f"ce_smoothing:{args.ce_smoothing}")
+    print(f"batch_size:{args.batch_size}")
+    print(f"epochs:{args.epochs}")
+    print(f"")
+    print(f"rpr:{args.rpr}")
+    print(f"max_sequence:{args.max_sequence}")
+    print(f"n_layers:{args.n_layers}")
+    print(f"num_heads:{args.num_heads}")
+    print(f"d_model:{args.d_model}")
+    print(f"")
+    print(f"dim_feedforward:{args.dim_feedforward}")
+    print(f"dropout:{args.dropout}")
+    print(f'dataset_percentage:{args.dataset_percentage}')
+    print(SEPERATOR)
+    print(f"")
 
 # parse_generate_args
 def parse_generate_args():
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Argparse arguments for generation
-    ----------
+
     """
 
     parser = argparse.ArgumentParser()
@@ -182,44 +119,40 @@ def parse_generate_args():
 # print_generate_args
 def print_generate_args(args):
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Prints generation arguments
-    ----------
+
     """
 
-    logging.info(SEPERATOR)
-    logging.info(f"midi_root:{args.midi_root}")
-    logging.info(f"output_dir:{args.output_dir}")
-    logging.info(f"primer_file:{args.primer_file}")
-    logging.info(f"force_cpu:{args.force_cpu}")
-    logging.info(f"")
-    logging.info(f"target_seq_length:{args.target_seq_length}")
-    logging.info(f"num_prime:{args.num_prime}")
-    logging.info(f"model_weights:{args.model_weights}")
-    logging.info(f'temperature:{args.temperature}')
-    logging.info(f'top_k:{args.top_k}')
-    logging.info(f'top_p:{args.top_p}')
-    logging.info(f"")
-    logging.info(f"rpr:{args.rpr}")
-    logging.info(f"max_sequence:{args.max_sequence}")
-    logging.info(f"n_layers:{args.n_layers}")
-    logging.info(f"num_heads:{args.num_heads}")
-    logging.info(f"d_model:{args.d_model}")
-    logging.info(f"")
-    logging.info(f"dim_feedforward: {args.dim_feedforward}")
-    logging.info(SEPERATOR)
-    logging.info(f"")
+    print(SEPERATOR)
+    print(f"midi_root:{args.midi_root}")
+    print(f"output_dir:{args.output_dir}")
+    print(f"primer_file:{args.primer_file}")
+    print(f"force_cpu:{args.force_cpu}")
+    print(f"")
+    print(f"target_seq_length:{args.target_seq_length}")
+    print(f"num_prime:{args.num_prime}")
+    print(f"model_weights:{args.model_weights}")
+    print(f'temperature:{args.temperature}')
+    print(f'top_k:{args.top_k}')
+    print(f'top_p:{args.top_p}')
+    print(f"")
+    print(f"rpr:{args.rpr}")
+    print(f"max_sequence:{args.max_sequence}")
+    print(f"n_layers:{args.n_layers}")
+    print(f"num_heads:{args.num_heads}")
+    print(f"d_model:{args.d_model}")
+    print(f"")
+    print(f"dim_feedforward: {args.dim_feedforward}")
+    print(SEPERATOR)
+    print(f"")
 
 # write_model_params
 def write_model_params(args, output_file):
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Writes given training parameters to text file
-    ----------
+
     """
 
     o_stream = open(output_file, "w")

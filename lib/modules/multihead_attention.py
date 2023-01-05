@@ -10,15 +10,15 @@ from torch.nn.init import *
 # MultiheadAttentionRPR
 class MultiheadAttentionRPR(Module):
     """
-    ----------
+
     Author: Pytorch
     Modified: Damon Gwinn
-    ----------
+
     For Relative Position Representation support (https://arxiv.org/abs/1803.02155)
     https://pytorch.org/docs/1.2.0/_modules/torch/nn/modules/activation.html#MultiheadAttention
 
     Modification to add RPR embedding Er and call custom multi_head_attention_forward_rpr
-    ----------
+
     """
 
     def __init__(self, embed_dim, num_heads, dropout=0., bias=True, add_bias_kv=False,
@@ -155,15 +155,15 @@ def multi_head_attention_forward_rpr(query,                       # type: Tensor
                                  rpr_mat=None
                                  ):
     """
-    ----------
+
     Author: Pytorch
     Modified: Damon Gwinn
-    ----------
+
     For Relative Position Representation support (https://arxiv.org/abs/1803.02155)
     https://pytorch.org/docs/1.2.0/_modules/torch/nn/functional.html
 
     Modification to take RPR embedding matrix and perform skew optimized RPR (https://arxiv.org/abs/1809.04281)
-    ----------
+
     """
 
     # type: (...) -> Tuple[Tensor, Optional[Tensor]]
@@ -360,11 +360,9 @@ def multi_head_attention_forward_rpr(query,                       # type: Tensor
 
 def _get_valid_embedding(Er, len_q, len_k):
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Gets valid embeddings based on max length of RPR attention
-    ----------
+
     """
 
     len_e = Er.shape[0]
@@ -373,11 +371,9 @@ def _get_valid_embedding(Er, len_q, len_k):
 
 def _skew(qe):
     """
-    ----------
-    Author: Damon Gwinn
-    ----------
+
     Performs the skew optimized RPR computation (https://arxiv.org/abs/1809.04281)
-    ----------
+
     """
 
     sz = qe.shape[1]
