@@ -28,6 +28,7 @@ def parse_train_args():
     parser.add_argument("--batch_size", type=int, default=2, help="Batch size to use")
     parser.add_argument("--epochs", type=int, default=100, help="Number of epochs to use")
     # Model parameters
+    parser.add_argument("--arch", action=int, help='Change model architecture \n --> encoder-decoder: 1 \n --> encoder: 2')
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
     parser.add_argument("--max_sequence", type=int, default=2048, help="Maximum midi sequence to consider")
     parser.add_argument("--n_layers", type=int, default=6, help="Number of decoder layers to use")
