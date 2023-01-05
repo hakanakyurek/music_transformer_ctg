@@ -76,12 +76,13 @@ class MidiDataset(Dataset):
 
         return x, tgt_input, tgt_output
 
-    def __transpose(self, midi):
+    def __transpose(self, midi: torch.tensor) -> torch.tensor:
         """
         Augments the data by shifting all of the notes to higher and/or lower pitches.
         Pitch transpositions uniformly sampled from {-3, -2, . . . , 2, 3} half-steps
 
-        
+        :param torch.tensor midi: preprocessed midi tensor
+        :return: transposed midi tensor (if all notes could be transposed)
         """
         pitch_change = self.rng.choice([-3, -2, -1, 0, 1, 2, 3])
 
