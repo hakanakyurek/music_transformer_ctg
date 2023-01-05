@@ -7,9 +7,9 @@ from lib.utilities.constants import *
 from lib.utilities.device import get_device
 from lib.utilities.lr_scheduling import LrStepTracker, get_lr
 
-from .positional_encoding import PositionalEncoding
-from .encoder_rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
-from .decoder_rpr import TransformerDecoderRPR, TransformerDecoderLayerRPR
+from ..modules.positional_encoding import PositionalEncoding
+from ..modules.encoder_rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
+from ..modules.decoder_rpr import TransformerDecoderRPR, TransformerDecoderLayerRPR
 import logging
 import random
 

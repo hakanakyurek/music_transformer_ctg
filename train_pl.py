@@ -6,10 +6,10 @@ from lib.utilities.logging_config import config_logging
 
 from lib.data.data_module import MidiDataModule
 
-from lib.model.accuracy_metric import MusicAccuracy
+from lib.metrics.accuracy_metric import MusicAccuracy
 
 from lib.model.music_transformer_ed import MusicTransformerEncoderDecoder
-from lib.model.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
+from lib.losses.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
 
 from lib.utilities.constants import *
 from lib.utilities.argument_funcs import parse_train_args, print_train_args
@@ -25,7 +25,6 @@ import wandb
 
 # main
 def main():
-    torch.autograd.set_detect_anomaly(True)
     """
     ----------
     Author: Damon Gwinn
@@ -36,6 +35,7 @@ def main():
 
     args = parse_train_args()
 
+    torch.autograd.set_detect_anomaly(True)
     os.environ['WANDB_API_KEY'] = wandb_key
 
     PROJECT = 'music_transformer'
