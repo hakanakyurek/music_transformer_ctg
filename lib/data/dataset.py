@@ -10,6 +10,8 @@ import logging
 from lib.utilities.constants import *
 from lib.utilities.device import cpu_device
 
+from lib.midi_processor.processor import RANGE_NOTE_ON, RANGE_NOTE_OFF
+
 import numpy as np
 
 SEQUENCE_START = 0
@@ -33,7 +35,7 @@ class MidiDataset(Dataset):
         self.random_seq = random_seq
         self.percentage = percentage
 
-        self.rng = np.random.default_rng()
+        self.rng = np.random.default_rng(seed=2486)
 
         fs = [os.path.join(root, f) for f in os.listdir(self.root)]
         self.data_files = [f for f in fs if os.path.isfile(f)]
@@ -65,14 +67,40 @@ class MidiDataset(Dataset):
         """
 
         # All data on cpu to allow for the Dataloader to multithread
-        i_stream    = open(self.data_files[idx], "rb")
+        i_stream = open(self.data_files[idx], "rb")
         # return pickle.load(i_stream), None
-        raw_mid     = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
+        raw_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
         i_stream.close()
-
-        x, tgt_input, tgt_output = process_midi_ed(raw_mid, self.max_seq, self.random_seq)
+        aug_midi = self.__transpose(raw_mid)
+        x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
 
         return x, tgt_input, tgt_output
+
+    def __transpose(self, midi):
+        """
+        Augments the data by shifting all of the notes to higher and/or lower pitches.
+        Pitch transpositions uniformly sampled from {-3, -2, . . . , 2, 3} half-steps
+
+        
+        """
+        pitch_change = self.rng.choice([-3, -2, -1, 0, 1, 2, 3])
+
+        range_note_on = range(0, RANGE_NOTE_ON)
+        range_note_off = range(RANGE_NOTE_ON, RANGE_NOTE_ON+RANGE_NOTE_OFF)
+
+        aug_midi = torch.clone(midi)
+
+        for i in range(len(aug_midi)):
+            final_pitch = aug_midi[i] + pitch_change
+            if final_pitch in range_note_on:
+                aug_midi[i] += pitch_change
+            elif final_pitch in range_note_off:
+                aug_midi[i] += pitch_change
+            else:
+                # Either we transpose everything or none
+                return midi
+        
+        return aug_midi
 
 # process_midi
 def process_midi(raw_mid, max_seq, random_seq):
@@ -229,3 +257,4 @@ def compute_accuracy(out, tgt):
     acc = num_right / len(tgt)
 
     return acc
+
