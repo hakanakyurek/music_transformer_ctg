@@ -99,8 +99,10 @@ class MidiDataset(Dataset):
                 aug_midi[i] += pitch_change
             else:
                 # Either we transpose every note or none
+                del aug_midi
                 return midi
-        
+
+        del midi
         return aug_midi
 
 # process_midi
