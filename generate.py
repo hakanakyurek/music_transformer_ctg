@@ -1,18 +1,12 @@
 import torch
-import torch.nn as nn
 import os
 import random
-
-import logging
-from lib.utilities.logging_config import config_logging
 
 from lib.midi_processor.processor import decode_midi, encode_midi
 
 from lib.utilities.argument_funcs import parse_generate_args, print_generate_args
 from lib.model.music_transformer import MusicTransformer
 from lib.data.dataset import process_midi, create_datasets
-from torch.utils.data import DataLoader
-from torch.optim import Adam
 
 from lib.utilities.constants import *
 from lib.utilities.device import get_device, use_cuda
@@ -25,15 +19,12 @@ def main():
 
     """
 
-
-    config_logging('generate')
-
     args = parse_generate_args()
     print_generate_args(args)
 
     if(args.force_cpu):
         use_cuda(False)
-        logging.warning("WARNING: Forced CPU usage, expect model to perform slower")
+        print("WARNING: Forced CPU usage, expect model to perform slower")
 
     os.makedirs(args.output_dir, exist_ok=True)
 
@@ -56,7 +47,7 @@ def main():
     else:
         raw_mid = encode_midi(f)
         if(len(raw_mid) == 0):
-            logging.error(f"Error: No midi messages in primer file: {f}")
+            print(f"Error: No midi messages in primer file: {f}")
             return
 
         primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False)

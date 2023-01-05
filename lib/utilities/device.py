@@ -9,7 +9,7 @@ TORCH_CPU_DEVICE = torch.device("cpu")
 if(torch.cuda.device_count() > 0):
     TORCH_CUDA_DEVICE = torch.device("cuda")
 else:
-    logging.warning("----- WARNING: CUDA devices not detected. This will cause the model to run very slow! -----")
+    print("----- WARNING: CUDA devices not detected. This will cause the model to run very slow! -----")
     
     TORCH_CUDA_DEVICE = None
 

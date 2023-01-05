@@ -30,7 +30,7 @@ def prep_maestro_midi(maestro_root, output_dir):
 
     maestro_json_file = os.path.join(maestro_root, JSON_FILE)
     if(not os.path.isfile(maestro_json_file)):
-        logging.error("ERROR: Could not find file:", maestro_json_file)
+        print("ERROR: Could not find file:", maestro_json_file)
         return False
 
     maestro_json = json.load(open(maestro_json_file, "r"))
@@ -57,7 +57,7 @@ def prep_maestro_midi(maestro_root, output_dir):
             o_file = os.path.join(test_dir, f_name)
             test_count += 1
         else:
-            logging.error("ERROR: Unrecognized split type:", split_type)
+            print("ERROR: Unrecognized split type:", split_type)
             return False
 
         prepped = midi_processor.encode_midi(mid)
