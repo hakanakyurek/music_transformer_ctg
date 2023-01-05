@@ -21,7 +21,7 @@ def parse_train_args():
     parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")
     # Checkpoint parameters
     parser.add_argument('--resume', action='store_true', help='Resume the training from checkpoint')
-    parser.add_argument('--checkpoint_path', action=str, help='Checkpoint path for training resume, resume flag should be up')
+    parser.add_argument('--checkpoint_path', type=str, help='Checkpoint path for training resume, resume flag should be up')
     # Training parameters
     parser.add_argument("--lr", type=float, default=None, help="Constant learn rate. Leave as None for a custom scheduler.")
     parser.add_argument("--ce_smoothing", type=float, default=None, help="Smoothing parameter for smoothed cross entropy loss (defaults to no smoothing)")
