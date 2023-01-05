@@ -92,12 +92,12 @@ class MidiDataset(Dataset):
 
         for i in range(len(aug_midi)):
             final_pitch = aug_midi[i] + pitch_change
-            if final_pitch in range_note_on:
+            if final_pitch in range_note_on and aug_midi[i] in range_note_on:
                 aug_midi[i] += pitch_change
-            elif final_pitch in range_note_off:
+            elif final_pitch in range_note_off and aug_midi[i] in range_note_off:
                 aug_midi[i] += pitch_change
             else:
-                # Either we transpose everything or none
+                # Either we transpose every note or none
                 return midi
         
         return aug_midi
