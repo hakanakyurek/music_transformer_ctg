@@ -337,7 +337,7 @@ def multi_head_attention_forward_rpr(query,                       # type: Tensor
         attn_output_weights = attn_output_weights.view(bsz, num_heads, tgt_len, src_len)
         attn_output_weights = attn_output_weights.masked_fill(
             key_padding_mask.unsqueeze(1).unsqueeze(2),
-            float('-inf'),
+            float(-1e9),
         )
         attn_output_weights = attn_output_weights.view(bsz * num_heads, tgt_len, src_len)
 
