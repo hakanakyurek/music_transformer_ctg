@@ -95,7 +95,7 @@ class MusicTransformerEncoder(MusicTransformerBase):
         # They are trained to predict the next note in sequence (we don't need the last one)
         return y
 
-    def step(self, batch, acc_metric):
+    def step(self, batch, acc_metric, pp_metric):
         
         x, tgt = batch
 
@@ -106,6 +106,6 @@ class MusicTransformerEncoder(MusicTransformerBase):
 
         loss = self.loss_fn.forward(y, tgt)
 
-        self.metric_update(y, tgt)
-        
+        self.metric_update(acc_metric, pp_metric, y, tgt)
+
         return loss, y

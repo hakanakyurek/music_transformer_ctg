@@ -98,7 +98,7 @@ class MusicTransformerBase(pl.LightningModule):
         raise NotImplementedError()
 
     def training_step(self, batch, batch_idx):
-        loss, _ = self.step(batch, self.train_acc)
+        loss, _ = self.step(batch, self.train_acc, self.train_pp)
 
         self.log('training loss', loss)
 
@@ -110,7 +110,7 @@ class MusicTransformerBase(pl.LightningModule):
         self.log('training perplexity', self.train_pp)
 
     def validation_step(self, batch, batch_idx):
-        loss, _ = self.step(batch, self.val_acc)
+        loss, _ = self.step(batch, self.val_acc, self.val_pp)
         self.log('validation loss', loss)
 
         return loss
@@ -121,7 +121,7 @@ class MusicTransformerBase(pl.LightningModule):
         self.log('validation perplexity', self.val_pp)
 
     def test_step(self, batch, batch_idx):
-        loss, y = self.step(batch, self.test_acc)
+        loss, y = self.step(batch, self.test_acc, self.test_pp)
         return loss, y
 
     def test_epoch_end(self, outs):
