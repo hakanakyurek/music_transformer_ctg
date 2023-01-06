@@ -20,7 +20,7 @@ def parse_train_args():
     parser.add_argument("--n_workers", type=int, default=1, help="Number of threads for the dataloader")
     parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")
     # Checkpoint parameters
-    parser.add_argument('--resume', action='store_true', help='Resume the training from checkpoint')
+    parser.add_argument('--run_id', type=str, help='The training id to resume (check wandb)')
     parser.add_argument('--checkpoint_path', type=str, help='Checkpoint path for training resume, resume flag should be up')
     # Training parameters
     parser.add_argument("--lr", type=float, default=None, help="Constant learn rate. Leave as None for a custom scheduler.")
@@ -57,8 +57,8 @@ def print_train_args(args):
     print(f"n_workers:{args.n_workers}")
     print(f"force_cpu:{args.force_cpu}")
     print(f"Checkpoint parameters")
-    print(f"continue_weights:{args.resume}")
-    print(f"continue_epoch:{args.checkpoint_path}")
+    print(f"Run id:{args.run_id}")
+    print(f"Checkpoint path:{args.checkpoint_path}")
     print(f"Training parameters")
     print(f"lr:{args.lr}")
     print(f"ce_smoothing:{args.ce_smoothing}")

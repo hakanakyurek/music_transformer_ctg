@@ -20,7 +20,6 @@ from pytorch_lightning.callbacks import LearningRateMonitor
 
 import wandb
 
-
 # main
 def main():
     """
@@ -32,14 +31,16 @@ def main():
     args = parse_train_args()
     print_train_args(args)
 
-    if (args.resume and not args.checkpoint_path) or (not args.resume and args.checkpoint_path):
-        print('Resume and Checkpoint path should be given together!')
+    if (args.run_id and not args.checkpoint_path) or (not args.run_id and args.checkpoint_path):
+        print('Run id and Checkpoint path should be given together!')
         return
 
     os.environ['WANDB_API_KEY'] = wandb_key
 
     PROJECT = 'music_transformer'
     EXPERIMENT_NAME = 'encoder_singleaug'
+
+    RUN_ID = wandb.util.generate_id() if not args.run_id else args.run_id
 
     SEED = 2486
     pl.seed_everything(SEED, workers=True)
@@ -86,13 +87,13 @@ def main():
 
     ##### Checkpoint? #####
 
-    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath="checkpoints", save_top_k=1, 
+    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"checkpoints/{RUN_ID}/", save_top_k=1, 
                                                        save_last=True, monitor="validation loss", 
                                                        filename="best")
 
     ##### Init wandb #####
 
-    wandb.init(project=PROJECT, name=EXPERIMENT_NAME, job_type="train", config=args, resume=args.resume)
+    wandb.init(project=PROJECT, name=EXPERIMENT_NAME, job_type="train", config=args, id=RUN_ID, resume='allow')
 
     ##### Logger #####
 
@@ -106,7 +107,7 @@ def main():
                                     LearningRateMonitor(logging_interval='epoch')],
                          log_every_n_steps=10,
                          check_val_every_n_epoch=3)
-    if args.resume:
+    if args.checkpoint_path:
         trainer.fit(model=model, datamodule=data_module, ckpt_path=args.checkpoint_path)
     else:
         trainer.fit(model=model, datamodule=data_module)
