@@ -32,10 +32,14 @@ def main():
     args = parse_train_args()
     print_train_args(args)
 
+    if (args.resume and not args.checkpoint_path) or (not args.resume and args.checkpoint_path):
+        print('Resume and Checkpoint path should be given together!')
+        return
+
     os.environ['WANDB_API_KEY'] = wandb_key
 
     PROJECT = 'music_transformer'
-    EXPERIMENT_NAME = 'test'
+    EXPERIMENT_NAME = 'encoder_singleaug'
 
     SEED = 2486
     pl.seed_everything(SEED, workers=True)
@@ -88,7 +92,7 @@ def main():
 
     ##### Init wandb #####
 
-    wandb.init(project=PROJECT, name=EXPERIMENT_NAME, job_type="train", config=args)
+    wandb.init(project=PROJECT, name=EXPERIMENT_NAME, job_type="train", config=args, resume=args.resume)
 
     ##### Logger #####
 
@@ -102,8 +106,10 @@ def main():
                                     LearningRateMonitor(logging_interval='epoch')],
                          log_every_n_steps=10,
                          check_val_every_n_epoch=3)
-
-    trainer.fit(model=model, datamodule=data_module)
+    if args.resume:
+        trainer.fit(model=model, datamodule=data_module, ckpt_path=args.checkpoint_path)
+    else:
+        trainer.fit(model=model, datamodule=data_module)
     logger.experiment.log_artifact("checkpoints/", name=f'{EXPERIMENT_NAME}_model', type='model')
     print(f'Outputted Model: {EXPERIMENT_NAME}_model')
     wandb.finish()
