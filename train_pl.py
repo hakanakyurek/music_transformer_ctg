@@ -3,16 +3,13 @@ import torch.nn as nn
 
 from lib.data.data_module import MidiDataModule
 
-from lib.metrics.accuracy import MusicAccuracy
-
-from lib.model.music_transformer_ed import MusicTransformerEncoderDecoder
-from lib.model.music_transformer import MusicTransformerEncoder
 from lib.losses.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
 
 from lib.utilities.constants import *
 from lib.utilities.argument_funcs import parse_train_args, print_train_args
 from lib.utilities.private_constants import wandb_key
 from lib.utilities.device import use_cuda
+from lib.utilities.create_model import create_model_for_training
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -62,28 +59,7 @@ def main():
         loss_func = SmoothCrossEntropyLoss(args.ce_smoothing, VOCAB_SIZE, ignore_index=TOKEN_PAD)
 
     ##### Model #####
-    if args.arch == 2:
-        model = MusicTransformerEncoderDecoder(n_layers=args.n_layers, 
-                                                num_heads=args.num_heads,
-                                                d_model=args.d_model, 
-                                                dim_feedforward=args.dim_feedforward, 
-                                                dropout=args.dropout,
-                                                max_sequence=args.max_sequence, 
-                                                rpr=args.rpr, 
-                                                acc_metric=MusicAccuracy, 
-                                                loss_fn=loss_func,
-                                                lr=LR_DEFAULT_START)
-    elif args.arch == 1:
-        model = MusicTransformerEncoder(n_layers=args.n_layers, 
-                                        num_heads=args.num_heads,
-                                        d_model=args.d_model, 
-                                        dim_feedforward=args.dim_feedforward, 
-                                        dropout=args.dropout,
-                                        max_sequence=args.max_sequence, 
-                                        rpr=args.rpr, 
-                                        acc_metric=MusicAccuracy, 
-                                        loss_fn=loss_func,
-                                        lr=LR_DEFAULT_START)
+        model = create_model_for_training(args, loss_func)
 
     ##### Checkpoint? #####
 
