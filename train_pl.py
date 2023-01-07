@@ -59,7 +59,7 @@ def main():
         loss_func = SmoothCrossEntropyLoss(args.ce_smoothing, VOCAB_SIZE, ignore_index=TOKEN_PAD)
 
     ##### Model #####
-        model = create_model_for_training(args, loss_func)
+    model = create_model_for_training(args, loss_func)
 
     ##### Checkpoint? #####
 
