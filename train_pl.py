@@ -35,6 +35,7 @@ def main():
     os.environ['WANDB_API_KEY'] = wandb_key
 
     PROJECT = 'music_transformer'
+    # TODO: make it adjustable with args
     EXPERIMENT_NAME = 'encoder_singleaug'
 
     RUN_ID = wandb.util.generate_id() if not args.run_id else args.run_id
@@ -86,7 +87,9 @@ def main():
         trainer.fit(model=model, datamodule=data_module, ckpt_path=args.checkpoint_path)
     else:
         trainer.fit(model=model, datamodule=data_module)
-    logger.experiment.log_artifact("checkpoints/", name=f'{EXPERIMENT_NAME}_model', type='model')
+    logger.experiment.log_artifact(f"checkpoints/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
+    torch.save(model.state_dict(), f"models/{RUN_ID}/{EXPERIMENT_NAME}_model.pt")
+    logger.experiment.log_artifact(f"models/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
     print(f'Outputted Model: {EXPERIMENT_NAME}_model')
     wandb.finish()
 
