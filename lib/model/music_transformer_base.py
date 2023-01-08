@@ -30,11 +30,11 @@ class MusicTransformerBase(pl.LightningModule):
 
         if acc_metric is not None:
             self.train_acc = acc_metric()
-            self.train_pp = tm.Perplexity(ignore_index=TOKEN_PAD)
+            self.train_pp = tm.Perplexity(ignore_index=TOKEN_PAD, compute_on_cpu=True)
             self.val_acc = acc_metric()
-            self.val_pp = tm.Perplexity(ignore_index=TOKEN_PAD)
+            self.val_pp = tm.Perplexity(ignore_index=TOKEN_PAD, compute_on_cpu=True)
             self.test_acc = acc_metric()
-            self.test_pp = tm.Perplexity(ignore_index=TOKEN_PAD)
+            self.test_pp = tm.Perplexity(ignore_index=TOKEN_PAD, compute_on_cpu=True)
 
     # forward
     def forward(self, x, mask=True):
