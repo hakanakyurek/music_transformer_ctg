@@ -118,19 +118,19 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
 
         print(f"Generating sequence of max length: {target_seq_length}")
 
-        gen_seq = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
+        prior = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
 
         num_primer = len(primer)
-        gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
+        prior[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
 
-        decode_array = torch.tensor(TOKEN_START)
+        gen_seq = prior.clone()
         # print("primer:",primer)
         # print(gen_seq.shape)
         # Here cur_i is the current token index
         cur_i = num_primer
         while(cur_i < target_seq_length):
 
-            logits = self.forward(gen_seq[..., :cur_i], decode_array)
+            logits = self.forward(prior[..., :num_primer], gen_seq[..., :cur_i])
             
             logits = logits[:, cur_i-1, :] / temperature
 
@@ -139,7 +139,6 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
 
             token_probs = self.softmax(logits)[..., :TOKEN_END]
 
-            
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)
             next_token = distrib.sample()
             # print("next token:",next_token)
@@ -158,30 +157,15 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
         return gen_seq[:, :cur_i]
 
     # source: https://towardsdatascience.com/a-detailed-guide-to-pytorchs-nn-transformer-module-c80afbc9ffb1
-    def get_tgt_mask(self, size) -> torch.tensor:
-        # Generates a squeare matrix where the each row allows one word more to be seen
-        mask = torch.tril(torch.ones(size, size) == 1) # Lower triangular matrix
-        mask = mask.float()
-        mask = mask.masked_fill(mask == 0, float(-1e9)) # Convert zeros to -inf
-        mask = mask.masked_fill(mask == 1, float(0.0)) # Convert ones to 0
-        
-        # EX for size=5:
-        # [[0., -inf, -inf, -inf, -inf],
-        #  [0.,   0., -inf, -inf, -inf],
-        #  [0.,   0.,   0., -inf, -inf],
-        #  [0.,   0.,   0.,   0., -inf],
-        #  [0.,   0.,   0.,   0.,   0.]]
-        
-        return mask
-    
     def create_pad_mask(self, matrix: torch.tensor, pad_token: int) -> torch.tensor:
         # If matrix = [1,2,3,0,0,0] where pad_token=0, the result mask is
         # [False, False, False, True, True, True]
+        # Padding is done in the dataset __getitem__
         return (matrix == pad_token)
 
     def create_masks(self, src, tgt):
         src_mask = self.transformer.generate_square_subsequent_mask(src.shape[1])
-        tgt_mask = self.get_tgt_mask(tgt.shape[1])
+        tgt_mask = self.transformer.generate_square_subsequent_mask(tgt.shape[1])
         src_pad_mask = self.create_pad_mask(src, TOKEN_PAD)
         tgt_pad_mask = self.create_pad_mask(tgt, TOKEN_PAD)
 

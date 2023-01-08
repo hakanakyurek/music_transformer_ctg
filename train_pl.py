@@ -88,6 +88,7 @@ def main():
     else:
         trainer.fit(model=model, datamodule=data_module)
     logger.experiment.log_artifact(f"checkpoints/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
+    os.makedirs(f"models/{RUN_ID}/")
     torch.save(model.state_dict(), f"models/{RUN_ID}/{EXPERIMENT_NAME}_model.pt")
     logger.experiment.log_artifact(f"models/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
     print(f'Outputted Model: {EXPERIMENT_NAME}_model')
