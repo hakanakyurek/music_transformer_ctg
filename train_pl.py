@@ -84,12 +84,11 @@ def main():
                                     LearningRateMonitor(logging_interval='epoch')],
                          log_every_n_steps=10)
     if args.checkpoint_path:
-        trainer.fit(model=model, datamodule=data_module, ckpt_path=args.checkpoint_path)
+        trainer.fit(model=model, datamodule=data_module, ckpt_path=args.checkpoint_path, precision=16)
     else:
-        trainer.fit(model=model, datamodule=data_module)
+        trainer.fit(model=model, datamodule=data_module, precision=16)
     logger.experiment.log_artifact(f"checkpoints/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
-    os.makedirs(f"models/{RUN_ID}/")
-    torch.save(model.state_dict(), f"models/{RUN_ID}/{EXPERIMENT_NAME}_model.pt")
+
     logger.experiment.log_artifact(f"models/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
     print(f'Outputted Model: {EXPERIMENT_NAME}_model')
     wandb.finish()
