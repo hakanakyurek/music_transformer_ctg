@@ -24,7 +24,7 @@ VOCAB_SIZE              = TOKEN_PAD + 1
 TORCH_FLOAT             = torch.float32
 TORCH_INT               = torch.int32
 
-TORCH_LABEL_TYPE        = torch.long
+TORCH_LABEL_TYPE        = TORCH_INT
 
 PREPEND_ZEROS_WIDTH     = 4
 
