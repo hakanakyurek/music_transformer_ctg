@@ -64,7 +64,7 @@ def main():
 
     ##### Checkpoint? #####
 
-    os.mkdirs(f"checkpoints/{RUN_ID}/")
+    os.makedirs(f"checkpoints/{RUN_ID}/")
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"checkpoints/{RUN_ID}/", save_top_k=1, 
                                                        save_last=True, monitor="validation loss", 
