@@ -89,7 +89,6 @@ def main():
         trainer.fit(model=model, datamodule=data_module)
     logger.experiment.log_artifact(f"checkpoints/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
 
-    logger.experiment.log_artifact(f"models/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
     print(f'Outputted Model: {EXPERIMENT_NAME}_model')
     wandb.finish()
 
