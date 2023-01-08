@@ -82,8 +82,7 @@ def main():
                          callbacks=[checkpoint_callback, 
                                     EarlyStopping(monitor="validation loss", mode="min", patience=3),
                                     LearningRateMonitor(logging_interval='epoch')],
-                         log_every_n_steps=10,
-                         precision=16)
+                         log_every_n_steps=10)
     if args.checkpoint_path:
         trainer.fit(model=model, datamodule=data_module, ckpt_path=args.checkpoint_path)
     else:
