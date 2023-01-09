@@ -36,7 +36,7 @@ def main():
 
     PROJECT = 'music_transformer'
     # TODO: make it adjustable with args
-    EXPERIMENT_NAME = 'encoder_singleaug'
+    EXPERIMENT_NAME = args.experiment_name
 
     RUN_ID = wandb.util.generate_id() if not args.run_id else args.run_id
 
