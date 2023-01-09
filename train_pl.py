@@ -96,10 +96,10 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-        wandb.finish()
     except Exception as e:
         import traceback
         print(traceback.format_exc())
         print(e)
+    finally:
         wandb.finish()
  
