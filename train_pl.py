@@ -92,13 +92,14 @@ def main():
     logger.experiment.log_artifact(f"checkpoints/{RUN_ID}/", name=f'{EXPERIMENT_NAME}_model', type='model')
 
     print(f'Outputted Model: {EXPERIMENT_NAME}_model')
-    wandb.finish()
 
 if __name__ == "__main__":
     try:
         main()
+        wandb.finish()
     except Exception as e:
         import traceback
         print(traceback.format_exc())
         print(e)
+        wandb.finish()
  
