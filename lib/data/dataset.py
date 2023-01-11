@@ -70,7 +70,7 @@ class MidiDataset(Dataset):
         # return pickle.load(i_stream), None
         raw_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
         i_stream.close()
-        aug_midi = self.__transpose(raw_mid)
+        # aug_midi = self.__transpose(raw_mid)
         
         if self.model_arch == 2:
             x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
