@@ -10,4 +10,4 @@ typing-extensions
 zipp
 pytorch-lightning
 torchmetrics
-wandb
+wandb==0.13.7
