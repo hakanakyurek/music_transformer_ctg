@@ -39,10 +39,10 @@ class MusicAccuracy(tm.Metric):
 
         return acc
 
-    def __call__(self, gt, pred):
+    def update(self, gt, pred):
 
-        gt = torch.stack(self.gt.to(cpu_device()))
-        predictions = torch.stack(self.predictions.to(cpu_device()))
+        gt = torch.stack(gt.to(cpu_device()))
+        predictions = torch.stack(pred.to(cpu_device()))
 
         accuracy = self.__compute_accuracy(gt, predictions)
         self.accuracy.append(accuracy)
