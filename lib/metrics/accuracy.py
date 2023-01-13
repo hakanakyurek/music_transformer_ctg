@@ -45,6 +45,6 @@ class MusicAccuracy(tm.Metric):
         self.accuracy.append(accuracy)
 
     def compute(self):
-        accuracy = torch.mean(self.accuracy)
+        accuracy = torch.mean(torch.stack(self.accuracy))
         self.accuracy = []
         return accuracy
