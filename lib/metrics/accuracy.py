@@ -4,12 +4,12 @@ import torch.nn as nn
 from lib.utilities.constants import TOKEN_PAD, TORCH_FLOAT
 from lib.utilities.device import cpu_device
 
+
 class MusicAccuracy(tm.Metric):
     def __init__(self) -> None:
         super().__init__()
 
-        self.add_state('gt', default=[], dist_reduce_fx="cat")
-        self.add_state("predictions", default=[], dist_reduce_fx="cat")
+        self.add_state('accuracy', default=[], dist_reduce_fx="cat")
 
     def __compute_accuracy(self, out, tgt):
         """
@@ -39,14 +39,15 @@ class MusicAccuracy(tm.Metric):
 
         return acc
 
-    def update(self, gt, pred):
-        self.gt.append(gt.to(cpu_device()))
-        self.predictions.append(pred.to(cpu_device()))
+    def __call__(self, gt, pred):
+
+        gt = torch.stack(self.gt.to(cpu_device()))
+        predictions = torch.stack(self.predictions.to(cpu_device()))
+
+        accuracy = self.__compute_accuracy(gt, predictions)
+        self.accuracy.append(accuracy)
 
     def compute(self):
-        gt = torch.stack(self.gt)
-        predictions = torch.stack(self.predictions)
-        accuracy = self.__compute_accuracy(gt, predictions)
-        self.gt = []
-        self.predictions = []
+        accuracy = torch.mean(self.accuracy)
+        self.accuracy = []
         return accuracy
