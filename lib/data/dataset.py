@@ -41,6 +41,18 @@ class MidiDataset(Dataset):
 
         self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
 
+        self.encoded_midis = [self.read_encoded_midi(idx) for idx in range(len(self.data_files))]
+
+    def read_encoded_midi(self, idx):
+        # All data on cpu to allow for the Dataloader to multithread
+        i_stream = open(self.data_files[idx], "rb")
+        # return pickle.load(i_stream), None
+        raw_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
+        i_stream.close()
+        # aug_midi = self.__transpose(raw_mid)
+        aug_midi = raw_mid
+        return aug_midi
+
     # __len__
     def __len__(self):
         """
@@ -65,13 +77,7 @@ class MidiDataset(Dataset):
     
         """
 
-        # All data on cpu to allow for the Dataloader to multithread
-        i_stream = open(self.data_files[idx], "rb")
-        # return pickle.load(i_stream), None
-        raw_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
-        i_stream.close()
-        # aug_midi = self.__transpose(raw_mid)
-        aug_midi = raw_mid
+        aug_midi = self.encoded_midis[idx]
         if self.model_arch == 2:
             x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
             return x, tgt_input, tgt_output
