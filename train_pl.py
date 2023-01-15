@@ -63,8 +63,10 @@ def main():
     model = create_model_for_training(args, loss_func)
 
     ##### Checkpoint? #####
-
-    os.makedirs(f"checkpoints/{RUN_ID}/")
+    try:
+        os.makedirs(f"checkpoints/{RUN_ID}/")
+    except:
+        print('Checkpoint dir already exists!')
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"checkpoints/{RUN_ID}/", save_top_k=1, 
                                                        save_last=True, monitor="validation loss", 
