@@ -89,7 +89,7 @@ def parse_generate_args():
     # Path parameters
     parser.add_argument("--midi_root", type=str, help="Midi file to prime the generator with")
     parser.add_argument("--output_dir", type=str, default="./output", help="Folder to write generated midi to")
-    parser.add_argument("--primer_file", type=str, default=None, help="File path or integer index to the evaluation dataset. Default is to select a random index.")
+    parser.add_argument("--primer_file", default=None, help="File path or integer index to the evaluation dataset. Default is to select a random index.")
     # Environment parameters
     parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")
     # Generation parameters
