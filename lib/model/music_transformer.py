@@ -75,7 +75,7 @@ class MusicTransformerEncoder(MusicTransformerBase):
             mask = None
 
         x = self.embedding(x)
-
+        x *= torch.sqrt(torch.tensor(self.d_model).float())
         # Input shape is (max_seq, batch_size, d_model)
         x = x.permute(1,0,2)
 
@@ -119,16 +119,9 @@ class MusicTransformerEncoder(MusicTransformerBase):
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            logits = self.forward(gen_seq[..., :cur_i])
-            
-            logits = logits[:, cur_i-1, :] / temperature
-
-            if top_p != 0.0 and top_k != 0:
-                logits = top_k_top_p_filtering(logits, top_k, top_p)
-
-            token_probs = self.softmax(logits)[..., :TOKEN_END]
-
-            
+            y = self.softmax(self.forward(gen_seq[..., :cur_i]) / temperature)[..., :TOKEN_END]
+            token_probs = y[:, cur_i-1, :]
+            # next_token = torch.argmax(token_probs)
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)
             next_token = distrib.sample()
             # print("next token:",next_token)

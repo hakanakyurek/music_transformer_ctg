@@ -119,31 +119,29 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
         print(f"Generating sequence of max length: {target_seq_length}")
 
         prior = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
+        gen_seq = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
 
         num_primer = len(primer)
         prior[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
+        gen_seq[..., 0] = TOKEN_START
+        gen_seq[..., 1 :num_primer + 1] = primer.type(TORCH_LABEL_TYPE).to(get_device())
 
-        gen_seq = prior.clone()
         # print("primer:",primer)
         # print(gen_seq.shape)
         # Here cur_i is the current token index
         cur_i = num_primer
         while(cur_i < target_seq_length):
 
-            logits = self.forward(prior[..., :num_primer], gen_seq[..., :cur_i])
+            logits = self.forward(prior[..., :cur_i], gen_seq[..., :cur_i])
             
-            logits = logits[:, cur_i-1, :] / temperature
-
-            if top_p != 0.0 and top_k != 0:
-                logits = top_k_top_p_filtering(logits, top_k, top_p)
-
             token_probs = self.softmax(logits)[..., :TOKEN_END]
-
+            token_probs = token_probs[:, cur_i-1, :]
+            # next_token = torch.argmax(token_probs)
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)
             next_token = distrib.sample()
+            print(distrib)
             # print("next token:",next_token)
             gen_seq[:, cur_i] = next_token
-
 
             # Let the transformer decide to end if it wants to
             if(next_token == TOKEN_END):
