@@ -29,17 +29,21 @@ def main():
         print("WARNING: Forced CPU usage, expect model to perform slower")
 
     os.makedirs(args.output_dir, exist_ok=True)
+    
+    dataset = MidiDataset(args.midi_root + 'test/', args.arch, args.max_sequence, random_seq=False)
 
     # Can be None, an integer index to dataset, or a file path
     if(args.primer_file is None):
-        dataset = MidiDataset(args.midi_root + 'test/', args.arch, args.max_sequence)
         f = str(random.randrange(len(dataset)))
     else:
         f = args.primer_file
     
     if(f.isdigit()):
         idx = int(f)
-        primer, _ = dataset[idx]
+        if args.arch == 1:
+            primer, _ = dataset[idx]
+        elif args.arch == 2:
+            primer, _, __ = dataset[idx]
         primer = primer.to(get_device())
 
         print("Using primer index:", idx, "(", dataset.data_files[idx], ")")
