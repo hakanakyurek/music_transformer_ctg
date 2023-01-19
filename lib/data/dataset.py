@@ -38,10 +38,10 @@ class MidiDataset(Dataset):
 
         fs = [os.path.join(root, f) for f in os.listdir(self.root)]
         self.data_files = [f for f in fs if os.path.isfile(f)]
+        if self.percentage < 100.0:
+            self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
 
-        self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
-
-        self.encoded_midis = [self.read_encoded_midi(idx) for idx in range(len(self.data_files))]
+        # self.encoded_midis = [self.read_encoded_midi(idx) for idx in range(len(self.data_files))]
 
     def read_encoded_midi(self, idx):
         # All data on cpu to allow for the Dataloader to multithread
@@ -76,8 +76,7 @@ class MidiDataset(Dataset):
         Returns the input and the target.
     
         """
-
-        aug_midi = self.encoded_midis[idx]
+        aug_midi = self.read_encoded_midi(idx)
         if self.model_arch == 2:
             x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
             return x, tgt_input, tgt_output
