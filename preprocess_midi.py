@@ -5,7 +5,6 @@ import json
 import random
 
 import logging
-from lib.utilities.logging_config import config_logging
 from tqdm import tqdm
 
 import lib.midi_processor.processor as midi_processor
