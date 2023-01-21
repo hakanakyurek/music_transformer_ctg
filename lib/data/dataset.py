@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset
 
 from lib.utilities.constants import *
-from lib.midi_processor.processor import RANGE_NOTE_ON, RANGE_NOTE_OFF
+from lib.midi_processor.processor import RANGE_NOTE_ON, RANGE_NOTE_OFF, decode_midi, encode_midi
 from lib.data.midi_processing import process_midi, process_midi_ed
 
 import numpy as np
@@ -31,7 +31,8 @@ class MidiDataset(Dataset):
         self.rng = np.random.default_rng(seed=2486)
 
         fs = [os.path.join(root, f) for f in os.listdir(self.root)]
-        self.data_files = [f for f in fs if os.path.isfile(f)]
+        # Data files hold (midi_file, encoding_file)
+        self.data_files = [f for f in fs if os.path.isfile(f)] 
         if self.percentage < 100.0:
             self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
 
@@ -39,12 +40,19 @@ class MidiDataset(Dataset):
 
     def __read_encoded_midi(self, idx):
         # All data on cpu to allow for the Dataloader to multithread
-        i_stream = open(self.data_files[idx], "rb")
-        # return pickle.load(i_stream), None
-        raw_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
+        mid = self.data_files[idx][0]
+        enc = self.data_files[idx][1]
+        i_stream = open(enc, "rb")
+        encoded_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
         i_stream.close()
-        # aug_midi = self.__transpose(raw_mid)
-        aug_midi = raw_mid
+        # Decode back the encoding and Get the clipping time info
+        decoded_mid = decode_midi(encoded_mid[0:self.max_seq])
+        end_time = decoded_mid.get_end_time()
+        # Augmentation
+        # decoded_mid = self.__transpose(decoded_mid)
+        # Encode back the clipped part
+        encoded_mid = encode_midi(mid, clip=end_time)
+        aug_midi = encoded_mid
         return aug_midi
 
     # __len__

@@ -1,6 +1,5 @@
 import pretty_midi
-import logging
-
+import numpy as np
 
 RANGE_NOTE_ON = 128
 RANGE_NOTE_OFF = 128
@@ -205,13 +204,23 @@ def _note_preprocess(susteins, notes):
     return note_stream
 
 
-def encode_midi(file_path):
+def encode_midi(file_path, clip=0):
     events = []
     notes = []
-    mid = pretty_midi.PrettyMIDI(midi_file=file_path)
+    if type(file_path) == str:
+        mid = pretty_midi.PrettyMIDI(midi_file=file_path)
+    else:
+        mid = file_path
 
     for inst in mid.instruments:
         inst_notes = inst.notes
+        if clip:
+            end_time = mid.get_end_time()
+            temp = []
+            for note in inst_notes:
+                if note.start < min(clip, end_time):
+                    temp.append(note)
+            inst_notes = temp
         # ctrl.number is the number of sustain control. If you want to know abour the number type of control,
         # see https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
         ctrls = _control_preprocess([ctrl for ctrl in inst.control_changes if ctrl.number == 64])
@@ -255,14 +264,15 @@ def decode_midi(idx_array, file_path=None):
 
 
 if __name__ == '__main__':
-    encoded = encode_midi('bin/ADIG04.mid')
-    print(encoded)
-    decided = decode_midi(encoded,file_path='bin/test.mid')
-
-    ins = pretty_midi.PrettyMIDI('bin/ADIG04.mid')
-    print(ins)
-    print(ins.instruments[0])
-    for i in ins.instruments:
-        print(i.control_changes)
-        print(i.notes)
-
+    encoded = encode_midi('/Users/hakanakyurek/Desktop/oKuL/thesis/dataset/midi/vgmidi/Ace Attorney_Nintendo 3DS_Phoenix Wright Ace Attorney Spirit of Justice_Cheerful People.mid',
+                          clip=0)
+    print(len(encoded))
+    # decoded = decode_midi(encoded,file_path='test.mid')
+    decoded = decode_midi(encoded[0:1024])
+    print(decoded.get_end_time())
+    # ins = pretty_midi.PrettyMIDI('bin/ADIG04.mid')
+    # print(ins)
+    # print(ins.instruments[0])
+    # for i in ins.instruments:
+    #     print(i.control_changes)
+    #     print(i.notes)

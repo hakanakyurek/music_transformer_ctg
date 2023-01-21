@@ -138,7 +138,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
         
 
         o_stream = open(o_file, "wb")
-        pickle.dump(prepped, o_stream)
+        pickle.dump((mid, prepped), o_stream)
         o_stream.close()
 
         total_count += 1
