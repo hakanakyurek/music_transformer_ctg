@@ -1,6 +1,6 @@
 import argparse
 import os
-import pickle
+from joblib import dump
 import json
 import random
 
@@ -60,9 +60,7 @@ def prep_maestro_midi(maestro_root, output_dir):
 
         prepped = midi_processor.encode_midi(mid)
 
-        o_stream = open(o_file, "wb")
-        pickle.dump(prepped, o_stream)
-        o_stream.close()
+        dump(prepped, o_file)
 
         total_count += 1
         if(total_count % 50 == 0):
@@ -134,10 +132,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
             o_file = os.path.join(test_dir, f_name)
             test_count += 1
         
-
-        o_stream = open(o_file, "wb")
-        pickle.dump((mid, prepped), o_stream)
-        o_stream.close()
+        dump((mid, prepped), o_file)
 
         total_count += 1
 

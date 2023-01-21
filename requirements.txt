@@ -11,3 +11,4 @@ zipp
 pytorch-lightning
 torchmetrics
 wandb==0.13.7
+joblib
