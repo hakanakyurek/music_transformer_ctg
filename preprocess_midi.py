@@ -4,7 +4,6 @@ import pickle
 import json
 import random
 
-import logging
 from tqdm import tqdm
 
 import lib.midi_processor.processor as midi_processor
@@ -169,9 +168,7 @@ def main():
 
     Entry point. Preprocesses maestro and saved midi to specified output folder.
 
-    """
-    config_logging()
-    
+    """    
     args = parse_args()
     root = args.root
     output_dir = args.output_dir
