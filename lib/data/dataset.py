@@ -9,6 +9,16 @@ from lib.data.midi_processing import process_midi, process_midi_ed
 
 import numpy as np
 
+import os, sys
+
+class HiddenPrints:
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
 
 class MidiDataset(Dataset):
     """
@@ -78,7 +88,8 @@ class MidiDataset(Dataset):
         Returns the input and the target.
     
         """
-        aug_midi = self.__read_encoded_midi(idx)
+        with HiddenPrints():
+            aug_midi = self.__read_encoded_midi(idx)
         if self.model_arch == 2:
             x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
             return x, tgt_input, tgt_output
