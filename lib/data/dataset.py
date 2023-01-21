@@ -40,11 +40,11 @@ class MidiDataset(Dataset):
 
     def __read_encoded_midi(self, idx):
         # All data on cpu to allow for the Dataloader to multithread
-        mid = self.data_files[idx][0]
-        enc = self.data_files[idx][1]
-        i_stream = open(enc, "rb")
-        encoded_mid = torch.tensor(pickle.load(i_stream), dtype=TORCH_LABEL_TYPE)
-        i_stream.close()
+        mid_enc = self.data_files[idx]
+        i_stream = open(mid_enc, "rb")
+        mid = pickle.load(i_stream)[0]
+        enc = pickle.load(i_stream)[1]
+        encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
         # Decode back the encoding and Get the clipping time info
         decoded_mid = decode_midi(encoded_mid[0:self.max_seq])
         end_time = decoded_mid.get_end_time()
@@ -52,6 +52,7 @@ class MidiDataset(Dataset):
         # decoded_mid = self.__transpose(decoded_mid)
         # Encode back the clipped part
         encoded_mid = encode_midi(mid, clip=end_time)
+        i_stream.close()
         aug_midi = encoded_mid
         return aug_midi
 
