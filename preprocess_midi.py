@@ -121,6 +121,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2):
         try:
             prepped = midi_processor.encode_midi(mid)
         except Exception as e:
+            print(e)
             continue
         if(split_type == "train"):
             o_file = os.path.join(train_dir, f_name)
