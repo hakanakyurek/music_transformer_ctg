@@ -211,9 +211,12 @@ def encode_midi(file_path, start_time=0, end_time=0):
         mid = pretty_midi.PrettyMIDI(midi_file=file_path)
     else:
         mid = file_path
-
+    # Get the earliest note
+    earliest_note_start = min(note.start for inst in mid.instruments for note in inst.notes)
+    
     for inst in mid.instruments:
-        inst_notes = inst.notes
+        # Subtract the earliest note start time from the start time of each note using a one-liner for loop
+        inst_notes = [setattr(note, 'start', note.start - earliest_note_start) for note in inst.notes]
         if start_time >= 0 and end_time:
             end_time = min(end_time, mid.get_end_time())
             temp = []
@@ -237,7 +240,6 @@ def encode_midi(file_path, start_time=0, end_time=0):
     for snote in dnotes:
         events += _make_time_sift_events(prev_time=cur_time, post_time=snote.time)
         events += _snote2events(snote=snote, prev_vel=cur_vel)
-        # events += _make_time_sift_events(prev_time=cur_time, post_time=snote.time)
 
         cur_time = snote.time
         cur_vel = snote.velocity

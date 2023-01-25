@@ -29,6 +29,7 @@ class MusicAccuracy(tm.Metric):
         tgt = tgt[mask]
 
         # Empty
+        # Accuracy doesn't work with this
         if(len(tgt) == 0):
             return 1.0
 
