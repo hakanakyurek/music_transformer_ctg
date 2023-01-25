@@ -62,10 +62,8 @@ class MidiDataset(Dataset):
         enc = i_stream[1]
         # Get the end time of the whole midi
         max_end_time = mid.get_end_time()
-        # encoding --> tensor
-        encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
         # Decode back the encoding
-        decoded_mid = decode_midi(encoded_mid[0:self.max_seq])
+        decoded_mid = decode_midi(enc[0:self.max_seq])
         # Get the duration for clip
         duration = decoded_mid.get_end_time()
         if duration != max_end_time:
@@ -79,6 +77,8 @@ class MidiDataset(Dataset):
             # decoded_mid = self.__transpose(decoded_mid)
             # Encode the clipped part
             encoded_mid = encode_midi(mid, start_time, end_time)
+        # encoding --> tensor
+        encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
         return encoded_mid
 
     # __len__
