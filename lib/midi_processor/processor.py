@@ -204,7 +204,7 @@ def _note_preprocess(susteins, notes):
     return note_stream
 
 
-def encode_midi(file_path, clip=0):
+def encode_midi(file_path, start_time=0, end_time=0):
     events = []
     notes = []
     if type(file_path) == str:
@@ -214,11 +214,11 @@ def encode_midi(file_path, clip=0):
 
     for inst in mid.instruments:
         inst_notes = inst.notes
-        if clip:
-            end_time = mid.get_end_time()
+        if start_time >= 0 and end_time:
+            end_time = min(end_time, mid.get_end_time())
             temp = []
             for note in inst_notes:
-                if note.start < min(clip, end_time):
+                if note.start > start_time and note.end < end_time:
                     temp.append(note)
             inst_notes = temp
         # ctrl.number is the number of sustain control. If you want to know abour the number type of control,

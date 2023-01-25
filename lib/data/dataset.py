@@ -10,6 +10,9 @@ from lib.data.midi_processing import process_midi, process_midi_ed
 import numpy as np
 
 import os, sys
+import random
+
+import pretty_midi
 
 class HiddenPrints:
     def __enter__(self):
@@ -31,7 +34,7 @@ class MidiDataset(Dataset):
 
     """
 
-    def __init__(self, root, arch, max_seq=2048, random_seq=True, percentage=100.0):
+    def __init__(self, root, arch, max_seq=2048, random_seq=False, percentage=100.0):
         self.root       = root
         self.max_seq    = max_seq
         self.random_seq = random_seq
@@ -52,18 +55,31 @@ class MidiDataset(Dataset):
         # All data on cpu to allow for the Dataloader to multithread
         mid_enc = self.data_files[idx]
         i_stream = load(mid_enc)
-        mid = i_stream[0]
+        # Load midi
+        mid_path = i_stream[0]
+        mid = pretty_midi.PrettyMIDI(midi_file=mid_path)
+        # Get encoding
         enc = i_stream[1]
+        # Get the end time of the whole midi
+        max_end_time = mid.get_end_time()
+        # encoding --> tensor
         encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
-        # Decode back the encoding and Get the clipping time info
+        # Decode back the encoding
         decoded_mid = decode_midi(encoded_mid[0:self.max_seq])
-        end_time = decoded_mid.get_end_time()
-        # Augmentation
-        # decoded_mid = self.__transpose(decoded_mid)
-        # Encode back the clipped part
-        encoded_mid = encode_midi(mid, clip=end_time)
-        aug_midi = encoded_mid
-        return aug_midi
+        # Get the duration for clip
+        duration = decoded_mid.get_end_time()
+        if duration != max_end_time:
+            # Get a start time, max_end_time should be equal to duration in worst case
+            start_time = random.uniform(0, max_end_time - duration)
+            # Ensure the start time is at least 0
+            start_time = 0 if start_time < 0 else start_time
+            # Get the end time
+            end_time = start_time + duration
+            # Augmentation
+            # decoded_mid = self.__transpose(decoded_mid)
+            # Encode the clipped part
+            encoded_mid = encode_midi(mid, start_time, end_time)
+        return encoded_mid
 
     # __len__
     def __len__(self):
