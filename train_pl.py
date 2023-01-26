@@ -97,14 +97,19 @@ def main():
     print(f'Outputted Model: {EXPERIMENT_NAME}_model')
 
 if __name__ == "__main__":
+    import signal, sys
+    def signal_handler(sig, frame):
+        wandb.log({'Interrupted': True})
+        wandb.finish()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
     try:
         main()
     except Exception as e:
         import traceback
         print(traceback.format_exc())
         print(e)
-    except KeyboardInterrupt:
-        wandb.finish()
     finally:
         wandb.finish()
  
