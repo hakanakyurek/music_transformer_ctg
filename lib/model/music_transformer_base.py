@@ -79,7 +79,7 @@ class MusicTransformerBase(pl.LightningModule):
         self.log('test perplexity', self.test_pp)
 
     def configure_optimizers(self):
-        opt = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
+        opt = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON, capturable=True)
 
         lr_stepper = LrStepTracker(self.d_model, SCHEDULER_WARMUP_STEPS, 1)
 
