@@ -103,6 +103,8 @@ if __name__ == "__main__":
         import traceback
         print(traceback.format_exc())
         print(e)
+    except KeyboardInterrupt:
+        wandb.finish()
     finally:
         wandb.finish()
  
