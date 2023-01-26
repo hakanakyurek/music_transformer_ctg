@@ -4,24 +4,17 @@ import torch
 from torch.utils.data import Dataset
 
 from lib.utilities.constants import *
-from lib.midi_processor.processor import RANGE_NOTE_ON, RANGE_NOTE_OFF, decode_midi, encode_midi
+from lib.midi_processor.processor import decode_midi, encode_midi
 from lib.data.midi_processing import process_midi, process_midi_ed
+from lib.utilities.hide_prints import NoStdOut
 
 import numpy as np
 
-import os, sys
+import os
 import random
 
 import pretty_midi
 
-class HiddenPrints:
-    def __enter__(self):
-        self._original_stdout = sys.stdout
-        sys.stdout = open(os.devnull, 'w')
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout.close()
-        sys.stdout = self._original_stdout
 
 class MidiDataset(Dataset):
     """
@@ -66,6 +59,7 @@ class MidiDataset(Dataset):
         decoded_mid = decode_midi(enc[0:self.max_seq])
         # Get the duration for clip
         duration = decoded_mid.get_end_time()
+        # If the midi is shorter than max sequence
         if duration != max_end_time:
             # Get a start time, max_end_time should be equal to duration in worst case
             start_time = random.uniform(0, max_end_time - duration)
@@ -104,7 +98,7 @@ class MidiDataset(Dataset):
         Returns the input and the target.
     
         """
-        with HiddenPrints():
+        with NoStdOut():
             aug_midi = self.__read_encoded_midi(idx)
         if self.model_arch == 2:
             x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, self.random_seq)
@@ -114,7 +108,7 @@ class MidiDataset(Dataset):
             return x, tgt
 
 
-    def __transpose(self, midi: torch.tensor) -> torch.tensor:
+    def __transpose(self, midi: pretty_midi.PrettyMIDI()) -> torch.tensor:
         """
         Augments the data by shifting all of the notes to higher and/or lower pitches.
         Pitch transpositions uniformly sampled from {-3, -2, . . . , 2, 3} half-steps
@@ -124,21 +118,6 @@ class MidiDataset(Dataset):
         """
         pitch_change = self.rng.choice([-3, -2, -1, 0, 1, 2, 3])
 
-        range_note_on = range(0, RANGE_NOTE_ON)
-        range_note_off = range(RANGE_NOTE_ON, RANGE_NOTE_ON+RANGE_NOTE_OFF)
+        midi.transpose(pitch_change)
 
-        aug_midi = torch.clone(midi)
-
-        for i in range(len(aug_midi)):
-            final_pitch = aug_midi[i] + pitch_change
-            if final_pitch in range_note_on and aug_midi[i] in range_note_on:
-                aug_midi[i] += pitch_change
-            elif final_pitch in range_note_off and aug_midi[i] in range_note_off:
-                aug_midi[i] += pitch_change
-            else:
-                # Either we transpose every note or none
-                del aug_midi
-                return midi
-
-        del midi
-        return aug_midi
+        return midi
