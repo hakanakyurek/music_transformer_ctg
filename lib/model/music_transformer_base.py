@@ -86,7 +86,13 @@ class MusicTransformerBase(pl.LightningModule):
 
         lr_scheduler = LambdaLR(opt, lr_stepper.step)
 
-        return [opt], [lr_scheduler]
+        return {
+        'optimizer': opt, 
+        'lr_scheduler': {
+            'scheduler': lr_scheduler, 
+            'interval': 'step'
+        }
+    }
 
     def metric_update(self, acc_metric, pp_metric, y, y_star):
         acc_metric.update(y, y_star)
