@@ -80,7 +80,7 @@ class MusicTransformerBase(pl.LightningModule):
 
     def configure_optimizers(self):
         # opt = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
-        opt = torch.optim.SGD(self.parameter(), lr=self.lr, momentum=0.9)
+        opt = torch.optim.SGD(self.parameters(), lr=self.lr, momentum=0.9)
 
         lr_stepper = LrStepTracker(self.d_model, SCHEDULER_WARMUP_STEPS, 1)
 
