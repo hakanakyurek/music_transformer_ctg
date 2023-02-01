@@ -267,8 +267,8 @@ def decode_midi(idx_array, file_path=None):
 
 
 if __name__ == '__main__':
-    encoded = encode_midi('/Users/hakanakyurek/Desktop/oKuL/thesis/dataset/midi/vgmidi/Ace Attorney_Nintendo 3DS_Phoenix Wright Ace Attorney Spirit of Justice_Cheerful People.mid',
-                          clip=0)
+    encoded = encode_midi('/Users/hakanakyurek/Desktop/oKuL/thesis/dataset/midi/adl-piano-midi/Rock/Pop Rock/Sarah McLachlan/Last Dance.mid',
+    0)
     print(len(encoded))
     # decoded = decode_midi(encoded,file_path='test.mid')
     decoded = decode_midi(encoded[0:1024])
