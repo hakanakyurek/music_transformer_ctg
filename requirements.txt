@@ -1,8 +1,9 @@
 certifi
+numpy==1.24.1
 dataclasses
 importlib-resources
 mido
-git+https://github.com/craffel/pretty-midi
+prettymidi
 six
 torch
 tqdm
@@ -12,3 +13,5 @@ pytorch-lightning
 torchmetrics
 wandb==0.13.7
 joblib
+music21
+pandas
