@@ -106,4 +106,5 @@ if __name__ == "__main__":
         print(e)
     finally:
         wandb.finish()
+        exit(9)
  
