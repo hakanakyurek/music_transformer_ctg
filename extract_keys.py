@@ -8,6 +8,7 @@ from tqdm import tqdm
 import lib.midi_processor.processor as midi_processor
 
 import pandas as pd
+from joblib import dump
 
 
 def key_custom_midi(custom_midi_root, output_dir):
@@ -49,8 +50,9 @@ def key_custom_midi(custom_midi_root, output_dir):
 
         total_count += 1
 
+    dump(keys, output_dir + 'keys')
     df = pd.DataFrame(keys)
-    df.to_csv(output_dir + 'keys.csv', index=False)
+    df.to_csv(output_dir + 'keys.csv', index=[0])
 
     print(f"Num total: {total_count}")
     return True
