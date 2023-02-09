@@ -15,6 +15,7 @@ def parse_train_args():
     parser = argparse.ArgumentParser()
     # Path parameters
     parser.add_argument("--input_dir", type=str, default="./dataset/e_piano", help="Folder of preprocessed and pickled midi files")
+    parser.add_argument("--key_dir", type=str, default="./dataset/keys", help="Binary key dictionary (dumped with joblib) for each data in the dataset")
     # Environment parameters
     parser.add_argument("--n_workers", type=int, default=1, help="Number of threads for the dataloader")
     parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")
@@ -53,6 +54,7 @@ def print_train_args(args):
     print(SEPERATOR)
     print(f"Path parameters")
     print(f"input_dir:{args.input_dir}")
+    print(f"key_dir:{args.key_dir}")
     print(f"Environment parameters")
     print(f"n_workers:{args.n_workers}")
     print(f"force_cpu:{args.force_cpu}")

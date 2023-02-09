@@ -14,6 +14,7 @@ import os
 import random
 
 import pretty_midi
+import music21
 
 
 class MidiDataset(Dataset):
@@ -27,13 +28,13 @@ class MidiDataset(Dataset):
 
     """
 
-    def __init__(self, root, arch, max_seq=2048, random_seq=False, percentage=100.0, keys=False):
+    def __init__(self, root, arch, max_seq=2048, random_seq=False, percentage=100.0, keys=None):
         self.root       = root
         self.max_seq    = max_seq
         self.random_seq = random_seq
         self.percentage = percentage
         self.model_arch = arch
-        self.keys       = keys
+        self.keys       = load(keys) if keys else keys
 
         self.rng = np.random.default_rng(seed=2486)
 
@@ -49,13 +50,16 @@ class MidiDataset(Dataset):
         # All data on cpu to allow for the Dataloader to multithread
         mid_enc = self.data_files[idx]
         i_stream = load(mid_enc)
-        # Key operations
-        # TODO: Read key
-        key = None
-        token_key = KEY_DICT[key]
         # Load midi
         mid_path = i_stream[0]
         mid = pretty_midi.PrettyMIDI(midi_file=mid_path)
+        # Key operations
+        key = self.keys[mid_path]
+        if not key in KEY_DICT:
+            my_score: music21.stream.Score = music21.converter.parse(mid_path)
+            key = my_score.analyze('Krumhansl')
+
+        token_key = KEY_DICT[key]        
         # Get encoding
         enc = i_stream[1]
         # Get the end time of the whole midi
@@ -85,7 +89,7 @@ class MidiDataset(Dataset):
         encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
         token_key = torch.tensor(token_key, dtype=TORCH_LABEL_TYPE)
         encoded_mid = torch.cat((token_key, encoded_mid), dim=0)
-        return encoded_mid, key
+        return encoded_mid
 
     # __len__
     def __len__(self):
@@ -111,7 +115,7 @@ class MidiDataset(Dataset):
     
         """
         with NoStdOut():
-            aug_midi, key = self.__read_encoded_midi(idx)
+            aug_midi = self.__read_encoded_midi(idx)
         if self.model_arch == 2:
             if not self.keys:
                 x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, False)
@@ -119,7 +123,7 @@ class MidiDataset(Dataset):
                 raise NotImplementedError('encoder-decoder arch isn\'t updated for key control')
             return x, tgt_input, tgt_output
         elif self.model_arch == 1:
-            x, tgt = process_midi(aug_midi, self.max_seq, False, key)
+            x, tgt = process_midi(aug_midi, self.max_seq, False)
             return x, tgt
 
 

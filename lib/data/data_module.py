@@ -6,7 +6,7 @@ import torch
 class MidiDataModule(pl.LightningDataModule):
     
     def __init__(self, batch_size, data_dir, dataset_percentage, 
-                 max_seq, n_workers, arch, random_seq=True) -> None:
+                 max_seq, n_workers, arch, random_seq=True, keys=None) -> None:
         super().__init__()
 
         self.batch_size = batch_size
@@ -16,6 +16,7 @@ class MidiDataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.dataset_percentage = dataset_percentage
         self.model_arch = arch
+        self.keys = keys
 
     def collate(self, batch):
         if self.model_arch == 2:
@@ -34,7 +35,7 @@ class MidiDataModule(pl.LightningDataModule):
             return x, tgt
 
     def train_dataloader(self):
-        self.train = MidiDataset(f'{self.data_dir}train/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage)
+        self.train = MidiDataset(f'{self.data_dir}train/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage, self.keys)
         print('Train dataset size:', len(self.train))
         return  DataLoader(self.train, batch_size=self.batch_size, 
                            collate_fn=self.collate,
@@ -42,7 +43,7 @@ class MidiDataModule(pl.LightningDataModule):
                            drop_last=True)
 
     def val_dataloader(self):
-        self.val = MidiDataset(f'{self.data_dir}val/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage)
+        self.val = MidiDataset(f'{self.data_dir}val/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage, self.keys)
         print('Val dataset size:', len(self.val))
         return  DataLoader(self.val, batch_size=self.batch_size, 
                            collate_fn=self.collate,
@@ -50,7 +51,7 @@ class MidiDataModule(pl.LightningDataModule):
                            drop_last=True)
 
     def test_dataloader(self):
-        self.test = MidiDataset(f'{self.data_dir}test/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage)
+        self.test = MidiDataset(f'{self.data_dir}test/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage, self.keys)
         print('Test dataset size:', len(self.test))
         return  DataLoader(self.test, batch_size=self.batch_size, 
                            collate_fn=self.collate,
