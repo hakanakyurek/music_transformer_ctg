@@ -29,7 +29,7 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
         self.lr           = lr
 
         # Input embedding
-        self.embedding = nn.Embedding(VOCAB_SIZE, self.d_model)
+        self.embedding = nn.Embedding(vocab['size'], self.d_model)
 
         # Positional encoding
         self.positional_encoding = PositionalEncoding(self.d_model, self.dropout, self.max_seq)
@@ -59,7 +59,7 @@ class MusicTransformerEncoderDecoder(MusicTransformerBase):
             )
 
         # Final output is a softmaxed linear layer
-        self.Wout       = nn.Linear(self.d_model, VOCAB_SIZE)
+        self.Wout       = nn.Linear(self.d_model, vocab['size'])
         self.softmax    = nn.Softmax(dim=-1)
 
     # forward

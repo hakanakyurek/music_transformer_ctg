@@ -27,6 +27,7 @@ def main():
 
     args = parse_train_args()
     print_train_args(args)
+    vocab['size'] = VOCAB_SIZE_KEYS if args.keys else VOCAB_SIZE_NORMAL
 
     if (args.run_id and not args.checkpoint_path) or (not args.run_id and args.checkpoint_path):
         print('Run id and Checkpoint path should be given together!')
@@ -58,7 +59,7 @@ def main():
     if(args.ce_smoothing is None):
         loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
     else:
-        loss_func = SmoothCrossEntropyLoss(args.ce_smoothing, VOCAB_SIZE, ignore_index=TOKEN_PAD)
+        loss_func = SmoothCrossEntropyLoss(args.ce_smoothing, vocab['size'], ignore_index=TOKEN_PAD)
 
     ##### Model #####
     model = create_model_for_training(args, loss_func)

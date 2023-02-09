@@ -23,6 +23,7 @@ def main():
 
     args = parse_generate_args()
     print_generate_args(args)
+    vocab['size'] = VOCAB_SIZE_KEYS if args.keys else VOCAB_SIZE_NORMAL
 
     if(args.force_cpu):
         use_cuda(False)

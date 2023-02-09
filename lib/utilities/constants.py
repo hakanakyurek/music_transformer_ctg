@@ -19,7 +19,15 @@ TOKEN_START             = -1
 TOKEN_END               = RANGE_NOTE_ON + RANGE_NOTE_OFF + RANGE_VEL + RANGE_TIME_SHIFT
 TOKEN_PAD               = TOKEN_END + 1
 
-VOCAB_SIZE              = TOKEN_PAD + 1
+RANGE_KEYS              = 24 # major and minor keys in circle of fifths
+TOKEN_KEYS              = TOKEN_PAD + RANGE_KEYS
+
+VOCAB_SIZE_KEYS         = TOKEN_KEYS + 1
+VOCAB_SIZE_NORMAL       = TOKEN_PAD + 1
+
+vocab = {
+    'size': -1
+}
 
 TORCH_FLOAT             = torch.float32
 TORCH_INT               = torch.int32
