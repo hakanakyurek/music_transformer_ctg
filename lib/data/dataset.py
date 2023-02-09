@@ -44,7 +44,7 @@ class MidiDataset(Dataset):
 
         # self.encoded_midis = [self.read_encoded_midi(idx) for idx in range(len(self.data_files))]
 
-    def __read_encoded_midi(self, idx, random_seq=False):
+    def __read_encoded_midi(self, idx):
         # All data on cpu to allow for the Dataloader to multithread
         mid_enc = self.data_files[idx]
         i_stream = load(mid_enc)
@@ -61,7 +61,7 @@ class MidiDataset(Dataset):
         duration = decoded_mid.get_end_time()
         # If the midi is shorter than max sequence
         if duration != max_end_time:
-            if random_seq:
+            if self.random_seq:
                 # Get a start time, max_end_time should be equal to duration in worst case
                 start_time = random.uniform(0, max_end_time - duration)
             else:
@@ -73,7 +73,7 @@ class MidiDataset(Dataset):
             # Augmentation
             # decoded_mid = self.__transpose(decoded_mid)
             # Encode the clipped part
-            encoded_mid = encode_midi(mid, start_time, end_time)
+            enc = encode_midi(mid, start_time, end_time)
         # encoding --> tensor
         encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
         return encoded_mid
@@ -102,7 +102,7 @@ class MidiDataset(Dataset):
     
         """
         with NoStdOut():
-            aug_midi = self.__read_encoded_midi(idx, self.random_seq)
+            aug_midi = self.__read_encoded_midi(idx)
         if self.model_arch == 2:
             x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, False)
             return x, tgt_input, tgt_output
