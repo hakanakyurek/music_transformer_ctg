@@ -27,12 +27,13 @@ class MidiDataset(Dataset):
 
     """
 
-    def __init__(self, root, arch, max_seq=2048, random_seq=False, percentage=100.0):
+    def __init__(self, root, arch, max_seq=2048, random_seq=False, percentage=100.0, keys=False):
         self.root       = root
         self.max_seq    = max_seq
         self.random_seq = random_seq
         self.percentage = percentage
         self.model_arch = arch
+        self.keys       = keys
 
         self.rng = np.random.default_rng(seed=2486)
 
@@ -48,6 +49,10 @@ class MidiDataset(Dataset):
         # All data on cpu to allow for the Dataloader to multithread
         mid_enc = self.data_files[idx]
         i_stream = load(mid_enc)
+        # Key operations
+        # TODO: Read key
+        key = None
+        token_key = KEY_DICT[key]
         # Load midi
         mid_path = i_stream[0]
         mid = pretty_midi.PrettyMIDI(midi_file=mid_path)
@@ -56,7 +61,9 @@ class MidiDataset(Dataset):
         # Get the end time of the whole midi
         max_end_time = mid.get_end_time()
         # Decode back the encoding
-        decoded_mid = decode_midi(enc[0:self.max_seq])
+        # Read time for max_seq - 1 tokens if we are using keys
+        max_seq = self.max_seq if not self.keys else self.max_seq - 1
+        decoded_mid = decode_midi(enc[0:max_seq])
         # Get the duration for clip
         duration = decoded_mid.get_end_time()
         # If the midi is shorter than max sequence
@@ -76,7 +83,9 @@ class MidiDataset(Dataset):
             enc = encode_midi(mid, start_time, end_time)
         # encoding --> tensor
         encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
-        return encoded_mid
+        token_key = torch.tensor(token_key, dtype=TORCH_LABEL_TYPE)
+        encoded_mid = torch.cat((token_key, encoded_mid), dim=0)
+        return encoded_mid, key
 
     # __len__
     def __len__(self):
@@ -102,12 +111,15 @@ class MidiDataset(Dataset):
     
         """
         with NoStdOut():
-            aug_midi = self.__read_encoded_midi(idx)
+            aug_midi, key = self.__read_encoded_midi(idx)
         if self.model_arch == 2:
-            x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, False)
+            if not self.keys:
+                x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, False)
+            else:
+                raise NotImplementedError('encoder-decoder arch isn\'t updated for key control')
             return x, tgt_input, tgt_output
         elif self.model_arch == 1:
-            x, tgt = process_midi(aug_midi, self.max_seq, False)
+            x, tgt = process_midi(aug_midi, self.max_seq, False, key)
             return x, tgt
 
 

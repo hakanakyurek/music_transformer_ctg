@@ -22,6 +22,35 @@ TOKEN_PAD               = TOKEN_END + 1
 RANGE_KEYS              = 24 # major and minor keys in circle of fifths
 TOKEN_KEYS              = TOKEN_PAD + RANGE_KEYS
 
+KEY_DICT = {
+    'c# minor': 1,
+    'F major': 2,
+    'D major': 3, 
+    'E major': 4, 
+    'B major': 5, 
+    'g minor': 6, 
+    'e minor': 7, 
+    'F# major': 8, 
+    'd minor': 9, 
+    'f# minor': 10, 
+    'C major': 11, 
+    'g# minor': 12, 
+    'A major': 13, 
+    'b- minor': 14, 
+    'b minor': 15, 
+    'A- major': 16, 
+    'E- major': 17, 
+    'G major': 18, 
+    'f minor': 19, 
+    'B- major': 20, 
+    'c minor': 21, 
+    'e- minor': 22, 
+    'a minor': 23, 
+    'C# major': 24}
+
+for k in KEY_DICT.keys():
+    KEY_DICT[k] += TOKEN_PAD
+
 VOCAB_SIZE_KEYS         = TOKEN_KEYS + 1
 VOCAB_SIZE_NORMAL       = TOKEN_PAD + 1
 

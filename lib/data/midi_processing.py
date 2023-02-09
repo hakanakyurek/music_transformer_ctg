@@ -6,7 +6,7 @@ import random
 SEQUENCE_START = 0
 
 # process_midi
-def process_midi(raw_mid, max_seq, random_seq):
+def process_midi(raw_mid, max_seq, random_seq, key=None):
     """
 
     Takes in pre-processed raw midi and returns the input and target. Can use a random sequence or
