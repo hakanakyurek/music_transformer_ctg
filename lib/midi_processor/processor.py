@@ -210,6 +210,7 @@ def encode_midi(file_path, start_time=0, end_time=0):
     if type(file_path) == str:
         mid = pretty_midi.PrettyMIDI(midi_file=file_path)
     else:
+        # If we pass midi file directly
         mid = file_path
     # Get the earliest note
     earliest_note_start = min(note.start for inst in mid.instruments for note in inst.notes)
