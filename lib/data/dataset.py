@@ -40,9 +40,17 @@ class MidiDataset(Dataset):
 
         fs = [os.path.join(root, f) for f in os.listdir(self.root)]
         # Data files hold (midi_file, encoding_file)
-        self.data_files = [f for f in fs if os.path.isfile(f) and f in self.keys.keys()] 
+        self.data_files = [f for f in fs if os.path.isfile(f)] 
         if self.percentage < 100.0:
             self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
+
+        # Sanity check
+        temp = []
+        for data in self.data_files:
+            mid_path = load(data)[0]
+            if mid_path in self.keys.keys():
+                temp.append(data)
+        self.data_files = temp
 
         # self.encoded_midis = [self.read_encoded_midi(idx) for idx in range(len(self.data_files))]
 
