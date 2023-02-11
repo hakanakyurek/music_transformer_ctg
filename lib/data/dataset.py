@@ -44,13 +44,14 @@ class MidiDataset(Dataset):
         if self.percentage < 100.0:
             self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
 
-        # Sanity check
-        temp = []
-        for data in self.data_files:
-            mid_path = load(data)[0]
-            if mid_path in self.keys.keys():
-                temp.append(data)
-        self.data_files = temp
+        # Sanity check for keys
+        if keys:
+            temp = []
+            for data in self.data_files:
+                mid_path = load(data)[0]
+                if mid_path in self.keys.keys():
+                    temp.append(data)
+            self.data_files = temp
 
         # self.encoded_midis = [self.read_encoded_midi(idx) for idx in range(len(self.data_files))]
 
@@ -62,12 +63,13 @@ class MidiDataset(Dataset):
         mid_path = i_stream[0]
         mid = pretty_midi.PrettyMIDI(midi_file=mid_path)
         # Key operations
-        key = self.keys[mid_path]
-        if not key in KEY_DICT:
-            my_score: music21.stream.Score = music21.converter.parse(mid_path)
-            key = my_score.analyze('Krumhansl')
+        if self.keys:
+            key = self.keys[mid_path]
+            if not key in KEY_DICT:
+                my_score: music21.stream.Score = music21.converter.parse(mid_path)
+                key = my_score.analyze('Krumhansl')
 
-        token_key = KEY_DICT[key]        
+            token_key = KEY_DICT[key]        
         # Get encoding
         enc = i_stream[1]
         # Get the end time of the whole midi
@@ -95,8 +97,9 @@ class MidiDataset(Dataset):
             enc = encode_midi(mid, start_time, end_time)
         # encoding --> tensor
         encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
-        token_key = torch.tensor([token_key], dtype=TORCH_LABEL_TYPE)
-        encoded_mid = torch.cat((token_key, encoded_mid), dim=0)
+        if self.keys:
+            token_key = torch.tensor([token_key], dtype=TORCH_LABEL_TYPE)
+            encoded_mid = torch.cat((token_key, encoded_mid), dim=0)
         return encoded_mid
 
     # __len__
