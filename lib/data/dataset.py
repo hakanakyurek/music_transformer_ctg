@@ -95,7 +95,7 @@ class MidiDataset(Dataset):
             enc = encode_midi(mid, start_time, end_time)
         # encoding --> tensor
         encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
-        token_key = torch.tensor(token_key, dtype=TORCH_LABEL_TYPE)
+        token_key = torch.tensor([token_key], dtype=TORCH_LABEL_TYPE)
         encoded_mid = torch.cat((token_key, encoded_mid), dim=0)
         return encoded_mid
 
