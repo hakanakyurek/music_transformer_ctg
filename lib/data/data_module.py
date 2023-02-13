@@ -6,7 +6,7 @@ import torch
 class MidiDataModule(pl.LightningDataModule):
     
     def __init__(self, batch_size, data_dir, dataset_percentage, 
-                 max_seq, n_workers, arch, random_seq=True, keys=None) -> None:
+                 max_seq, n_workers, arch, random_seq=True, keys=None, gedi=None) -> None:
         super().__init__()
 
         self.batch_size = batch_size
@@ -17,6 +17,7 @@ class MidiDataModule(pl.LightningDataModule):
         self.dataset_percentage = dataset_percentage
         self.model_arch = arch
         self.keys = keys
+        self.gedi = gedi
 
     def collate(self, batch):
         if self.model_arch == 2:
@@ -28,11 +29,19 @@ class MidiDataModule(pl.LightningDataModule):
             
             return x, tgt_input, tgt_output
         elif self.model_arch == 1:
-            x, tgt = zip(*batch)
-            x = torch.stack(x)
-            tgt = torch.stack(tgt)
+            if self.gedi:
+                x, tgt, keys = zip(*batch)
+                x = torch.stack(x)
+                tgt = torch.stack(tgt)
+                keys = torch.stack(keys)
 
-            return x, tgt
+                return x, tgt, keys
+            else:
+                x, tgt = zip(*batch)
+                x = torch.stack(x)
+                tgt = torch.stack(tgt)
+
+                return x, tgt
 
     def train_dataloader(self):
         self.train = MidiDataset(f'{self.data_dir}train/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage, self.keys)
