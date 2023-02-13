@@ -20,16 +20,29 @@ def create_model_for_training(args, loss_func):
                                                 loss_fn=loss_func,
                                                 lr=LR_DEFAULT_START)
     elif args.arch == 1:
-        model = MusicTransformerEncoder(n_layers=args.n_layers, 
-                                        num_heads=args.num_heads,
-                                        d_model=args.d_model, 
-                                        dim_feedforward=args.dim_feedforward, 
-                                        dropout=args.dropout,
-                                        max_sequence=args.max_sequence, 
-                                        rpr=args.rpr, 
-                                        acc_metric=MusicAccuracy, 
-                                        loss_fn=loss_func,
-                                        lr=LR_DEFAULT_START)
+        if args.keys:
+            model = MusicTransformerEncoder(n_layers=args.n_layers, 
+                                    num_heads=args.num_heads,
+                                    d_model=args.d_model, 
+                                    dim_feedforward=args.dim_feedforward, 
+                                    dropout=args.dropout,
+                                    max_sequence=args.max_sequence, 
+                                    rpr=args.rpr, 
+                                    acc_metric=MusicAccuracy, 
+                                    loss_fn=loss_func,
+                                    lr=LR_DEFAULT_START,
+                                    keys=args.keys)
+        else:
+            model = MusicTransformerEncoder(n_layers=args.n_layers, 
+                                            num_heads=args.num_heads,
+                                            d_model=args.d_model, 
+                                            dim_feedforward=args.dim_feedforward, 
+                                            dropout=args.dropout,
+                                            max_sequence=args.max_sequence, 
+                                            rpr=args.rpr, 
+                                            acc_metric=MusicAccuracy, 
+                                            loss_fn=loss_func,
+                                            lr=LR_DEFAULT_START)
     
     return model
 
@@ -43,9 +56,14 @@ def create_model_for_generation(args):
 
         model.load_state_dict(torch.load(args.model_weights, map_location=get_device())['state_dict'])
     elif args.arch == 1:
-        model = MusicTransformerEncoder(n_layers=args.n_layers, num_heads=args.num_heads,
-                    d_model=args.d_model, dim_feedforward=args.dim_feedforward,
-                    max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
+        if args.keys:
+            model = MusicTransformerEncoder(n_layers=args.n_layers, num_heads=args.num_heads,
+                        d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                        max_sequence=args.max_sequence, rpr=args.rpr, keys=args.keys).to(get_device())
+        else:
+            model = MusicTransformerEncoder(n_layers=args.n_layers, num_heads=args.num_heads,
+                        d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                        max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
         model.load_state_dict(torch.load(args.model_weights, map_location=get_device())['state_dict'])
 

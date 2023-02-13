@@ -17,7 +17,7 @@ from .music_transformer_base import MusicTransformerBase
 class MusicTransformerEncoder(MusicTransformerBase):
 
     def __init__(self, loss_fn=None, acc_metric=None, n_layers=6, num_heads=8, d_model=512, dim_feedforward=1024,
-                 dropout=0.1, max_sequence=2048, rpr=False, lr=1.0, keys=False):
+                 dropout=0.1, max_sequence=2048, rpr=False, lr=1.0):
         super(MusicTransformerEncoder, self).__init__(acc_metric)
         self.dummy        = DummyDecoder()
 
@@ -30,8 +30,6 @@ class MusicTransformerEncoder(MusicTransformerBase):
         self.rpr          = rpr
         self.loss_fn      = loss_fn
         self.lr           = lr
-        # Key is always the first token if enabled
-        self.keys         = keys
 
         # Input embedding
         self.embedding = nn.Embedding(vocab['size'], self.d_model)
