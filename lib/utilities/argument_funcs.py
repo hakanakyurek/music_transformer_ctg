@@ -103,7 +103,7 @@ def parse_generate_args():
     parser.add_argument('--temperature', type=float, default=1.0, help='Creativeness setting for the logits')
     parser.add_argument('--top_k', type=int, default=0, help='Top k for the filtering')
     parser.add_argument('--top_p', type=float, default=0.0, help='Top p for the filtering')
-    parser.add_argument('--keys', action='store_true', help='Enable generation with keys')
+    parser.add_argument('--key', type=int, default=0, help='Enable generation with keys')
     # Model parameters
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
     parser.add_argument("--max_sequence", type=int, default=2048, help="Maximum midi sequence to consider")
@@ -137,7 +137,7 @@ def print_generate_args(args):
     print(f'temperature:{args.temperature}')
     print(f'top_k:{args.top_k}')
     print(f'top_p:{args.top_p}')
-    print(f'keys enabled:{args.keys}')
+    print(f'key:{args.key}')
     print(f"Model parameters")
     print(f"rpr:{args.rpr}")
     print(f"max_sequence:{args.max_sequence}")
