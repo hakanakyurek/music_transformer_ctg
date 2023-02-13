@@ -23,7 +23,7 @@ def main():
 
     args = parse_generate_args()
     print_generate_args(args)
-    vocab['size'] = VOCAB_SIZE_KEYS if args.keys else VOCAB_SIZE_NORMAL
+    vocab['size'] = VOCAB_SIZE_KEYS if args.key else VOCAB_SIZE_NORMAL
 
     if(args.force_cpu):
         use_cuda(False)
@@ -45,6 +45,12 @@ def main():
             primer, _ = dataset[idx]
         elif args.arch == 2:
             primer, _, __ = dataset[idx]
+        
+        # Concat the key if wanted
+        if args.key:
+            token_key = torch.tensor([args.key + TOKEN_PAD], dtype=TORCH_LABEL_TYPE)
+            primer = torch.cat((token_key, primer[:-1]), dim=0)
+
         primer = primer.to(get_device())
 
         print("Using primer index:", idx, "(", dataset.data_files[idx], ")")
@@ -54,7 +60,7 @@ def main():
             print(f"Error: No midi messages in primer file: {f}")
             return
 
-        primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False)
+        primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False, token_key=args.key)
         primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
 
         print(f"Using primer file: {f}")
