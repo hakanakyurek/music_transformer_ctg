@@ -47,6 +47,7 @@ class MidiDataset(Dataset):
 
         # Sanity check for keys
         if keys:
+            print('Key sanity check')
             temp = []
             for data in self.data_files:
                 mid_path = load(data)[0]
@@ -151,7 +152,7 @@ class MidiDataset(Dataset):
         pitch_change = self.rng.choice([0, 5, 7]) # perfect 4th and 5th
         if pitch_change == 0:
             return midi
-        
+
         for instrument in midi.instruments:
             for note in instrument.notes:
                 note.pitch += pitch_change
