@@ -94,7 +94,7 @@ class MidiDataset(Dataset):
             # Get the end time
             end_time = start_time + duration
             # Augmentation
-            # decoded_mid = self.__transpose(decoded_mid)
+            mid = self.__transpose(mid)
             # Encode the clipped part
             enc = encode_midi(mid, start_time, end_time)
         # encoding --> tensor
@@ -148,7 +148,7 @@ class MidiDataset(Dataset):
         :param torch.tensor midi: preprocessed midi tensor
         :return: transposed midi tensor (if all notes could be transposed)
         """
-        pitch_change = self.rng.choice([-3, -2, -1, 0, 1, 2, 3])
+        pitch_change = self.rng.choice(['p4', 'p5'])
 
         midi.transpose(pitch_change)
 
