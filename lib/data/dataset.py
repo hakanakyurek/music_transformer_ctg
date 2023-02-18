@@ -148,8 +148,10 @@ class MidiDataset(Dataset):
         :param torch.tensor midi: preprocessed midi tensor
         :return: transposed midi tensor (if all notes could be transposed)
         """
-        pitch_change = self.rng.choice([5, 7]) # perfect 4th and 5th
-
+        pitch_change = self.rng.choice([0, 5, 7]) # perfect 4th and 5th
+        if pitch_change == 0:
+            return midi
+        
         for instrument in midi.instruments:
             for note in instrument.notes:
                 note.pitch += pitch_change
