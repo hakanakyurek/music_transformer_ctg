@@ -43,7 +43,7 @@ def key_custom_midi(custom_midi_root, output_dir):
         try:
             my_score: music21.stream.Score = music21.converter.parse(piece)
             key = my_score.analyze('Krumhansl')
-            keys[piece] = key
+            keys[piece] = str(key)
         except Exception as e:
             print(e)
             continue
@@ -51,8 +51,6 @@ def key_custom_midi(custom_midi_root, output_dir):
         total_count += 1
 
     dump(keys, output_dir + 'keys')
-    df = pd.DataFrame(keys)
-    df.to_csv(output_dir + 'keys.csv', index=[0])
 
     print(f"Num total: {total_count}")
     return True
