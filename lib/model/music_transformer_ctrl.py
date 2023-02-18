@@ -13,7 +13,7 @@ class MusicTransformerCTRL(MusicTransformerEncoder):
                  dropout=0.1, max_sequence=2048, rpr=False, lr=1.0, keys=False):
         super(MusicTransformerCTRL, self).__init__(loss_fn, acc_metric, n_layers, num_heads, d_model,
                                                    dim_feedforward, dropout, max_sequence, rpr, lr)
-
+        print('Generatin CTRL model')
         # Key is always the first token if enabled
         self.keys         = keys
 
