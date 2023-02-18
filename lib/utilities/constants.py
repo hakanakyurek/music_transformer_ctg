@@ -22,6 +22,9 @@ TOKEN_PAD               = TOKEN_END + 1
 RANGE_KEYS              = 24 # major and minor keys in circle of fifths
 TOKEN_KEYS              = TOKEN_PAD + RANGE_KEYS
 
+TOKEN_TRUE              = TOKEN_KEYS + 1
+TOKEN_FALSE             = TOKEN_TRUE + 1
+
 KEY_DICT = {
     'c# minor': 1,
     'F major': 2,
@@ -51,6 +54,7 @@ KEY_DICT = {
 for k in KEY_DICT.keys():
     KEY_DICT[k] += TOKEN_PAD
 
+VOCAB_SIZE_KEYS_GEDI    = TOKEN_FALSE + 1
 VOCAB_SIZE_KEYS         = TOKEN_KEYS + 1
 VOCAB_SIZE_NORMAL       = TOKEN_PAD + 1
 
