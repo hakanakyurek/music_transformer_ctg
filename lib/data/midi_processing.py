@@ -13,7 +13,6 @@ def process_midi(raw_mid, max_seq, random_seq, token_key=None, gedi=False):
     go from the start based on random_seq.
 
     """
-    raw_len     = len(raw_mid) 
     full_seq    = max_seq + 1 # Performing seq2seq
 
     if token_key:
@@ -27,6 +26,8 @@ def process_midi(raw_mid, max_seq, random_seq, token_key=None, gedi=False):
             seq_true = torch.cat((token_true, raw_mid), dim=0)
             seq_false = torch.cat((token_false, raw_mid), dim=0)
             raw_mid = torch.stack((seq_true, seq_false))
+
+    raw_len     = len(raw_mid) 
 
     x   = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
     tgt = torch.full((max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
