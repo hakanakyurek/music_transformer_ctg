@@ -67,20 +67,20 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
     if full_seq:
 
         start_time = 0
+        while start_time < max_end_time:
 
-        while start_time <= max_end_time:
-
-            # If the midi is shorter than max sequence
             if duration != max_end_time:
                 # Get the end time
                 end_time = start_time + duration
                 # Encode the clipped part
                 enc = encode_midi(mid, start_time, end_time)
+                start_time += (duration - duration / 10)
+
             else:
-                encodings.append(enc)
+                # Midi is represented with less then max_seq tokens
                 start_time = end_time + 1
 
-            start_time += (duration - duration / 10)
+            encodings.append(enc)
 
     else:
         if duration != max_end_time:
@@ -145,6 +145,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
             
         f_name = piece.split('/')[-1].split('.')[0] + ".pickle"
         try:
+            print(piece)
             mid = pretty_midi.PrettyMIDI(midi_file=piece)
             enc = encode_midi(piece)
             encodings = time_split(mid, enc, max_seq, keys, full_seq)
