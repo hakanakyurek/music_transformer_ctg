@@ -223,7 +223,7 @@ def encode_midi(file_path, start_time=0, end_time=0):
             end_time = min(end_time, mid.get_end_time())
             temp = []
             for note in inst_notes:
-                if note.start > start_time and note.end < end_time:
+                if note.start >= start_time and note.end <= end_time:
                     temp.append(note)
             inst_notes = temp
         # ctrl.number is the number of sustain control. If you want to know abour the number type of control,
@@ -237,7 +237,7 @@ def encode_midi(file_path, start_time=0, end_time=0):
     dnotes.sort(key=lambda x: x.time)
     # print('sorted:')
     # print(dnotes)
-    cur_time = 0
+    cur_time = start_time
     cur_vel = 0
     for snote in dnotes:
         events += _make_time_sift_events(prev_time=cur_time, post_time=snote.time)
