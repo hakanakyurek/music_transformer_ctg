@@ -16,6 +16,8 @@ import random
 import pretty_midi
 import music21
 
+from tqdm import tqdm
+
 
 class MidiDataset(Dataset):
     """
@@ -45,62 +47,35 @@ class MidiDataset(Dataset):
         if self.percentage < 100.0:
             self.data_files = self.rng.choice(self.data_files, int(self.percentage/100 * len(self.data_files)))
 
-        # Sanity check for keys
-        if keys:
-            print('Key sanity check')
-            temp = []
-            for data in self.data_files:
-                mid_path = load(data)[0]
-                if mid_path in self.keys.keys():
-                    temp.append(data)
-            self.data_files = temp
-
-        # self.encoded_midis = [self.read_encoded_midi(idx) for idx in range(len(self.data_files))]
+        self.total_data = []
+        for i in range(len(self.data_files)):
+            with NoStdOut():
+                data_points = self.__read_encoded_midi(i)
+                self.total_data.append(data_points)
 
     def __read_encoded_midi(self, idx):
         # All data on cpu to allow for the Dataloader to multithread
-        mid_enc = self.data_files[idx]
-        i_stream = load(mid_enc)
-        # Load midi
-        mid_path = i_stream[0]
-        mid = pretty_midi.PrettyMIDI(midi_file=mid_path)
-        # Key operations
+        data = self.data_files[idx]
+        data = load(data)
+
+        data_points = []
+
+        key = data[0]
+        encodings = data[1]
+        f_path = data[3]
+
         token_key = None
         if self.keys:
-            key = self.keys[mid_path]
             if not key in KEY_DICT:
-                my_score: music21.stream.Score = music21.converter.parse(mid_path)
+                my_score: music21.stream.Score = music21.converter.parse(f_path)
                 key = my_score.analyze('Krumhansl')
-
-            token_key = KEY_DICT[key]        
-        # Get encoding
-        enc = i_stream[1]
-        # Get the end time of the whole midi
-        max_end_time = mid.get_end_time()
-        # Decode back the encoding
-        # Read time for max_seq - 1 tokens if we are using keys
-        max_seq = self.max_seq if not self.keys else self.max_seq - 1
-        decoded_mid = decode_midi(enc[0:max_seq])
-        # Get the duration for clip
-        duration = decoded_mid.get_end_time()
-        # If the midi is shorter than max sequence
-        if duration != max_end_time:
-            if self.random_seq:
-                # Get a start time, max_end_time should be equal to duration in worst case
-                start_time = random.uniform(0, max_end_time - duration)
-            else:
-                start_time = 0
-            # Ensure the start time is at least 0
-            start_time = 0 if start_time < 0 else start_time
-            # Get the end time
-            end_time = start_time + duration
-            # Augmentation
-            mid = self.__transpose(mid)
-            # Encode the clipped part
-            enc = encode_midi(mid, start_time, end_time)
+    
+        token_key = KEY_DICT[key]
         # encoding --> tensor
-        encoded_mid = torch.tensor(enc, dtype=TORCH_LABEL_TYPE)
-        return encoded_mid, token_key
+        for enc in encodings:
+            data_points.append(torch.tensor(enc, dtype=TORCH_LABEL_TYPE), token_key)
+        
+        return data_points
 
     # __len__
     def __len__(self):
@@ -112,7 +87,7 @@ class MidiDataset(Dataset):
     
         """
 
-        return len(self.data_files)
+        return len(self.total_data)
 
     # __getitem__
     def __getitem__(self, idx):
@@ -125,8 +100,7 @@ class MidiDataset(Dataset):
         Returns the input and the target.
     
         """
-        with NoStdOut():
-            aug_midi, token_key = self.__read_encoded_midi(idx)
+        aug_midi, token_key = self.total_data[idx]
         if self.model_arch == 2:
             if not self.keys:
                 x, tgt_input, tgt_output = process_midi_ed(aug_midi, self.max_seq, False)
@@ -139,7 +113,6 @@ class MidiDataset(Dataset):
                 return x, tgt, token_key
             else:
                 return x, tgt
-
 
     def __transpose(self, midi: pretty_midi.PrettyMIDI()) -> torch.tensor:
         """
