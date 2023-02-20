@@ -107,6 +107,12 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
     given output folder. 
 
     """
+
+    if full_seq:
+        os.path.join(output_dir, "full_seq")
+    else:
+        os.path.join(output_dir, "random_seq") 
+
     train_dir = os.path.join(output_dir, "train")
     os.makedirs(train_dir, exist_ok=True)
     val_dir = os.path.join(output_dir, "val")
