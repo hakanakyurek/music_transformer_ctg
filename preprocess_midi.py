@@ -92,7 +92,8 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
             end_time = start_time + duration
             # Encode the clipped part
             enc = encode_midi(mid, start_time, end_time)
-            encodings.append(enc)
+
+        encodings.append(enc)
 
     return encodings
 
