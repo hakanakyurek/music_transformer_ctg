@@ -54,8 +54,9 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
     # Decode back the encoding
     # Read time for max_seq - 1 tokens if we are using keys
     max_seq = max_seq if not keys else max_seq - 1
-    
+
     time_check_midi = decode_midi(enc[0:max_seq])
+    dump(time_check_midi, './a.mid')
     # Get the duration for clip
     duration = time_check_midi.get_end_time()
     
@@ -152,6 +153,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
             # Subtract the earliest note start time from the start time of each note
             for inst in mid.instruments:
                 [setattr(note, 'start', note.start - earliest_note_start) for note in inst.notes]
+                [setattr(note, 'end', note.end - earliest_note_start) for note in inst.notes]
             enc = encode_midi(mid)
             encodings = time_split(mid, enc, max_seq, keys, full_seq)
             # Key operations

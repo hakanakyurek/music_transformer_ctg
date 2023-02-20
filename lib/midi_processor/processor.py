@@ -216,8 +216,9 @@ def encode_midi(file_path, start_time=0, end_time=0):
     earliest_note_start = min(note.start for inst in mid.instruments for note in inst.notes)
     
     for inst in mid.instruments:
-        # Subtract the earliest note start time from the start time of each note using a one-liner for loop
+        # Subtract the earliest note start time from the start time of each note
         [setattr(note, 'start', note.start - earliest_note_start) for note in inst.notes]
+        [setattr(note, 'end', note.end - earliest_note_start) for note in inst.notes]
         inst_notes = inst.notes
         if start_time >= 0 and end_time:
             end_time = min(end_time, mid.get_end_time())
