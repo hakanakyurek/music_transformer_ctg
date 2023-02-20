@@ -151,7 +151,6 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
             
         f_name = piece.split('/')[-1].split('.')[0] + ".pickle"
         try:
-            print(piece)
             mid = pretty_midi.PrettyMIDI(midi_file=piece)
             enc = encode_midi(piece)
             encodings = time_split(mid, enc, max_seq, keys, full_seq)
