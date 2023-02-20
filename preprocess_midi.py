@@ -59,9 +59,9 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
     # Read time for max_seq - 1 tokens if we are using keys
     max_seq = max_seq if not keys else max_seq - 1
     
-    decoded_mid = decode_midi(enc[0:max_seq])
+    time_check_midi = decode_midi(enc[0:max_seq])
     # Get the duration for clip
-    duration = decoded_mid.get_end_time()
+    duration = time_check_midi.get_end_time()
     
 
     if full_seq:
