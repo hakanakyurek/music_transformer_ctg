@@ -53,7 +53,7 @@ def main():
 
     ##### Data Module #####
     data_module = MidiDataModule(args.batch_size, args.input_dir, args.dataset_percentage, args.max_sequence, 
-                                 args.n_workers, args.arch, random_seq=True, keys=args.key_dir)
+                                 args.n_workers, args.arch, random_seq=True, keys=args.keys)
 
     ##### SmoothCrossEntropyLoss or CrossEntropyLoss for training #####
     if(args.ce_smoothing is None):

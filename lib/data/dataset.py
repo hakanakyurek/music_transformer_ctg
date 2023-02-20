@@ -36,7 +36,7 @@ class MidiDataset(Dataset):
         self.random_seq = random_seq
         self.percentage = percentage
         self.model_arch = arch
-        self.keys       = load(keys) if keys else keys
+        self.keys       = keys
         self.gedi       = gedi
 
         self.rng = np.random.default_rng(seed=2486)
