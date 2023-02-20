@@ -51,6 +51,10 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
     encodings = []
     # Get the end time of the whole midi
     max_end_time = mid.get_end_time()
+    earliest_note_start = min(note.start for inst in mid.instruments for note in inst.notes)
+    # Subtract the earliest note start time from the start time of each note
+    for inst in mid.instruments:
+        [setattr(note, 'start', note.start - earliest_note_start) for note in inst.notes]
     # Decode back the encoding
     # Read time for max_seq - 1 tokens if we are using keys
     max_seq = max_seq if not keys else max_seq - 1
