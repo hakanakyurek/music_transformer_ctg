@@ -11,10 +11,6 @@ import music21
 import pretty_midi
 
 
-
-JSON_FILE = "maestro-v2.0.0.json"
-
-
 def key_custom_midi(pieces, output_dir):
     """
 
@@ -109,9 +105,9 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
     """
 
     if full_seq:
-        os.path.join(output_dir, "full_seq")
+        output_dir = os.path.join(output_dir, "full_seq")
     else:
-        os.path.join(output_dir, "random_seq") 
+        output_dir = os.path.join(output_dir, "random_seq") 
 
     train_dir = os.path.join(output_dir, "train")
     os.makedirs(train_dir, exist_ok=True)
