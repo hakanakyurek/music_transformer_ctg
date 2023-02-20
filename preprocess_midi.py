@@ -152,7 +152,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
             # Subtract the earliest note start time from the start time of each note
             for inst in mid.instruments:
                 [setattr(note, 'start', note.start - earliest_note_start) for note in inst.notes]
-            enc = encode_midi(piece)
+            enc = encode_midi(mid)
             encodings = time_split(mid, enc, max_seq, keys, full_seq)
             # Key operations
             if keys:
