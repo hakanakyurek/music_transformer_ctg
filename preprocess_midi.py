@@ -56,10 +56,11 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
     max_seq = max_seq if not keys else max_seq - 1
 
     time_check_midi = decode_midi(enc[0:max_seq])
-    dump(time_check_midi, './a.mid')
+
     # Get the duration for clip
     duration = time_check_midi.get_end_time()
-    
+    if duration == 0.0:
+        return None
 
     if full_seq:
 
@@ -156,6 +157,8 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
                 [setattr(note, 'end', note.end - earliest_note_start) for note in inst.notes]
             enc = encode_midi(mid)
             encodings = time_split(mid, enc, max_seq, keys, full_seq)
+            if encodings is None:
+                continue
             # Key operations
             if keys:
                 my_score: music21.stream.Score = music21.converter.parse(piece)
