@@ -59,7 +59,7 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
 
     # Get the duration for clip
     duration = time_check_midi.get_end_time()
-    if duration == 0.0:
+    if duration <= 1:
         return None
 
     if full_seq:
@@ -133,7 +133,6 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
 
     print(f"Found {len(pieces)} pieces")
     print("Preprocessing data...")
-
 
     for piece in tqdm(pieces):
         #deciding whether the data should be part of train, valid or test dataset
