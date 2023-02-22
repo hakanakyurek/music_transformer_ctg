@@ -62,7 +62,7 @@ class MidiDataset(Dataset):
 
         key = data[0]
         encodings = data[1]
-        f_path = data[3]
+        f_path = data[2]
 
         token_key = None
         if self.keys:
