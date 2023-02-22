@@ -50,12 +50,12 @@ class MidiDataset(Dataset):
         self.total_data = []
         for i in range(len(self.data_files)):
             with NoStdOut():
-                data_points = self.__read_encoded_midi(i)
-                self.total_data.append(data_points)
+                data_points = self.__read_encoded_midi(self.data_files[i])
+                for data_point in data_points:
+                    self.total_data.append(data_point)
 
-    def __read_encoded_midi(self, idx):
+    def __read_encoded_midi(self, data):
         # All data on cpu to allow for the Dataloader to multithread
-        data = self.data_files[idx]
         data = load(data)
 
         data_points = []
