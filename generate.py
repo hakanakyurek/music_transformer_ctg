@@ -30,8 +30,8 @@ def main():
         print("WARNING: Forced CPU usage, expect model to perform slower")
 
     os.makedirs(args.output_dir, exist_ok=True)
-    
-    dataset = MidiDataset(args.midi_root + 'test/', args.arch, args.max_sequence, random_seq=False)
+    if args.midi_root:
+        dataset = MidiDataset(args.midi_root + 'test/', args.arch, args.max_sequence, random_seq=False)
 
     # Can be None, an integer index to dataset, or a file path
     if(args.primer_file is None):
@@ -59,9 +59,9 @@ def main():
         if(len(raw_mid) == 0):
             print(f"Error: No midi messages in primer file: {f}")
             return
-
+        raw_mid = torch.tensor(raw_mid, dtype=TORCH_LABEL_TYPE)
         primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False, token_key=args.key)
-        primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
+        #primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
 
         print(f"Using primer file: {f}")
 

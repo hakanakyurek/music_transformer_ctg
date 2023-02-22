@@ -178,7 +178,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
             o_file = os.path.join(test_dir, f_name)
             test_count += 1
         
-        dump((str(key), encodings, mid, piece), o_file)
+        dump((str(key), encodings, piece), o_file)
 
         total_count += 1
 
