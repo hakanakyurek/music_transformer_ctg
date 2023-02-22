@@ -73,7 +73,7 @@ class MidiDataset(Dataset):
         token_key = KEY_DICT[key]
         # encoding --> tensor
         for enc in encodings:
-            data_points.append(torch.tensor(enc, dtype=TORCH_LABEL_TYPE), token_key)
+            data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE), token_key))
         
         return data_points
 
