@@ -66,10 +66,10 @@ def time_split(mid, enc, max_seq, keys=False, full_seq=False):
 
         start_time = 0
         while start_time < max_end_time:
-
+            # Get the end time
+            end_time = start_time + duration
+            
             if duration != max_end_time:
-                # Get the end time
-                end_time = start_time + duration
                 # Encode the clipped part
                 enc = encode_midi(mid, start_time, end_time)
                 start_time += (duration - duration / 10)
