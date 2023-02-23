@@ -1,7 +1,7 @@
 import os
 import torch.nn as nn
 
-from lib.data.data_module import MidiDataModule
+from lib.data.generation_data_module import MidiDataModule
 
 from lib.losses.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
 
