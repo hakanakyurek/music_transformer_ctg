@@ -217,6 +217,8 @@ def main():
     root = args.root
     output_dir = args.output_dir
 
+    random.seed(10)
+
     print(f"Preprocessing midi files and saving to {output_dir}")
     prep_custom_midi(root, output_dir, max_seq=args.max_seq, keys=args.keys, full_seq=args.full_seq)
     print("Done!")
