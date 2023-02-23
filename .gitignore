@@ -158,9 +158,8 @@ logs/*
 # Scripts for private access
 private_scripts/*
 # Dataset
-dataset/midi/*/
+dataset/*
 !dataset/midi/.keep
-dataset/encoded/*/*.pickle
 # Training and Inference output folders
 graphs/*
 !graphs/.keep
