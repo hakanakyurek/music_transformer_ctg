@@ -1,5 +1,5 @@
 import pytorch_lightning as pl
-from .dataset import MidiDataset
+from .generation_dataset import MidiDataset
 from torch.utils.data import DataLoader
 import torch
 

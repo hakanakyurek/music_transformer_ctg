@@ -6,7 +6,7 @@ from lib.midi_processor.processor import decode_midi, encode_midi
 
 from lib.utilities.argument_funcs import parse_generate_args, print_generate_args
 
-from lib.data.dataset import process_midi, MidiDataset
+from lib.data.generation_dataset import process_midi, MidiDataset
 
 from lib.utilities.create_model import create_model_for_generation
 from lib.utilities.constants import *
