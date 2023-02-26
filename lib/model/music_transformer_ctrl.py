@@ -40,7 +40,8 @@ class MusicTransformerCTRL(MusicTransformerEncoder):
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            y = self.softmax(self.forward(gen_seq[..., :cur_i]) / temperature)[..., :TOKEN_END]
+            y = self.Wout(self.forward(gen_seq[..., :cur_i]))
+            y = self.softmax(y / temperature)[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
             # next_token = torch.argmax(token_probs)
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)

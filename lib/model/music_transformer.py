@@ -88,13 +88,10 @@ class MusicTransformerEncoder(MusicTransformerBase):
         # Back to (batch_size, max_seq, d_model)
         x_out = x_out.permute(1,0,2)
 
-        y = self.Wout(x_out)
-        # y = self.softmax(y)
-
         del mask
 
         # They are trained to predict the next note in sequence (we don't need the last one)
-        return y
+        return x_out
 
     # generate
     def generate(self, primer=None, target_seq_length=1024, temperature=1.0, top_p=0.0, top_k=0):
@@ -119,7 +116,8 @@ class MusicTransformerEncoder(MusicTransformerBase):
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            y = self.softmax(self.forward(gen_seq[..., :cur_i]) / temperature)[..., :TOKEN_END]
+            y = self.Wout(self.forward(gen_seq[..., :cur_i]))
+            y = self.softmax(y / temperature)[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
             # next_token = torch.argmax(token_probs)
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)
@@ -143,7 +141,7 @@ class MusicTransformerEncoder(MusicTransformerBase):
         
         x, tgt = batch
 
-        y = self.forward(x)
+        y = self.Wout(self.forward(x))
 
         pp_metric.update(y, tgt)
 
