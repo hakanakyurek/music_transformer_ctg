@@ -1,15 +1,13 @@
 import os
 import torch.nn as nn
 
-from lib.data.generation_data_module import MidiDataModule
-
-from lib.losses.smooth_cross_entropy_loss import SmoothCrossEntropyLoss
+from lib.data.classification_data_module import ClassificationDataModule
 
 from lib.utilities.constants import *
-from lib.utilities.argument_funcs import parse_train_args, print_train_args
+from lib.utilities.argument_funcs import parse_classification_args, print_classification_args
 from lib.utilities.private_constants import wandb_key
 from lib.utilities.device import use_cuda
-from lib.utilities.create_model import create_model_for_training
+from lib.utilities.create_model import create_model_for_classification
 
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -25,8 +23,8 @@ def main():
 
     """
 
-    args = parse_train_args()
-    print_train_args(args)
+    args = parse_classification_args()
+    print_classification_args(args)
     vocab['size'] = VOCAB_SIZE_KEYS if args.keys else VOCAB_SIZE_NORMAL
 
     if (args.run_id and not args.checkpoint_path) or (not args.run_id and args.checkpoint_path):
@@ -52,17 +50,15 @@ def main():
         accelerator = 'gpu'
 
     ##### Data Module #####
-    data_module = MidiDataModule(args.batch_size, args.input_dir, args.dataset_percentage, args.max_sequence, 
-                                 args.n_workers, args.arch, random_seq=True, keys=args.keys)
+    data_module = ClassificationDataModule(args.batch_size, args.input_dir, 
+                                           args.dataset_percentage, args.max_sequence, args.n_workers)
 
-    ##### SmoothCrossEntropyLoss or CrossEntropyLoss for training #####
+    ##### CrossEntropyLoss for training #####
     if(args.ce_smoothing is None):
         loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
-    else:
-        loss_func = SmoothCrossEntropyLoss(args.ce_smoothing, vocab['size'], ignore_index=TOKEN_PAD)
 
     ##### Model #####
-    model = create_model_for_training(args, loss_func)
+    model = create_model_for_classification(args, loss_func)
 
     ##### Checkpoint? #####
     try:

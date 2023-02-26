@@ -1,6 +1,7 @@
 from lib.model.music_transformer_ed import MusicTransformerEncoderDecoder
 from lib.model.music_transformer import MusicTransformerEncoder
 from lib.model.music_transformer_ctrl import MusicTransformerCTRL
+from lib.model.music_transformer_classifier import MusicTransformerClassifier
 from lib.metrics.accuracy import MusicAccuracy
 from lib.utilities.constants import LR_DEFAULT_START
 from lib.utilities.device import get_device
@@ -69,3 +70,16 @@ def create_model_for_generation(args):
         model.load_state_dict(torch.load(args.model_weights, map_location=get_device())['state_dict'])
 
     return model
+
+
+def create_model_for_classification(args, loss_func):
+
+    music_transformer = create_model_for_generation(args)
+
+    model = MusicTransformerClassifier(music_transformer=music_transformer,
+                                       n_classes=0,
+                                       lr=args.lr, 
+                                       loss_fn=loss_func)
+
+    return model
+
