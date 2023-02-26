@@ -62,6 +62,72 @@ vocab = {
     'size': -1
 }
 
+ARTIST_DICT = {
+    'Joseph Haydn': 0,
+    'Felix Mendelssohn': 1,
+    'Johann Strauss': 2,
+    'Mikhail Glinka': 3,
+    'Domenico Scarlatti': 4,
+    'Antonio Soler': 5,
+    'Leoš Janáček': 6,
+    'César Franck': 7,
+    'Jean-Philippe Rameau': 8,
+    'Muzio Clementi': 9,
+    'Johann Sebastian Bach': 10,
+    'Claude Debussy': 11,
+    'Johannes Brahms': 12,
+    'Johann Christian Fischer': 13,
+    'Nikolai Rimsky-Korsakov': 14,
+    'Nikolai Medtner': 15,
+    'Carl Maria von Weber': 16,
+    'Niccolò Paganini': 17,
+    'Franz Liszt': 18,
+    'Sergei Rachmaninoff': 19,
+    'Percy Grainger': 20,
+    'Georges Bizet': 21,
+    'Mily Balakirev': 22,
+    'Franz Schubert': 23,
+    'George Frideric Handel': 24,
+    'Orlando Gibbons': 25,
+    'Robert Schumann': 26,
+    'Edvard Grieg': 27,
+    'Fritz Kreisler': 28,
+    'Wolfgang Amadeus Mozart': 29,
+    'Giuseppe Verdi': 30,
+    'Pyotr Ilyich Tchaikovsky': 31,
+    'Richard Wagner': 32,
+    'Modest Mussorgsky': 33,
+    'Alexander Scriabin': 34,
+    'Alban Berg': 35,
+    'Johann Pachelbel': 36,
+    'George Enescu': 37,
+    'Henry Purcell': 38,
+    'Frédéric Chopin': 39,
+    'Ludwig van Beethoven': 40,
+    'Isaac Albéniz': 41,
+    'Charles Gounod': 42
+}
+
+GENRE_DICT = {
+    'rap': 0, 
+    'latin': 1, 
+    'unknown': 2, 
+    'electronic': 3, 
+    'religious': 4, 
+    'reggae': 5, 
+    'pop': 6, 
+    'ambient': 7, 
+    'country': 8, 
+    'classical': 9, 
+    'rock': 10, 
+    'soundtracks': 11, 
+    'soul': 12, 
+    'folk': 13, 
+    'blues': 14, 
+    'children': 15, 
+    'jazz': 16, 
+    'world': 17}
+
 TORCH_FLOAT             = torch.float32
 TORCH_INT               = torch.int32
 
