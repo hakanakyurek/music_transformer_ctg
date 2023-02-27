@@ -3,6 +3,9 @@ import pytorch_lightning as pl
 import torch
 import torchmetrics as tm
 from lib.utilities.constants import *
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from lib.utilities.constants import KEY_DICT, GENRE_DICT, ARTIST_DICT
+import matplotlib.pyplot as plt
 
 class MusicTransformerClassifier(pl.LightningModule):
 
@@ -15,6 +18,15 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.backbone.freeze()
 
         self.n_classes = n_classes
+        if n_classes == len(KEY_DICT):
+            self.labels = list(KEY_DICT.keys())
+        elif n_classes == len(GENRE_DICT):
+            self.labels = list(GENRE_DICT.keys())
+        elif n_classes == len(ARTIST_DICT):
+            self.labels = list(ARTIST_DICT.keys())   
+        else:
+            raise Exception('Unrecognized number of classes!')   
+
         self.classifier = nn.Linear(n_hidden_backbone, n_classes)
 
         self.softmax    = nn.Softmax(dim=-1)
@@ -50,11 +62,11 @@ class MusicTransformerClassifier(pl.LightningModule):
         acc_metric.update(y, y_pred)
         f1_metric.update(y, y_pred)
 
-        return loss, y_pred
+        return loss, y_pred, y
 
 
     def training_step(self, batch, batch_idx):
-        loss, _ = self.step(batch, self.train_acc, self.train_f1)
+        loss, _, _ = self.step(batch, self.train_acc, self.train_f1)
 
         self.log('training loss', loss)
 
@@ -65,7 +77,7 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.log('train perplexity', self.train_f1)
 
     def validation_step(self, batch, batch_idx):
-        loss, _ = self.step(batch, self.val_acc, self.val_f1)
+        loss, _, _ = self.step(batch, self.val_acc, self.val_f1)
 
         self.log('validation loss', loss)
 
@@ -76,13 +88,19 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.log('test perplexity', self.val_f1)
 
     def test_step(self, batch, batch_idx):
-        loss, y = self.step(batch, self.test_acc, self.test_f1)
+        loss, y_pred, y_tru = self.step(batch, self.test_acc, self.test_f1)
         
-        return loss, y
+        return loss, y_pred, y_tru
     
     def test_epoch_end(self, outs):
+        _, y_pred, y_tru = zip(*outs)
         self.log('test accuracy', self.test_acc)
         self.log('test perplexity', self.test_f1)
+
+        cm = confusion_matrix(y_true=y_tru, y_pred=y_pred, labels=self.labels)
+        ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.labels).plot()
+        plt.savefig("confusion_matrix.png", bbox_inches="tight", dpi=300)
+        self.logger.log_image(key="confusion_matrix", images=["confusion_matrix.png"])
 
 
     def configure_optimizers(self):
