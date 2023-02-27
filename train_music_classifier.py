@@ -25,7 +25,6 @@ def main():
 
     args = parse_classification_args()
     print_classification_args(args)
-    vocab['size'] = VOCAB_SIZE_KEYS if args.keys else VOCAB_SIZE_NORMAL
 
     if (args.run_id and not args.checkpoint_path) or (not args.run_id and args.checkpoint_path):
         print('Run id and Checkpoint path should be given together!')
