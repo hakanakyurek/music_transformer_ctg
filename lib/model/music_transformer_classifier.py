@@ -57,8 +57,8 @@ class MusicTransformerClassifier(pl.LightningModule):
 
         loss = self.loss_fn.forward(y_pred, y)
 
-        acc_metric.update(y, y_pred)
-        f1_metric.update(y, y_pred)
+        acc_metric.update(y_pred, y)
+        f1_metric.update(y_pred, y)
 
         return loss, y_pred, y
 
