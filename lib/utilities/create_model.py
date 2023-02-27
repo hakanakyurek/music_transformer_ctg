@@ -72,18 +72,11 @@ def create_model_for_generation(args):
     return model
 
 
-def create_model_for_classification(args, loss_func):
+def create_model_for_classification(args, loss_func, n_classes):
 
     args.key = False
     music_transformer = create_model_for_generation(args)
 
-    n_classes = 0
-    if args.task == 'key':
-        n_classes = len(KEY_DICT)
-    elif args.task == 'artist':
-        n_classes = len(ARTIST_DICT)
-    elif args.task == 'genre':
-        n_classes = len(GENRE_DICT)
 
     model = MusicTransformerClassifier(music_transformer=music_transformer,
                                        n_classes=n_classes,

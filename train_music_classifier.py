@@ -49,15 +49,24 @@ def main():
     else:
         accelerator = 'gpu'
 
+    n_classes = 0
+    if args.task == 'key':
+        n_classes = len(KEY_DICT)
+    elif args.task == 'artist':
+        n_classes = len(ARTIST_DICT)
+    elif args.task == 'genre':
+        n_classes = len(GENRE_DICT)
+    
     ##### Data Module #####
     data_module = ClassificationDataModule(args.batch_size, args.input_dir, 
-                                           args.dataset_percentage, args.max_sequence, args.n_workers, args.task)
+                                           args.dataset_percentage, args.max_sequence, 
+                                           args.n_workers, args.task, n_classes)
 
     ##### CrossEntropyLoss for training #####
     loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
 
     ##### Model #####
-    model = create_model_for_classification(args, loss_func)
+    model = create_model_for_classification(args, loss_func, n_classes)
 
     ##### Checkpoint? #####
     try:

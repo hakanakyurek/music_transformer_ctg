@@ -5,7 +5,7 @@ import torch
 
 class ClassificationDataModule(pl.LightningDataModule):
     
-    def __init__(self, batch_size, data_dir, dataset_percentage, max_seq, n_workers, task) -> None:
+    def __init__(self, batch_size, data_dir, dataset_percentage, max_seq, n_workers, task, n_classes) -> None:
         super().__init__()
 
         self.batch_size = batch_size
@@ -14,6 +14,7 @@ class ClassificationDataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.dataset_percentage = dataset_percentage
         self.task = task
+        self.n_classes = n_classes
 
     def collate(self, batch):
 
@@ -21,6 +22,8 @@ class ClassificationDataModule(pl.LightningDataModule):
 
         x = torch.stack(x)
         y = torch.stack(y)
+
+        y = torch.nn.functional.one_hot(y, num_classes=self.n_classes)
 
         return x, y
 
