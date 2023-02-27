@@ -66,19 +66,19 @@ class ClassificationDataset(Dataset):
             # encoding --> tensor
             for enc in encodings:
                 data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE), 
-                                   (torch.tensor([token_key], dtype=TORCH_LABEL_TYPE))))
+                                   (torch.tensor([token_key], dtype=TORCH_FLOAT))))
         elif self.task == 'artist':
             token_artist = ARTIST_DICT[y]
             # encoding --> tensor
             for enc in encodings:
                 data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE),
-                                   (torch.tensor([token_artist], dtype=TORCH_LABEL_TYPE))))
+                                   (torch.tensor([token_artist], dtype=TORCH_FLOAT))))
         elif self.task == 'genre':
             token_genre = GENRE_DICT[y]
             # encoding --> tensor
             for enc in encodings:
                 data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE),
-                                   (torch.tensor([token_genre], dtype=TORCH_LABEL_TYPE))))
+                                   (torch.tensor([token_genre], dtype=TORCH_FLOAT))))
 
         return data_points
 
