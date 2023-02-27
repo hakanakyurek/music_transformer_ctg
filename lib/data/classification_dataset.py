@@ -68,6 +68,7 @@ class ClassificationDataset(Dataset):
                 data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE), 
                                    (torch.tensor([token_key], dtype=TORCH_LABEL_TYPE))))
         elif self.task == 'artist':
+            y = y.split('/')[0]
             token_artist = ARTIST_DICT[y]
             # encoding --> tensor
             for enc in encodings:
