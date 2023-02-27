@@ -172,6 +172,7 @@ def parse_classification_args():
     parser.add_argument("--lr", type=float, default=None, help="Constant learn rate. Leave as None for a custom scheduler.")
     parser.add_argument("--batch_size", type=int, default=2, help="Batch size to use")
     parser.add_argument("--epochs", type=int, default=100, help="Number of epochs to use")
+    parser.add_argument("--pretrained_weights", type=str, default="./models/best.pt", help="Pickled model weights file saved with torch.save and model.state_dict()")
     parser.add_argument("--experiment_name", type=str, default='test', help="Name of the experiment")
     # Model parameters
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
