@@ -1,12 +1,12 @@
 import torch.nn as nn
 import pytorch_lightning as pl
-
+import torch
 import torchmetrics as tm
-
+from lib.utilities.constants import *
 
 class MusicTransformerClassifier(pl.LightningModule):
 
-    def __init__(self, music_transformer, n_classes, loss_fn) -> None:
+    def __init__(self, music_transformer, n_classes, loss_fn, lr) -> None:
         
         n_hidden_backbone = music_transformer.d_model
         self.backbone = music_transformer
@@ -19,6 +19,7 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.softmax    = nn.Softmax(dim=-1)
 
         self.loss_fn = loss_fn
+        self.lr = lr
 
         self.train_acc = tm.Accuracy()
         self.val_acc = tm.Accuracy()
@@ -81,3 +82,9 @@ class MusicTransformerClassifier(pl.LightningModule):
     def test_epoch_end(self, outs):
         self.log('test accuracy', self.test_acc)
         self.log('test perplexity', self.test_f1)
+
+
+    def configure_optimizers(self):
+        opt = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
+        return opt
+    
