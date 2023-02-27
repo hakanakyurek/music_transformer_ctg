@@ -51,8 +51,10 @@ KEY_DICT = {
     'a minor': 23, 
     'C# major': 24}
 
+KEY_VOCAB = {}
+
 for k in KEY_DICT.keys():
-    KEY_DICT[k] += TOKEN_PAD
+    KEY_VOCAB[k] = KEY_DICT[k] + TOKEN_PAD
 
 VOCAB_SIZE_KEYS_GEDI    = TOKEN_FALSE + 1
 VOCAB_SIZE_KEYS         = TOKEN_KEYS + 1

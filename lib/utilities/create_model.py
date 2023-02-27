@@ -3,7 +3,7 @@ from lib.model.music_transformer import MusicTransformerEncoder
 from lib.model.music_transformer_ctrl import MusicTransformerCTRL
 from lib.model.music_transformer_classifier import MusicTransformerClassifier
 from lib.metrics.accuracy import MusicAccuracy
-from lib.utilities.constants import LR_DEFAULT_START, KEY_DICT, ARTIST_DICT, GENRE_DICT
+from lib.utilities.constants import LR_DEFAULT_START
 from lib.utilities.device import get_device
 
 import torch

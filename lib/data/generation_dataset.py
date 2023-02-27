@@ -66,11 +66,11 @@ class MidiDataset(Dataset):
 
         token_key = None
         if self.keys:
-            if not key in KEY_DICT:
+            if not key in KEY_VOCAB:
                 my_score: music21.stream.Score = music21.converter.parse(f_path)
                 key = my_score.analyze('Krumhansl')
     
-        token_key = KEY_DICT[key]
+        token_key = KEY_VOCAB[key]
         # encoding --> tensor
         for enc in encodings:
             data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE), token_key))
