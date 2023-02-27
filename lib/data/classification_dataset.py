@@ -5,6 +5,7 @@ from torch.utils.data import Dataset
 
 from lib.utilities.constants import *
 from lib.utilities.hide_prints import NoStdOut
+from lib.data.midi_processing import process_midi
 
 import numpy as np
 
@@ -102,4 +103,5 @@ class ClassificationDataset(Dataset):
     
         """
         aug_midi, token_key = self.total_data[idx]
-        return aug_midi, token_key
+        x, _ = process_midi(aug_midi, self.max_seq, False,)
+        return x, token_key
