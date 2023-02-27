@@ -3,7 +3,7 @@ from lib.model.music_transformer import MusicTransformerEncoder
 from lib.model.music_transformer_ctrl import MusicTransformerCTRL
 from lib.model.music_transformer_classifier import MusicTransformerClassifier
 from lib.metrics.accuracy import MusicAccuracy
-from lib.utilities.constants import LR_DEFAULT_START
+from lib.utilities.constants import LR_DEFAULT_START, KEY_DICT, ARTIST_DICT, GENRE_DICT
 from lib.utilities.device import get_device
 
 import torch
@@ -77,8 +77,16 @@ def create_model_for_classification(args, loss_func):
     args.key = False
     music_transformer = create_model_for_generation(args)
 
+    n_classes = 0
+    if args.task == 'keys':
+        n_classes = len(KEY_DICT)
+    elif args.task == 'artist':
+        n_classes = len(ARTIST_DICT)
+    elif args.task == 'genre':
+        n_classes = len(GENRE_DICT)
+
     model = MusicTransformerClassifier(music_transformer=music_transformer,
-                                       n_classes=0,
+                                       n_classes=n_classes,
                                        lr=args.lr, 
                                        loss_fn=loss_func)
 
