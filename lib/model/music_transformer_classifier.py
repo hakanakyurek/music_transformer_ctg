@@ -26,8 +26,14 @@ class MusicTransformerClassifier(pl.LightningModule):
             self.labels = list(ARTIST_DICT.keys())   
         else:
             raise Exception('Unrecognized number of classes!')   
+        
+        self.n_hidden = n_hidden_backbone / 2
 
-        self.classifier = nn.Linear(n_hidden_backbone, n_classes)
+        self.classifier = nn.Sequential(
+            nn.Linear(n_hidden_backbone, self.n_hidden),
+            nn.SiLU(),
+            nn.Linear(self.n_hidden, self.n_classes))
+
 
         self.softmax    = nn.Softmax(dim=-1)
 
@@ -44,7 +50,7 @@ class MusicTransformerClassifier(pl.LightningModule):
 
     def forward(self, x):
         t_out = self.backbone(x)
-        t_out_pooled = t_out.max(dim=1)
+        t_out_pooled = t_out.mean(dim=1)
         c_out = self.classifier(t_out_pooled)
         y_pred = self.softmax(c_out)
 
