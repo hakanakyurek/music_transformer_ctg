@@ -24,6 +24,8 @@ class ClassificationDataModule(pl.LightningDataModule):
         x = torch.stack(x)
         y = torch.stack(y)
 
+        y = torch.nn.functional.one_hot(y, num_classes=self.n_classes)[:, 0, :].to(TORCH_FLOAT)
+
         return x, y
 
     def train_dataloader(self):
