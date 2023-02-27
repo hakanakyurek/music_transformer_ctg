@@ -63,7 +63,7 @@ def main():
                                            args.n_workers, args.task, n_classes)
 
     ##### CrossEntropyLoss for training #####
-    loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
+    loss_func = nn.CrossEntropyLoss()
 
     ##### Model #####
     model = create_model_for_classification(args, loss_func, n_classes)
