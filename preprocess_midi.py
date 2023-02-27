@@ -138,8 +138,6 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
 
     artist_df = pd.read_csv(os.path.join(custom_midi_root, 'maestro-v3.0.0/maestro-v3.0.0.csv'))
 
-    a = set()
-
     for piece in tqdm(pieces):
         print(piece)
         #deciding whether the data should be part of train, valid or test dataset
@@ -164,7 +162,6 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
                 artist = artist_df[artist_df['midi_filename'].str.contains(piece.split('/')[-1])]['canonical_composer']
                 if len(artist) != 0:
                     y = artist.iloc[0]
-                    a.add(y.split(' / ')[0])
                 else:
                     # Data is not in maestro
                     continue
@@ -209,9 +206,6 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
         dump((str(y), encodings, piece), o_file)
 
         total_count += 1
-
-    my_dict = {elem: idx for idx, elem in enumerate(a)}
-    print(my_dict)
 
     print(f"Num Train: {train_count}")
     print(f"Num Val: {val_count}")
