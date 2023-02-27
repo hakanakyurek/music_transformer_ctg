@@ -44,7 +44,8 @@ class MusicTransformerClassifier(pl.LightningModule):
 
     def forward(self, x):
         t_out = self.backbone(x)
-        c_out = self.classifier(t_out)
+        t_out_pooled = t_out.mean(dim=1)[0]
+        c_out = self.classifier(t_out_pooled)
         y_pred = self.softmax(c_out)
 
         return y_pred
@@ -53,9 +54,6 @@ class MusicTransformerClassifier(pl.LightningModule):
         x, y = batch
 
         y_pred = self.forward(x)
-
-        y_pred  = y_pred.reshape(y.shape[0] * y.shape[1], -1)
-        y = y.flatten()
 
         loss = self.loss_fn.forward(y_pred, y)
 
