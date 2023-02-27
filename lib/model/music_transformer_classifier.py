@@ -22,12 +22,12 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.loss_fn = loss_fn
         self.lr = lr
 
-        self.train_acc = tm.Accuracy('multiclass')
-        self.val_acc = tm.Accuracy('multiclass')
-        self.test_acc = tm.Accuracy('multiclass')
-        self.train_f1 = tm.F1Score()
-        self.val_f1 = tm.F1Score()
-        self.test_f1 = tm.F1Score()
+        self.train_acc = tm.Accuracy('multiclass', num_classes=self.n_classes)
+        self.val_acc = tm.Accuracy('multiclass', num_classes=self.n_classes)
+        self.test_acc = tm.Accuracy('multiclass', num_classes=self.n_classes)
+        self.train_f1 = tm.F1Score('multiclass', num_classes=self.n_classes)
+        self.val_f1 = tm.F1Score('multiclass', num_classes=self.n_classes)
+        self.test_f1 = tm.F1Score('multiclass', num_classes=self.n_classes)
 
 
     def forward(self, x):
