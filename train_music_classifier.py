@@ -53,8 +53,7 @@ def main():
                                            args.dataset_percentage, args.max_sequence, args.n_workers)
 
     ##### CrossEntropyLoss for training #####
-    if(args.ce_smoothing is None):
-        loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
+    loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
 
     ##### Model #####
     model = create_model_for_classification(args, loss_func)
