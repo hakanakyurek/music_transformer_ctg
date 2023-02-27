@@ -7,6 +7,7 @@ from lib.utilities.constants import *
 class MusicTransformerClassifier(pl.LightningModule):
 
     def __init__(self, music_transformer, n_classes, loss_fn, lr) -> None:
+        super(MusicTransformerClassifier, self).__init__()
         
         n_hidden_backbone = music_transformer.d_model
         self.backbone = music_transformer
