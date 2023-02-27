@@ -23,7 +23,7 @@ class ClassificationDataModule(pl.LightningDataModule):
         x = torch.stack(x)
         y = torch.stack(y)
 
-        y = torch.nn.functional.one_hot(y, num_classes=self.n_classes)
+        y = torch.nn.functional.one_hot(y, num_classes=self.n_classes)[:, 0, :]
 
         return x, y
 
