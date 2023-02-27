@@ -74,6 +74,7 @@ def create_model_for_generation(args):
 
 def create_model_for_classification(args, loss_func):
 
+    args.key = False
     music_transformer = create_model_for_generation(args)
 
     model = MusicTransformerClassifier(music_transformer=music_transformer,
