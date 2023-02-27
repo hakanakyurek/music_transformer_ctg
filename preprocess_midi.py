@@ -154,7 +154,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
         f_name = piece.split('/')[-1].split('.')[0] + ".pickle"
         try:
             # Key operations
-            if task == 'keys' or task == 'keys_ctrl':
+            if task == 'key' or task == 'keys_ctrl':
                 my_score: music21.stream.Score = music21.converter.parse(piece)
                 y = my_score.analyze('Krumhansl')
             elif task == 'artist':
