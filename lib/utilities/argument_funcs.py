@@ -174,6 +174,7 @@ def parse_classification_args():
     parser.add_argument("--epochs", type=int, default=100, help="Number of epochs to use")
     parser.add_argument("--model_weights", type=str, default="./models/best.pt", help="Pickled model weights file saved with torch.save and model.state_dict() of the pretrained model")
     parser.add_argument("--experiment_name", type=str, default='test', help="Name of the experiment")
+    parser.add_argument("--task", type=str, default='keys', help="Name of the classification task")
     # Model parameters
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
     parser.add_argument("--max_sequence", type=int, default=2048, help="Maximum midi sequence to consider")

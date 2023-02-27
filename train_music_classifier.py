@@ -51,7 +51,7 @@ def main():
 
     ##### Data Module #####
     data_module = ClassificationDataModule(args.batch_size, args.input_dir, 
-                                           args.dataset_percentage, args.max_sequence, args.n_workers)
+                                           args.dataset_percentage, args.max_sequence, args.n_workers, args.task)
 
     ##### CrossEntropyLoss for training #####
     loss_func = nn.CrossEntropyLoss(ignore_index=TOKEN_PAD)
