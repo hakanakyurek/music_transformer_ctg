@@ -43,6 +43,8 @@ class ClassificationDataset(Dataset):
         for i in range(len(self.data_files)):
             with NoStdOut():
                 data_points = self.__read_encoded_midi(self.data_files[i])
+                if data_points is None:
+                    continue
                 for data_point in data_points:
                     self.total_data.append(data_point)
 
@@ -76,6 +78,8 @@ class ClassificationDataset(Dataset):
                                    (torch.tensor([token_artist], dtype=TORCH_LABEL_TYPE))))
         elif self.task == 'genre':
             token_genre = GENRE_DICT[y]
+            if token_genre < 12:
+                return None
             # encoding --> tensor
             for enc in encodings:
                 data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE),
