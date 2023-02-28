@@ -60,7 +60,7 @@ class ClassificationDataset(Dataset):
 
         if self.task == 'key':
             token_key = None
-            if not y in KEY_DICT:
+            if y not in KEY_DICT:
                 my_score: music21.stream.Score = music21.converter.parse(f_path)
                 y = my_score.analyze('Krumhansl')
         
@@ -78,8 +78,6 @@ class ClassificationDataset(Dataset):
                                    (torch.tensor([token_artist], dtype=TORCH_LABEL_TYPE))))
         elif self.task == 'genre':
             token_genre = GENRE_DICT[y]
-            if token_genre < 12:
-                return None
             # encoding --> tensor
             for enc in encodings:
                 data_points.append((torch.tensor(enc, dtype=TORCH_LABEL_TYPE),

@@ -27,7 +27,7 @@ class MusicTransformerClassifier(pl.LightningModule):
         else:
             raise Exception('Unrecognized number of classes!')   
         
-        self.classifier = nn.Linear(n_hidden_backbone * self.backbone.max_seq, n_classes)
+        self.classifier = nn.Linear(n_hidden_backbone, n_classes)
 
         self.softmax    = nn.Softmax(dim=-1)
 
@@ -44,8 +44,8 @@ class MusicTransformerClassifier(pl.LightningModule):
 
     def forward(self, x):
         t_out = self.backbone(x)
-        batch_size = t_out.shape[0]
-        c_out = self.classifier(t_out.view(batch_size, -1))
+        t_out_pooled = t_out.mean(dim=1)
+        c_out = self.classifier(t_out_pooled)
         y_pred = self.softmax(c_out)
 
         return y_pred
@@ -100,8 +100,7 @@ class MusicTransformerClassifier(pl.LightningModule):
         plt.savefig("confusion_matrix.png", bbox_inches="tight", dpi=300)
         self.logger.log_image(key="confusion_matrix", images=["confusion_matrix.png"])
 
-
     def configure_optimizers(self):
-        opt = torch.optim.Adam(self.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
+        opt = torch.optim.Adam(self.classifier.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
         return opt
     
