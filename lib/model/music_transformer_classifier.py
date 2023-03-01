@@ -6,7 +6,6 @@ from lib.utilities.constants import *
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from lib.utilities.constants import KEY_DICT, GENRE_DICT, ARTIST_DICT
 import matplotlib.pyplot as plt
-from lib.utilities.device import get_device
 
 class MusicTransformerClassifier(pl.LightningModule):
 
@@ -59,9 +58,9 @@ class MusicTransformerClassifier(pl.LightningModule):
 
         loss = self.loss_fn.forward(y_pred, y)
         
-        indices = torch.argmax(y_pred, dim=0)
-        y_pred = torch.zeros(y.shape[0], self.n_classes).to(get_device())
-        y_pred[torch.arange(y.shape[0]), indices] = 1
+        index=torch.argmax(y_pred)
+        y_pred = torch.zeros(self.n_classes)
+        y_pred.scatter_(0, torch.tensor(index), 1)
 
         acc_metric.update(y_pred, y)
         f1_metric.update(y_pred, y)
