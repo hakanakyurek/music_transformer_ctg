@@ -59,8 +59,8 @@ class MusicTransformerClassifier(pl.LightningModule):
         loss = self.loss_fn.forward(y_pred, y)
         
         index=torch.argmax(y_pred)
-        y_pred = torch.zeros(self.num_classes)
-        one_hot.scatter_(0, torch.tensor(index), 1)
+        y_pred = torch.zeros(self.n_classes)
+        y_pred.scatter_(0, torch.tensor(index), 1)
 
         acc_metric.update(y_pred, y)
         f1_metric.update(y_pred, y)
