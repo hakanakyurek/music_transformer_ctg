@@ -72,7 +72,7 @@ class MusicTransformerClassifier(pl.LightningModule):
 
     def training_epoch_end(self, outs):
         self.log('train accuracy', self.train_acc)
-        self.log('train perplexity', self.train_f1)
+        self.log('train f1', self.train_f1)
 
     def validation_step(self, batch, batch_idx):
         loss, _, _ = self.step(batch, self.val_acc, self.val_f1)
@@ -82,8 +82,8 @@ class MusicTransformerClassifier(pl.LightningModule):
         return loss
 
     def validation_epoch_end(self, outs):
-        self.log('test accuracy', self.val_acc)
-        self.log('test perplexity', self.val_f1)
+        self.log('val accuracy', self.val_acc)
+        self.log('val f1', self.val_f1)
 
     def test_step(self, batch, batch_idx):
         loss, y_pred, y_tru = self.step(batch, self.test_acc, self.test_f1)
@@ -93,7 +93,7 @@ class MusicTransformerClassifier(pl.LightningModule):
     def test_epoch_end(self, outs):
         _, y_pred, y_tru = zip(*outs)
         self.log('test accuracy', self.test_acc)
-        self.log('test perplexity', self.test_f1)
+        self.log('test f1', self.test_f1)
 
         cm = confusion_matrix(y_true=y_tru, y_pred=y_pred, labels=self.labels)
         ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.labels).plot()
