@@ -93,14 +93,12 @@ def parse_generate_args():
 
     parser = argparse.ArgumentParser()
     # Path parameters
-    parser.add_argument("--midi_root", type=str, help="Midi file to prime the generator with")
     parser.add_argument("--output_dir", type=str, default="./output", help="Folder to write generated midi to")
-    parser.add_argument("--primer_file", default=None, help="File path or integer index to the evaluation dataset. Default is to select a random index.")
+    parser.add_argument("--primer_file", default=None, help="File path")
     # Environment parameters
     parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")
     # Generation parameters
     parser.add_argument("--target_seq_length", type=int, default=1024, help="Target length you'd like the midi to be")
-    parser.add_argument("--num_prime", type=int, default=256, help="Amount of messages to prime the generator with")
     parser.add_argument("--model_weights", type=str, default="./models/best.pt", help="Pickled model weights file saved with torch.save and model.state_dict()")
     parser.add_argument('--temperature', type=float, default=1.0, help='Creativeness setting for the logits')
     parser.add_argument('--top_k', type=int, default=0, help='Top k for the filtering')
@@ -127,14 +125,12 @@ def print_generate_args(args):
 
     print(SEPERATOR)
     print(f'Path parameters')
-    print(f"midi_root:{args.midi_root}")
     print(f"output_dir:{args.output_dir}")
     print(f"primer_file:{args.primer_file}")
     print(f'Environment parameters')
     print(f"force_cpu:{args.force_cpu}")
     print(f"Generation parameters")
     print(f"target_seq_length:{args.target_seq_length}")
-    print(f"num_prime:{args.num_prime}")
     print(f"model_weights:{args.model_weights}")
     print(f'temperature:{args.temperature}')
     print(f'top_k:{args.top_k}')
@@ -218,5 +214,73 @@ def print_classification_args(args):
     print(f"dim_feedforward: {args.dim_feedforward}")
     print(f"Dataset parameters")
     print(f'dataset_percentage:{args.dataset_percentage}')
+    print(SEPERATOR)
+    print(f"")
+
+
+# parse_generate_args
+def parse_test_args():
+    """
+
+    Argparse arguments for generation
+
+    """
+
+    parser = argparse.ArgumentParser()
+    # Path parameters
+    parser.add_argument("--midi_root", type=str, help="Test set root")
+    parser.add_argument("--output_dir", type=str, default="./output", help="Folder to write generated midi to")
+    parser.add_argument("--primer_index", default=None, help="Integer index to the evaluation dataset. Default is none and all test set")
+    # Environment parameters
+    parser.add_argument("--force_cpu", action="store_true", help="Forces model to run on a cpu even when gpu is available")
+    # Generation parameters
+    parser.add_argument("--target_seq_length", type=int, default=1024, help="Target length you'd like the midi to be")
+    parser.add_argument("--num_prime", type=int, default=256, help="Amount of messages to prime the generator with")
+    parser.add_argument("--model_weights", type=str, default="./models/best.pt", help="Pickled model weights file saved with torch.save and model.state_dict()")
+    parser.add_argument('--temperature', type=float, default=1.0, help='Creativeness setting for the logits')
+    parser.add_argument('--top_k', type=int, default=0, help='Top k for the filtering')
+    parser.add_argument('--top_p', type=float, default=0.0, help='Top p for the filtering')
+    parser.add_argument('--key', type=int, default=0, help='Enable generation with keys')
+    # Model parameters
+    parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
+    parser.add_argument("--max_sequence", type=int, default=2048, help="Maximum midi sequence to consider")
+    parser.add_argument("--n_layers", type=int, default=6, help="Number of decoder layers to use")
+    parser.add_argument("--num_heads", type=int, default=8, help="Number of heads to use for multi-head attention")
+    parser.add_argument("--d_model", type=int, default=512, help="Dimension of the model (output dim of embedding layers, etc.)")
+    parser.add_argument("--dim_feedforward", type=int, default=1024, help="Dimension of the feedforward layer")
+    parser.add_argument("--arch", type=int, help='Change model architecture \n --> encoder-decoder: 1 \n --> encoder: 2')
+    
+    return parser.parse_args()
+
+# print_generate_args
+def print_test_args(args):
+    """
+
+    Prints generation arguments
+
+    """
+
+    print(SEPERATOR)
+    print(f'Path parameters')
+    print(f"midi_root:{args.midi_root}")
+    print(f"output_dir:{args.output_dir}")
+    print(f"primer_index:{args.primer_index}")
+    print(f'Environment parameters')
+    print(f"force_cpu:{args.force_cpu}")
+    print(f"Generation parameters")
+    print(f"target_seq_length:{args.target_seq_length}")
+    print(f"num_prime:{args.num_prime}")
+    print(f"model_weights:{args.model_weights}")
+    print(f'temperature:{args.temperature}')
+    print(f'top_k:{args.top_k}')
+    print(f'top_p:{args.top_p}')
+    print(f'key:{args.key}')
+    print(f"Model parameters")
+    print(f"rpr:{args.rpr}")
+    print(f"max_sequence:{args.max_sequence}")
+    print(f"n_layers:{args.n_layers}")
+    print(f"num_heads:{args.num_heads}")
+    print(f"d_model:{args.d_model}")
+    print(f"dim_feedforward: {args.dim_feedforward}")
     print(SEPERATOR)
     print(f"")

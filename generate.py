@@ -30,40 +30,18 @@ def main():
         print("WARNING: Forced CPU usage, expect model to perform slower")
 
     os.makedirs(args.output_dir, exist_ok=True)
-    if args.midi_root:
-        dataset = MidiDataset(args.midi_root + 'test/', args.arch, args.max_sequence, random_seq=False)
 
-    # Can be None, an integer index to dataset, or a file path
-    if(args.primer_file is None):
-        f = str(random.randrange(len(dataset)))
-    else:
-        f = args.primer_file
+    f = args.primer_file
     
-    if(f.isdigit()):
-        idx = int(f)
-        if args.arch == 1:
-            primer, _ = dataset[idx]
-        elif args.arch == 2:
-            primer, _, __ = dataset[idx]
-        
-        # Concat the key if wanted
-        if args.key:
-            token_key = torch.tensor([args.key + TOKEN_PAD], dtype=TORCH_LABEL_TYPE)
-            primer = torch.cat((token_key, primer[:-1]), dim=0)
+    raw_mid = encode_midi(f)
+    if(len(raw_mid) == 0):
+        print(f"Error: No midi messages in primer file: {f}")
+        return
+    raw_mid = torch.tensor(raw_mid, dtype=TORCH_LABEL_TYPE)
+    primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False, token_key=args.key)
+    #primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
 
-        primer = primer.to(get_device())
-
-        print("Using primer index:", idx, "(", dataset.data_files[idx], ")")
-    else:
-        raw_mid = encode_midi(f)
-        if(len(raw_mid) == 0):
-            print(f"Error: No midi messages in primer file: {f}")
-            return
-        raw_mid = torch.tensor(raw_mid, dtype=TORCH_LABEL_TYPE)
-        primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False, token_key=args.key)
-        #primer = torch.tensor(primer, dtype=TORCH_LABEL_TYPE, device=get_device())
-
-        print(f"Using primer file: {f}")
+    print(f"Using primer file: {f}")
 
     model = create_model_for_generation(args)
 
@@ -80,8 +58,6 @@ def main():
 
         f_path = os.path.join(args.output_dir, "rand.mid")
         decode_midi(rand_seq[0].cpu().numpy(), file_path=f_path)
-
-
 
 
 if __name__ == "__main__":
