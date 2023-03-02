@@ -48,16 +48,15 @@ class MusicTransformerClassifier(pl.LightningModule):
         t_out = self.backbone(x)
         t_out_pooled = t_out.mean(dim=1)
         c_out = self.classifier(t_out_pooled)
-        y_pred = self.softmax(c_out)
 
-        return y_pred
+        return c_out
 
     def step(self, batch, acc_metric, f1_metric):
         x, y = batch
 
-        y_pred = self.forward(x)
+        c_out = self.forward(x)
 
-        loss = self.loss_fn.forward(y_pred, y)
+        loss = self.loss_fn.forward(c_out, y)
         
         y_pred = torch.argmax(y_pred, dim=0)
 
