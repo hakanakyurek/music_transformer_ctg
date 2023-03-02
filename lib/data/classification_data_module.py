@@ -24,7 +24,7 @@ class ClassificationDataModule(pl.LightningDataModule):
         x = torch.stack(x)
         y = torch.stack(y)
         
-        return x, y
+        return x, y[:, 0]
 
     def train_dataloader(self):
         self.train = ClassificationDataset(f'{self.data_dir}train/', self.max_seq, self.dataset_percentage, self.task)
