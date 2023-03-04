@@ -59,7 +59,7 @@ class MusicTransformerClassifier(pl.LightningModule):
 
         loss = self.loss_fn.forward(c_out, y)
         
-        y_pred = torch.argmax(y_pred, dim=0)
+        y_pred = torch.argmax(y_pred, dim=1)
 
         acc_metric.update(y_pred, y)
         f1_metric.update(y_pred, y)
