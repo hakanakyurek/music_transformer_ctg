@@ -22,11 +22,11 @@ class MusicTransformerClassifier(pl.LightningModule):
 
         self.n_classes = n_classes
         if n_classes == len(KEY_DICT):
-            self.labels = list(KEY_DICT.keys())
+            self.labels = list(KEY_DICT.values())
         elif n_classes == len(GENRE_DICT):
-            self.labels = list(GENRE_DICT.keys())
+            self.labels = list(GENRE_DICT.values())
         elif n_classes == len(ARTIST_DICT):
-            self.labels = list(ARTIST_DICT.keys())   
+            self.labels = list(ARTIST_DICT.values())   
         else:
             raise Exception('Unrecognized number of classes!')   
         
@@ -101,8 +101,8 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.log('test accuracy', self.test_acc)
         self.log('test f1', self.test_f1)
 
-        y_tru = [y.cpu().detach().numpy() for y in chain(*y_tru)]
-        y_pred = [y.cpu().detach().numpy() for y in chain(*y_pred)]
+        y_tru = [y.cpu().detach().item() for y in chain(*y_tru)]
+        y_pred = [y.cpu().detach().item() for y in chain(*y_pred)]
 
         cm = confusion_matrix(y_true=y_tru, y_pred=y_pred, labels=self.labels)
         ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.labels).plot()
