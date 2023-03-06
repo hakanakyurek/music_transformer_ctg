@@ -27,7 +27,7 @@ def main():
 
     args = parse_train_args()
     print_train_args(args)
-    vocab['size'] = VOCAB_SIZE_KEYS if args.keys else VOCAB_SIZE_NORMAL
+    vocab['size'] = VOCAB_SIZE_KEYS if args.key else VOCAB_SIZE_NORMAL
 
     if (args.run_id and not args.checkpoint_path) or (not args.run_id and args.checkpoint_path):
         print('Run id and Checkpoint path should be given together!')
@@ -53,7 +53,7 @@ def main():
 
     ##### Data Module #####
     data_module = MidiDataModule(args.batch_size, args.input_dir, args.dataset_percentage, args.max_sequence, 
-                                 args.n_workers, args.arch, random_seq=True, keys=args.keys)
+                                 args.n_workers, args.arch, random_seq=True, keys=args.key)
 
     ##### SmoothCrossEntropyLoss or CrossEntropyLoss for training #####
     if(args.ce_smoothing is None):

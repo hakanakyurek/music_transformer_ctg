@@ -67,7 +67,7 @@ def print_train_args(args):
     print(f"batch_size:{args.batch_size}")
     print(f"epochs:{args.epochs}")
     print(f"epochs:{args.experiment_name}")
-    print(f'keys enabled:{args.keys}')
+    print(f'keys enabled:{args.key}')
     print(f'gedi enabled:{args.gedi}')
     print(f'gedi lambda:{args.gedi_lambda}')
     print(f"Model parameters")

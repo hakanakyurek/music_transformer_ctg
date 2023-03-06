@@ -31,7 +31,7 @@ def test(piece, output_dir, args):
     raw_mid = torch.tensor(raw_mid, dtype=TORCH_LABEL_TYPE)
 
     # Class condition to perfect 4th or perfect 5th
-    if args.keys:
+    if args.key:
         my_score: music21.stream.Score = music21.converter.parse(f_path)
         key_primer = my_score.analyze('Krumhansl')
         classes['primer'] = TOKEN_KEYS[key_primer]
@@ -59,13 +59,13 @@ def test(piece, output_dir, args):
                                   temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)   
 
         f_path = os.path.join(output_dir, "rand.mid")
-        if args.keys:
+        if args.key:
             classes['model'] = torch.argmax(classifier(rand_seq)[1])
 
         rand_seq = rand_seq[0].cpu().numpy()
         decode_midi(rand_seq, file_path=f_path)        
 
-        if args.keys:
+        if args.key:
             my_score: music21.stream.Score = music21.converter.parse(f_path)
             key_rand = my_score.analyze('Krumhansl')
             classes['algo'] = TOKEN_KEYS[key_rand]
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     os.makedirs(args.output_dir, exist_ok=True)
 
     classifier = create_model_for_classification(args)
-    if args.keys:
+    if args.key:
         generator = create_model_for_generation(args)
     else:
         generator = classifier.backbone
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     print(f'Overall accuracy: {overall_acc}')
     print(SEPERATOR)
 
-    if args.keys:
+    if args.key:
         # Check how much of the output keys are matching with the target according to the classifier
         mt_key_acc = accuracy_score(keys_dict['target'], keys_dict['model'])
         # Check how much of the output keys are matching with the target according to the algorithm

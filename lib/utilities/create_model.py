@@ -22,7 +22,7 @@ def create_model_for_training(args, loss_func):
                                                 loss_fn=loss_func,
                                                 lr=LR_DEFAULT_START)
     elif args.arch == 1:
-        if args.keys:
+        if args.key:
             model = MusicTransformerCTRL(n_layers=args.n_layers, 
                                     num_heads=args.num_heads,
                                     d_model=args.d_model, 
@@ -33,7 +33,7 @@ def create_model_for_training(args, loss_func):
                                     acc_metric=MusicAccuracy, 
                                     loss_fn=loss_func,
                                     lr=LR_DEFAULT_START,
-                                    keys=args.keys)
+                                    keys=args.key)
         else:
             model = MusicTransformerEncoder(n_layers=args.n_layers, 
                                             num_heads=args.num_heads,
