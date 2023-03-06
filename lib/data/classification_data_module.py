@@ -47,5 +47,4 @@ class ClassificationDataModule(pl.LightningDataModule):
         print('Test dataset size:', len(self.test))
         return  DataLoader(self.test, batch_size=self.batch_size, 
                            collate_fn=self.collate,
-                           num_workers=self.n_workers,
-                           drop_last=True)
+                           num_workers=self.n_workers)
