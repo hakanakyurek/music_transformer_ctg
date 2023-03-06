@@ -73,10 +73,14 @@ def create_model_for_generation(args):
 
 
 def create_model_for_classification(args, loss_func, n_classes):
-    temp = args.key
-    args.key = False
-    music_transformer = create_model_for_generation(args)
-    args.key = temp
+    try:
+        temp = args.key
+        args.key = False
+        music_transformer = create_model_for_generation(args)
+        args.key = temp
+    except:
+        args.key = False
+        music_transformer = create_model_for_generation(args)
 
     model = MusicTransformerClassifier(music_transformer=music_transformer,
                                        n_classes=n_classes,
