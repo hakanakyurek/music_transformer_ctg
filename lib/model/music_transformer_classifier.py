@@ -7,6 +7,8 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from lib.utilities.constants import KEY_DICT, GENRE_DICT, ARTIST_DICT
 import matplotlib.pyplot as plt
 from lib.utilities.device import get_device
+from itertools import chain
+
 
 class MusicTransformerClassifier(pl.LightningModule):
 
@@ -99,7 +101,10 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.log('test accuracy', self.test_acc)
         self.log('test f1', self.test_f1)
 
-        cm = confusion_matrix(y_true=y_tru.to(get_device()), y_pred=y_pred.to(get_device()), labels=self.labels)
+        y_tru = [y.to(get_device()) for y in chain(*y_tru)]
+        y_pred = [y.to(get_device()) for y in chain(*y_pred)]
+
+        cm = confusion_matrix(y_true=y_tru, y_pred=y_pred, labels=self.labels)
         ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.labels).plot()
         plt.savefig("confusion_matrix.png", bbox_inches="tight", dpi=300)
         self.logger.log_image(key="confusion_matrix", images=["confusion_matrix.png"])
