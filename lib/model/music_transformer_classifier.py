@@ -101,8 +101,8 @@ class MusicTransformerClassifier(pl.LightningModule):
         self.log('test accuracy', self.test_acc)
         self.log('test f1', self.test_f1)
 
-        y_tru = [y.to(get_device()) for y in chain(*y_tru)]
-        y_pred = [y.to(get_device()) for y in chain(*y_pred)]
+        y_tru = [y.cpu for y in chain(*y_tru)]
+        y_pred = [y.cpu for y in chain(*y_pred)]
 
         cm = confusion_matrix(y_true=y_tru, y_pred=y_pred, labels=self.labels)
         ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self.labels).plot()
