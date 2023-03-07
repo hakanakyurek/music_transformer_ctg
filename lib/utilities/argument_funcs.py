@@ -27,7 +27,7 @@ def parse_train_args():
     parser.add_argument("--batch_size", type=int, default=2, help="Batch size to use")
     parser.add_argument("--epochs", type=int, default=100, help="Number of epochs to use")
     parser.add_argument("--experiment_name", type=str, default='test', help="Name of the experiment")
-    parser.add_argument('--keys', action='store_true', help='Enable training with keys')
+    parser.add_argument('--key', action='store_true', help='Enable training with keys')
     parser.add_argument('--gedi', action='store_true', help='Enable training with gedi')
     parser.add_argument('--gedi_lambda', type=float, help='Gedi loss lambda')
     # Model parameters
