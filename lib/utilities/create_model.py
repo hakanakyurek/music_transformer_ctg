@@ -87,7 +87,7 @@ def create_model_for_classification(args, loss_func, n_classes):
                                        lr=args.lr, 
                                        loss_fn=loss_func)
 
-    return model
+    return model.to(get_device())
 
 
 def create_model_for_classification_test(args, n_classes):
@@ -106,4 +106,4 @@ def create_model_for_classification_test(args, n_classes):
     
     model.load_state_dict(torch.load(args.classifier_weights, map_location=get_device())['state_dict'])
 
-    return model
+    return model.to(get_device())

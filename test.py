@@ -5,6 +5,7 @@ from music21 import interval
 from tqdm import tqdm
 from joblib import load
 
+from lib.utilities.hide_prints import NoStdOut
 from lib.midi_processor.processor import decode_midi, encode_midi
 from lib.utilities.argument_funcs import parse_test_args, print_test_args
 from lib.data.generation_dataset import process_midi
@@ -59,8 +60,7 @@ def test(piece, output_dir, args):
 
     # GENERATION
     generator.eval()
-    with torch.set_grad_enabled(False):
-        print('Generating...')
+    with torch.set_grad_enabled(False) and NoStdOut():
         rand_seq = generator.generate(primer[:args.num_prime], args.target_seq_length, 
                                   temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)   
 
@@ -68,7 +68,7 @@ def test(piece, output_dir, args):
         if args.key:
             classes['model'] = torch.argmax(classifier(rand_seq)[1]).item()
 
-        decode_midi(rand_seq.cpu().numpy(), file_path=f_path)        
+        decode_midi(rand_seq[0].cpu().numpy(), file_path=f_path)        
 
         if args.key:
             my_score: music21.stream.Score = music21.converter.parse(f_path)
@@ -76,7 +76,7 @@ def test(piece, output_dir, args):
             classes['algo'] = KEY_DICT[str(key_rand)]
         
 
-    return raw_mid[:len(rand_seq)].numpy(), rand_seq.numpy(), classes
+    return raw_mid[:len(rand_seq)].cpu(9).numpy(), rand_seq.cpu().numpy(), classes
 
 
 if __name__ == "__main__":
@@ -133,6 +133,7 @@ if __name__ == "__main__":
             output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
             os.makedirs(output_dir, exist_ok=True)
             raw_mid, rand_seq, classes = test(piece, output_dir, args)
+            print(classes)
             p_acc = accuracy_score(raw_mid, rand_seq) 
             per_piece_accuracy.append(p_acc)
             
