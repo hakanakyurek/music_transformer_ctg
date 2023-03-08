@@ -112,7 +112,7 @@ if __name__ == "__main__":
             piece = load(piece)[2]
             pieces.append(piece) 
 
-    pieces = pieces.sort()
+    pieces.sort()
 
     print(f"Found {len(pieces)} pieces")
 
