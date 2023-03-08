@@ -131,7 +131,7 @@ if __name__ == "__main__":
     if(args.primer_index is None):
         for piece in tqdm(pieces):
             output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
-            os.makedirs(output_dir)
+            os.makedirs(output_dir, exist_ok=True)
             raw_mid, rand_seq, classes = test(piece, output_dir, args)
             p_acc = accuracy_score(raw_mid, rand_seq) 
             per_piece_accuracy.append(p_acc)
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     else:
         piece = pieces[args.primer_index]
         output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
-        os.makedirs(output_dir)        
+        os.makedirs(output_dir, exist_ok=True)        
         print(f"Using primer file: {piece}")
         raw_mid, rand_seq, classes = test(piece, output_dir, args)
         p_acc = accuracy_score(raw_mid, rand_seq) 
