@@ -76,11 +76,11 @@ def create_model_for_classification(args, loss_func, n_classes):
     try:
         temp = args.key
         args.key = False
-        music_transformer = create_model_for_generation(args, args.classifier_weights)
+        music_transformer = create_model_for_generation(args, args.model_weights)
         args.key = temp
     except:
         args.key = False
-        music_transformer = create_model_for_generation(args, args.classifier_weights)
+        music_transformer = create_model_for_generation(args, args.model_weights)
 
     model = MusicTransformerClassifier(music_transformer=music_transformer,
                                        n_classes=n_classes,
@@ -89,3 +89,16 @@ def create_model_for_classification(args, loss_func, n_classes):
 
     return model
 
+
+def create_model_for_classification_test(args, n_classes):
+    
+    music_transformer = create_model_for_training(args, None)
+
+    model = MusicTransformerClassifier(music_transformer=music_transformer,
+                                       n_classes=n_classes,
+                                       lr=args.lr, 
+                                       loss_fn=None)
+    
+    model.load_state_dict(torch.load(args.classifier_weights, map_location=get_device())['state_dict'])
+
+    return model

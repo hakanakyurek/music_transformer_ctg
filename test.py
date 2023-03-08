@@ -8,7 +8,7 @@ from joblib import load
 from lib.midi_processor.processor import decode_midi, encode_midi
 from lib.utilities.argument_funcs import parse_test_args, print_test_args
 from lib.data.generation_dataset import process_midi
-from lib.utilities.create_model import create_model_for_generation, create_model_for_classification
+from lib.utilities.create_model import create_model_for_generation, create_model_for_classification_test
 from lib.utilities.device import get_device, use_cuda
 from lib.utilities.constants import *
 from lib.data.midi_processing import *
@@ -90,7 +90,11 @@ if __name__ == "__main__":
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    classifier = create_model_for_classification(args)
+    n_classes = 0
+    if args.key:
+        n_classes = len(KEY_DICT)
+
+    classifier = create_model_for_classification_test(args, n_classes)
     if args.key:
         generator = create_model_for_generation(args, args.model_weights)
     else:
