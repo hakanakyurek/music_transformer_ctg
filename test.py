@@ -76,7 +76,7 @@ def test(piece, output_dir, args):
             classes['algo'] = KEY_DICT[str(key_rand)]
         
 
-    return raw_mid[:len(rand_seq)].cpu(9).numpy(), rand_seq.cpu().numpy(), classes
+    return raw_mid[:len(rand_seq)].cpu().numpy(), rand_seq[0].cpu().numpy(), classes
 
 
 if __name__ == "__main__":
@@ -133,7 +133,6 @@ if __name__ == "__main__":
             output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
             os.makedirs(output_dir, exist_ok=True)
             raw_mid, rand_seq, classes = test(piece, output_dir, args)
-            print(classes)
             p_acc = accuracy_score(raw_mid, rand_seq) 
             per_piece_accuracy.append(p_acc)
             
