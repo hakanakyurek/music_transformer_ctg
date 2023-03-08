@@ -91,12 +91,17 @@ def create_model_for_classification(args, loss_func, n_classes):
 
 
 def create_model_for_classification_test(args, n_classes):
+    args.dropout = 0
+    args.lr = 0
     
+    temp = args.key
+    args.key = None
     music_transformer = create_model_for_training(args, None)
-
+    args.key = temp
+    
     model = MusicTransformerClassifier(music_transformer=music_transformer,
                                        n_classes=n_classes,
-                                       lr=args.lr, 
+                                       lr=None, 
                                        loss_fn=None)
     
     model.load_state_dict(torch.load(args.classifier_weights, map_location=get_device())['state_dict'])
