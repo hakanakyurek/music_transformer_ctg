@@ -79,7 +79,6 @@ if __name__ == "__main__":
 
     args = parse_test_args()
     print_test_args(args)
-    vocab['size'] = VOCAB_SIZE_KEYS if args.key else VOCAB_SIZE_NORMAL
 
     if type(args.primer_index) is str:
         raise Exception('primer file is not accepted here, use an integer instead')
@@ -94,7 +93,12 @@ if __name__ == "__main__":
     if args.key:
         n_classes = len(KEY_DICT)
 
+    vocab['size'] = VOCAB_SIZE_NORMAL
+
     classifier = create_model_for_classification_test(args, n_classes)
+
+    vocab['size'] = VOCAB_SIZE_KEYS if args.key else VOCAB_SIZE_NORMAL
+
     if args.key:
         generator = create_model_for_generation(args, args.model_weights)
     else:
