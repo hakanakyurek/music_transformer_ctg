@@ -42,13 +42,15 @@ def test(piece, output_dir, args):
         inter = np.random.choice(intervals)
         key_target = str(inter.transposePitch(key_primer.tonic))
         
+        if key_target == 'D-':
+            key_target = 'C#'
+        if key_target == 'G#':
+            key_target = 'A-'
+
         if key_target.isupper():
             key_target += ' major'
         else:
             key_target += ' minor'
-        
-        if str(key_target) == 'D- major':
-            key_target = 'C# major'
 
         token_key = KEY_DICT[str(key_target)]
 
@@ -135,16 +137,20 @@ if __name__ == "__main__":
     # Can be None, an integer index to dataset
     if(args.primer_index is None):
         for piece in tqdm(pieces):
-            output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
-            os.makedirs(output_dir, exist_ok=True)
-            raw_mid, rand_seq, classes = test(piece, output_dir, args)
-            # p_acc = accuracy_score(raw_mid, rand_seq) 
-            # per_piece_accuracy.append(p_acc)
-            
-            keys_dict['primer'].append(classes['primer'])
-            keys_dict['algo'].append(classes['algo'])
-            keys_dict['model'].append(classes['model'])
-            keys_dict['target'].append(classes['target'])
+            try:
+                output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
+                os.makedirs(output_dir, exist_ok=True)
+                raw_mid, rand_seq, classes = test(piece, output_dir, args)
+                # p_acc = accuracy_score(raw_mid, rand_seq) 
+                # per_piece_accuracy.append(p_acc)
+                
+                keys_dict['primer'].append(classes['primer'])
+                keys_dict['algo'].append(classes['algo'])
+                keys_dict['model'].append(classes['model'])
+                keys_dict['target'].append(classes['target'])
+            except Exception as e:
+                print(e)
+                continue
     else:
         piece = pieces[args.primer_index]
         output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
@@ -159,7 +165,7 @@ if __name__ == "__main__":
         keys_dict['model'].append(classes['model'])
         keys_dict['target'].append(classes['target'])
 
-    overall_acc = np.mean(per_piece_accuracy)
+    # overall_acc = np.mean(per_piece_accuracy)
     # print('Sequence Accuracies')
     # print(SEPERATOR)
     # print(f'Per piece accuracies: \n {per_piece_accuracy}')
