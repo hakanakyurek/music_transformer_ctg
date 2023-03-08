@@ -39,7 +39,8 @@ def test(piece, output_dir, args):
         
         intervals = [interval.Interval('P4'), interval.Interval('P5')]
         inter = np.random.choice(intervals)
-        key_target = inter.transposePitch(key_primer.tonic)
+        key_target = str(inter.transposePitch(key_primer.tonic))
+        
         if key_target.isupper():
             key_target += ' major'
         else:
@@ -130,7 +131,8 @@ if __name__ == "__main__":
     # Can be None, an integer index to dataset
     if(args.primer_index is None):
         for piece in tqdm(pieces):
-            output_dir = os.path.join(args.output_dir, piece)
+            output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
+            os.makedirs(output_dir)
             raw_mid, rand_seq, classes = test(piece, output_dir, args)
             p_acc = accuracy_score(raw_mid, rand_seq) 
             per_piece_accuracy.append(p_acc)
@@ -141,7 +143,8 @@ if __name__ == "__main__":
             keys_dict['target'].append(classes['target'])
     else:
         piece = pieces[args.primer_index]
-        output_dir = os.path.join(args.output_dir, piece)
+        output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
+        os.makedirs(output_dir)        
         print(f"Using primer file: {piece}")
         raw_mid, rand_seq, classes = test(piece, output_dir, args)
         p_acc = accuracy_score(raw_mid, rand_seq) 
