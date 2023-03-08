@@ -33,14 +33,18 @@ def test(piece, output_dir, args):
 
     # Class condition to perfect 4th or perfect 5th
     if args.key:
-        my_score: music21.stream.Score = music21.converter.parse(f_path)
+        my_score: music21.stream.Score = music21.converter.parse(piece)
         key_primer = my_score.analyze('Krumhansl')
-        classes['primer'] = TOKEN_KEYS[key_primer]
+        classes['primer'] = KEY_DICT[str(key_primer)]
         
         intervals = [interval.Interval('P4'), interval.Interval('P5')]
         inter = np.random.choice(intervals)
         key_target = inter.transposePitch(key_primer.tonic)
-        token_key = TOKEN_KEYS[key_target]
+        if key_target.isupper():
+            key_target += ' major'
+        else:
+            key_target += ' minor'
+        token_key = KEY_DICT[str(key_target)]
         classes['target'] = token_key
     else:
         token_key = None
@@ -69,7 +73,7 @@ def test(piece, output_dir, args):
         if args.key:
             my_score: music21.stream.Score = music21.converter.parse(f_path)
             key_rand = my_score.analyze('Krumhansl')
-            classes['algo'] = TOKEN_KEYS[key_rand]
+            classes['algo'] = KEY_DICT[str(key_rand)]
         
 
     return raw_mid[:len(rand_seq)], rand_seq, classes
