@@ -49,14 +49,14 @@ def create_model_for_training(args, loss_func):
     return model
 
 
-def create_model_for_generation(args):
+def create_model_for_generation(args, model_weights):
 
     if args.arch == 2:
         model = MusicTransformerEncoderDecoder(n_layers=args.n_layers, num_heads=args.num_heads,
                     d_model=args.d_model, dim_feedforward=args.dim_feedforward,
                     max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
-        model.load_state_dict(torch.load(args.model_weights, map_location=get_device())['state_dict'])
+        model.load_state_dict(torch.load(model_weights, map_location=get_device())['state_dict'])
     elif args.arch == 1:
         if args.key:
             model = MusicTransformerCTRL(n_layers=args.n_layers, num_heads=args.num_heads,
@@ -67,7 +67,7 @@ def create_model_for_generation(args):
                         d_model=args.d_model, dim_feedforward=args.dim_feedforward,
                         max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
-        model.load_state_dict(torch.load(args.model_weights, map_location=get_device())['state_dict'])
+        model.load_state_dict(torch.load(model_weights, map_location=get_device())['state_dict'])
 
     return model
 
@@ -76,11 +76,11 @@ def create_model_for_classification(args, loss_func, n_classes):
     try:
         temp = args.key
         args.key = False
-        music_transformer = create_model_for_generation(args)
+        music_transformer = create_model_for_generation(args, args.classifier_weights)
         args.key = temp
     except:
         args.key = False
-        music_transformer = create_model_for_generation(args)
+        music_transformer = create_model_for_generation(args, args.classifier_weights)
 
     model = MusicTransformerClassifier(music_transformer=music_transformer,
                                        n_classes=n_classes,

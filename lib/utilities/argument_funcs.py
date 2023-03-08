@@ -237,6 +237,7 @@ def parse_test_args():
     parser.add_argument("--target_seq_length", type=int, default=1024, help="Target length you'd like the midi to be")
     parser.add_argument("--num_prime", type=int, default=256, help="Amount of messages to prime the generator with")
     parser.add_argument("--model_weights", type=str, default="./models/best.pt", help="Pickled model weights file saved with torch.save and model.state_dict()")
+    parser.add_argument('--classifier_weights', type=str, default="./models/best.pt", help="Pickled model weights file saved with torch.save and model.state_dict()")
     parser.add_argument('--temperature', type=float, default=1.0, help='Creativeness setting for the logits')
     parser.add_argument('--top_k', type=int, default=0, help='Top k for the filtering')
     parser.add_argument('--top_p', type=float, default=0.0, help='Top p for the filtering')
@@ -248,7 +249,7 @@ def parse_test_args():
     parser.add_argument("--num_heads", type=int, default=8, help="Number of heads to use for multi-head attention")
     parser.add_argument("--d_model", type=int, default=512, help="Dimension of the model (output dim of embedding layers, etc.)")
     parser.add_argument("--dim_feedforward", type=int, default=1024, help="Dimension of the feedforward layer")
-    parser.add_argument("--arch", type=int, help='Change model architecture \n --> encoder-decoder: 1 \n --> encoder: 2')
+    parser.add_argument("--arch", type=int, help='Change model architecture \n --> encoder-decoder: 2 \n --> encoder: 1')
     
     return parser.parse_args()
 

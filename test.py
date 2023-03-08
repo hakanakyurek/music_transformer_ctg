@@ -3,6 +3,7 @@ import os
 import music21
 from music21 import interval
 from tqdm import tqdm
+from joblib import load
 
 from lib.midi_processor.processor import decode_midi, encode_midi
 from lib.utilities.argument_funcs import parse_test_args, print_test_args
@@ -91,7 +92,7 @@ if __name__ == "__main__":
 
     classifier = create_model_for_classification(args)
     if args.key:
-        generator = create_model_for_generation(args)
+        generator = create_model_for_generation(args, args.model_weights)
     else:
         generator = classifier.backbone
 
@@ -100,6 +101,7 @@ if __name__ == "__main__":
     for subdir, dirs, files in os.walk(args.midi_root):
         for file in files:
             piece = os.path.join(subdir, file)
+            piece = load(piece)[2]
             pieces.append(piece) 
 
     pieces = pieces.sort()
