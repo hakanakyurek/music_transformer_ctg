@@ -81,7 +81,7 @@ def test(piece, output_dir, args):
             classes['algo'] = KEY_DICT[str(key_rand)]
         
 
-    return raw_mid[:len(rand_seq[0])].cpu().numpy(), rand_seq[0].cpu().numpy(), classes
+    return raw_mid.cpu().numpy(), rand_seq[0].cpu().numpy(), classes
 
 
 if __name__ == "__main__":
@@ -126,8 +126,8 @@ if __name__ == "__main__":
     print(f"Found {len(pieces)} pieces")
 
     # Metrics
-    overall_acc = 0
-    per_piece_accuracy = []
+    # overall_acc = 0
+    # per_piece_accuracy = []
     # Key arrays
     keys_dict = {'primer': [], 'algo': [], 'model': [], 'target': []}
 
@@ -138,8 +138,8 @@ if __name__ == "__main__":
             output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
             os.makedirs(output_dir, exist_ok=True)
             raw_mid, rand_seq, classes = test(piece, output_dir, args)
-            p_acc = accuracy_score(raw_mid, rand_seq) 
-            per_piece_accuracy.append(p_acc)
+            # p_acc = accuracy_score(raw_mid, rand_seq) 
+            # per_piece_accuracy.append(p_acc)
             
             keys_dict['primer'].append(classes['primer'])
             keys_dict['algo'].append(classes['algo'])
@@ -151,8 +151,8 @@ if __name__ == "__main__":
         os.makedirs(output_dir, exist_ok=True)        
         print(f"Using primer file: {piece}")
         raw_mid, rand_seq, classes = test(piece, output_dir, args)
-        p_acc = accuracy_score(raw_mid, rand_seq) 
-        per_piece_accuracy.append(p_acc)
+        # p_acc = accuracy_score(raw_mid, rand_seq) 
+        # per_piece_accuracy.append(p_acc)
     
         keys_dict['primer'].append(classes['primer'])
         keys_dict['algo'].append(classes['algo'])
@@ -160,12 +160,12 @@ if __name__ == "__main__":
         keys_dict['target'].append(classes['target'])
 
     overall_acc = np.mean(per_piece_accuracy)
-    print('Sequence Accuracies')
-    print(SEPERATOR)
-    print(f'Per piece accuracies: \n {per_piece_accuracy}')
-    print(SEPERATOR)
-    print(f'Overall accuracy: {overall_acc}')
-    print(SEPERATOR)
+    # print('Sequence Accuracies')
+    # print(SEPERATOR)
+    # print(f'Per piece accuracies: \n {per_piece_accuracy}')
+    # print(SEPERATOR)
+    # print(f'Overall accuracy: {overall_acc}')
+    # print(SEPERATOR)
 
     if args.key:
         # Check how much of the output keys are matching with the target according to the classifier
