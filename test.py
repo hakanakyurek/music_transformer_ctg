@@ -46,7 +46,12 @@ def test(piece, output_dir, args):
             key_target += ' major'
         else:
             key_target += ' minor'
+        
+        if token_key == 'D- major':
+            token_key = 'C# major'
+
         token_key = KEY_DICT[str(key_target)]
+
         classes['target'] = token_key
     else:
         token_key = None
@@ -76,7 +81,7 @@ def test(piece, output_dir, args):
             classes['algo'] = KEY_DICT[str(key_rand)]
         
 
-    return raw_mid[:len(rand_seq)].cpu().numpy(), rand_seq[0].cpu().numpy(), classes
+    return raw_mid[:len(rand_seq[0])].cpu().numpy(), rand_seq[0].cpu().numpy(), classes
 
 
 if __name__ == "__main__":
