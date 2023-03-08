@@ -51,11 +51,11 @@ def test(piece, output_dir, args):
         token_key = None
 
     primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False, token_key=token_key)
-    primer = primer.to(get_device())
 
     # Saving primer first
     f_path = os.path.join(output_dir, "primer.mid")
     decode_midi(primer[:args.num_prime].cpu().numpy(), file_path=f_path)
+    primer = primer.to(get_device())
 
     # GENERATION
     generator.eval()
@@ -66,10 +66,9 @@ def test(piece, output_dir, args):
 
         f_path = os.path.join(output_dir, "rand.mid")
         if args.key:
-            classes['model'] = torch.argmax(classifier(rand_seq)[1])
+            classes['model'] = torch.argmax(classifier(rand_seq)[1]).item()
 
-        rand_seq = rand_seq[0].cpu().numpy()
-        decode_midi(rand_seq, file_path=f_path)        
+        decode_midi(rand_seq.cpu().numpy(), file_path=f_path)        
 
         if args.key:
             my_score: music21.stream.Score = music21.converter.parse(f_path)
@@ -77,7 +76,7 @@ def test(piece, output_dir, args):
             classes['algo'] = KEY_DICT[str(key_rand)]
         
 
-    return raw_mid[:len(rand_seq)], rand_seq, classes
+    return raw_mid[:len(rand_seq)].numpy(), rand_seq.numpy(), classes
 
 
 if __name__ == "__main__":
