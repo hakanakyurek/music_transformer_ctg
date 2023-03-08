@@ -81,7 +81,7 @@ if __name__ == "__main__":
     print_test_args(args)
     vocab['size'] = VOCAB_SIZE_KEYS if args.key else VOCAB_SIZE_NORMAL
 
-    if type(args.primer_file) is str:
+    if type(args.primer_index) is str:
         raise Exception('primer file is not accepted here, use an integer instead')
 
     if(args.force_cpu):
