@@ -47,8 +47,8 @@ def test(piece, output_dir, args):
         else:
             key_target += ' minor'
         
-        if token_key == 'D- major':
-            token_key = 'C# major'
+        if str(key_target) == 'D- major':
+            key_target = 'C# major'
 
         token_key = KEY_DICT[str(key_target)]
 
