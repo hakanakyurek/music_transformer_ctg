@@ -178,6 +178,8 @@ if __name__ == "__main__":
         mt_key_acc = accuracy_score(keys_dict['target'], keys_dict['model'])
         # Check how much of the output keys are matching with the target according to the algorithm
         at_key_acc = accuracy_score(keys_dict['target'], keys_dict['algo'])
+        # Check how much of the output keys are matching with the target according to the algorithm
+        ma_key_acc = accuracy_score(keys_dict['model'], keys_dict['algo'])
         # Check how much of the primer keys are matching with the target according to the algorithm
         # This metric is for checking whether the baseline model can continue the primer in its key
         # For cclm this doesn't makes sense as we expect it to not follow it
@@ -186,6 +188,9 @@ if __name__ == "__main__":
         print(SEPERATOR)
         print('Classifier-Target Key Accuracy')
         print(f'Accuracy: {mt_key_acc}')
+        print(SEPERATOR)
+        print('Classifier-Algo Key Accuracy')
+        print(f'Accuracy: {ma_key_acc}')
         print(SEPERATOR)
         print('Algorithm-Target Key Accuracy')
         print(f'Accuracy: {at_key_acc}')
