@@ -4,18 +4,21 @@ from lib.utilities.constants import *
 from lib.utilities.device import get_device
 
 from lib.modules.cocon_block import CoconBlock
+from torch.optim.lr_scheduler import LambdaLR
 
+from lib.utilities.lr_scheduling import LrStepTracker
 from .music_transformer_base import MusicTransformerBase
 
 
 # MusicTransformer
 class MusicTransformerCoCon(MusicTransformerBase):
 
-    def __init__(self, music_transformer, acc_metric, lr=1, num_heads=8, d_model=512, dim_feedforward=1024, max_sequence=2048, keys=True):
+    def __init__(self, music_transformer, acc_metric, lr=1.0, num_heads=8, d_model=512, dim_feedforward=1024, max_sequence=2048, keys=True):
         super(MusicTransformerCoCon, self).__init__(acc_metric)
         print('Generatin CoCon model')
         # Key is always the first token if enabled
-        self.keys         = keys
+        self.keys = keys
+        self.lr = lr
         self.cs_len = 1
         
         self.music_transformer = music_transformer
@@ -98,7 +101,21 @@ class MusicTransformerCoCon(MusicTransformerBase):
 
         return loss, y
 
+    def configure_optimizers(self):
+        opt = torch.optim.Adam(self.cocon_block.parameters(), lr=self.lr, betas=(ADAM_BETA_1, ADAM_BETA_2), eps=ADAM_EPSILON)
+        # opt = torch.optim.SGD(self.parameters(), lr=self.lr, momentum=0.9)
 
+        lr_stepper = LrStepTracker(self.d_model, SCHEDULER_WARMUP_STEPS, 1)
+
+        lr_scheduler = LambdaLR(opt, lr_stepper.step)
+
+        return {
+        'optimizer': opt, 
+        'lr_scheduler': {
+            'scheduler': lr_scheduler, 
+            'interval': 'step'
+        }
+    }
 
 
 
