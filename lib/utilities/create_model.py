@@ -1,6 +1,7 @@
 from lib.model.music_transformer_ed import MusicTransformerEncoderDecoder
 from lib.model.music_transformer import MusicTransformerEncoder
 from lib.model.music_transformer_ctrl import MusicTransformerCTRL
+from lib.model.music_transformer_cocon import  MusicTransformerCoCon
 from lib.model.music_transformer_classifier import MusicTransformerClassifier
 from lib.metrics.accuracy import MusicAccuracy
 from lib.utilities.constants import LR_DEFAULT_START
@@ -22,7 +23,19 @@ def create_model_for_training(args, loss_func):
                                                 loss_fn=loss_func,
                                                 lr=LR_DEFAULT_START)
     elif args.arch == 1:
-        if args.key:
+        if args.key and args.cocon:
+            music_transformer = MusicTransformerEncoder(n_layers=args.n_layers, num_heads=args.num_heads,
+                        d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                        max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
+
+            music_transformer.load_state_dict(torch.load(args.checkpoint_path, map_location=get_device())['state_dict'])
+            
+            model = MusicTransformerCTRL(music_transformer, 
+                                         acc_metric=MusicAccuracy,
+                                         n_layers=args.n_layers, num_heads=args.num_heads,
+                                         d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                                         max_sequence=args.max_sequence, rpr=args.rpr, keys=args.keys)
+        elif args.key:
             model = MusicTransformerCTRL(n_layers=args.n_layers, 
                                     num_heads=args.num_heads,
                                     d_model=args.d_model, 

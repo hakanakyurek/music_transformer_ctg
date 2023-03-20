@@ -30,6 +30,7 @@ def parse_train_args():
     parser.add_argument('--key', action='store_true', help='Enable training with keys')
     parser.add_argument('--gedi', action='store_true', help='Enable training with gedi')
     parser.add_argument('--gedi_lambda', type=float, help='Gedi loss lambda')
+    parser.add_argument('--cocon', action='store_true', help='Enable training with cocon')
     # Model parameters
     parser.add_argument("--arch", type=int, help='Change model architecture \n --> encoder-decoder: 1 \n --> encoder: 2')
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
@@ -69,6 +70,7 @@ def print_train_args(args):
     print(f"epochs:{args.experiment_name}")
     print(f'keys enabled:{args.key}')
     print(f'gedi enabled:{args.gedi}')
+    print(f'cocon enabled:{args.cocon}')
     print(f'gedi lambda:{args.gedi_lambda}')
     print(f"Model parameters")
     print(f"rpr:{args.rpr}")
