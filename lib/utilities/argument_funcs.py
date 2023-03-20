@@ -31,6 +31,7 @@ def parse_train_args():
     parser.add_argument('--gedi', action='store_true', help='Enable training with gedi')
     parser.add_argument('--gedi_lambda', type=float, help='Gedi loss lambda')
     parser.add_argument('--cocon', action='store_true', help='Enable training with cocon')
+    parser.add_argument('--cocon_ms_path', action='str', help='music transformer for cocon')
     # Model parameters
     parser.add_argument("--arch", type=int, help='Change model architecture \n --> encoder-decoder: 1 \n --> encoder: 2')
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")

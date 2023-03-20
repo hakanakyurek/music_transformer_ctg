@@ -28,7 +28,7 @@ def create_model_for_training(args, loss_func):
                         d_model=args.d_model, dim_feedforward=args.dim_feedforward,
                         max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
 
-            music_transformer.load_state_dict(torch.load(args.checkpoint_path, map_location=get_device())['state_dict'])
+            music_transformer.load_state_dict(torch.load(args.cocon_ms_path, map_location=get_device())['state_dict'])
             
             model = MusicTransformerCTRL(music_transformer, 
                                          acc_metric=MusicAccuracy,
