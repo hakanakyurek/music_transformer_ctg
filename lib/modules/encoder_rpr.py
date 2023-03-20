@@ -6,6 +6,7 @@ from torch.nn.modules.linear import Linear
 from torch.nn.modules.dropout import Dropout
 from torch.nn.modules.normalization import LayerNorm
 
+from linear import MLP
 from .multihead_attention import MultiheadAttentionRPR
 
 # TransformerEncoderRPR
@@ -27,11 +28,14 @@ class TransformerEncoderRPR(Module):
         self.num_layers = num_layers
         self.norm = norm
 
-    def forward(self, src, mask=None, src_key_padding_mask=None):
-
+    def forward(self, src, mask=None, src_key_padding_mask=None, start_layer=0, stop_layer=None):
         output = src
 
         for i in range(self.num_layers):
+            if i == stop_layer:
+                break
+            if i < start_layer:
+                continue
             output = self.layers[i](output, src_mask=mask,
                                     src_key_padding_mask=src_key_padding_mask)
 
@@ -58,9 +62,7 @@ class TransformerEncoderLayerRPR(Module):
         super(TransformerEncoderLayerRPR, self).__init__()
         self.self_attn = MultiheadAttentionRPR(d_model, nhead, dropout=dropout, er_len=er_len)
         # Implementation of Feedforward model
-        self.linear1 = Linear(d_model, dim_feedforward)
-        self.dropout = Dropout(dropout)
-        self.linear2 = Linear(dim_feedforward, d_model)
+        self.mlp = MLP(d_model, dim_feedforward, dropout)
 
         self.norm1 = LayerNorm(d_model)
         self.norm2 = LayerNorm(d_model)
@@ -72,7 +74,7 @@ class TransformerEncoderLayerRPR(Module):
                               key_padding_mask=src_key_padding_mask)[0]
         src = src + self.dropout1(src2)
         src = self.norm1(src)
-        src2 = self.linear2(self.dropout(F.silu(self.linear1(src))))
+        src2 = self.mlp(src)
         src = src + self.dropout2(src2)
         src = self.norm2(src)
         return src

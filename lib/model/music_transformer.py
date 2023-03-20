@@ -9,6 +9,7 @@ from lib.utilities.top_p_top_k import top_k_top_p_filtering
 from ..modules.positional_encoding import PositionalEncoding
 from ..modules.encoder_rpr import TransformerEncoderRPR, TransformerEncoderLayerRPR
 from ..modules.dummy_decoder import DummyDecoder
+from ..modules.transformer import Transformer
 
 from .music_transformer_base import MusicTransformerBase
 
@@ -51,7 +52,7 @@ class MusicTransformerEncoder(MusicTransformerBase):
             encoder_norm = LayerNorm(self.d_model)
             encoder_layer = TransformerEncoderLayerRPR(self.d_model, self.nhead, self.d_ff, self.dropout, er_len=self.max_seq)
             encoder = TransformerEncoderRPR(encoder_layer, self.nlayers, encoder_norm)
-            self.transformer = nn.Transformer(
+            self.transformer = Transformer(
                 d_model=self.d_model, nhead=self.nhead, num_encoder_layers=self.nlayers,
                 num_decoder_layers=0, dropout=self.dropout, # activation=self.ff_activ,
                 dim_feedforward=self.d_ff, custom_decoder=self.dummy, custom_encoder=encoder
@@ -62,28 +63,30 @@ class MusicTransformerEncoder(MusicTransformerBase):
         self.softmax    = nn.Softmax(dim=-1)
 
     # forward
-    def forward(self, x, mask=True):
+    def forward(self, x, mask=True, start_layer=0, stop_layer=None):
         """
         Takes an input sequence and outputs predictions using a sequence to sequence method.
 
         A prediction at one index is the "next" prediction given all information seen previously.
         """
+        if start_layer == 0:
+            if(mask is True):
+                mask = self.transformer.generate_square_subsequent_mask(x.shape[1]).to(get_device())
+            else:
+                mask = None
 
-        if(mask is True):
-            mask = self.transformer.generate_square_subsequent_mask(x.shape[1]).to(get_device())
+            x = self.embedding(x)
+            x *= torch.sqrt(torch.tensor(self.d_model).float())
+            # Input shape is (max_seq, batch_size, d_model)
+            x = x.permute(1,0,2)
+
+            x = self.positional_encoding(x)
         else:
-            mask = None
-
-        x = self.embedding(x)
-        x *= torch.sqrt(torch.tensor(self.d_model).float())
-        # Input shape is (max_seq, batch_size, d_model)
-        x = x.permute(1,0,2)
-
-        x = self.positional_encoding(x)
-
+            x = x.permute(1,0,2)
         # Since there are no true decoder layers, the tgt is unused
         # Pytorch wants src and tgt to have some equal dims however
-        x_out = self.transformer(src=x, tgt=x, src_mask=mask)
+        x_out = self.transformer(src=x, tgt=x, src_mask=mask, 
+                                 start_layer=start_layer, stop_layer=stop_layer)
 
         # Back to (batch_size, max_seq, d_model)
         x_out = x_out.permute(1,0,2)

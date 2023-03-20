@@ -29,19 +29,10 @@ class MidiDataModule(pl.LightningDataModule):
             
             return x, tgt_input, tgt_output
         elif self.model_arch == 1:
-            if self.gedi:
-                x, tgt, keys = zip(*batch)
-                x = torch.stack(x)
-                tgt = torch.stack(tgt)
-                keys = torch.stack(keys)
-
-                return x, tgt, keys
-            else:
-                x, tgt = zip(*batch)
-                x = torch.stack(x)
-                tgt = torch.stack(tgt)
-
-                return x, tgt
+            model_input = []
+            model_input.append(zip(*batch))
+            for i in range(len(model_input)):
+                model_input[i] = torch.stack(model_input[i])
 
     def train_dataloader(self):
         self.train = MidiDataset(f'{self.data_dir}train/', self.model_arch, self.max_seq, self.random_seq, self.dataset_percentage, self.keys)

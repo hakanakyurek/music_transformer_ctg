@@ -30,7 +30,7 @@ class MidiDataset(Dataset):
 
     """
 
-    def __init__(self, root, arch, max_seq=2048, random_seq=False, percentage=100.0, keys=None, gedi=False):
+    def __init__(self, root, arch, max_seq=2048, random_seq=False, percentage=100.0, keys=None, gedi=False, cocon=False):
         self.root       = root
         self.max_seq    = max_seq
         self.random_seq = random_seq
@@ -38,6 +38,7 @@ class MidiDataset(Dataset):
         self.model_arch = arch
         self.keys       = keys
         self.gedi       = gedi
+        self.cocon      = cocon
 
         self.rng = np.random.default_rng(seed=2486)
 
@@ -111,6 +112,10 @@ class MidiDataset(Dataset):
             x, tgt = process_midi(aug_midi, self.max_seq, False, token_key)
             if self.gedi:
                 return x, tgt, token_key
+            elif self.cocon:
+                c = torch.full((self.max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
+                c[0] = token_key
+                return c, x, tgt
             else:
                 return x, tgt
 
