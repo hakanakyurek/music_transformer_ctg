@@ -11,7 +11,7 @@ from .music_transformer_base import MusicTransformerBase
 # MusicTransformer
 class MusicTransformerCoCon(MusicTransformerBase):
 
-    def __init__(self, music_transformer, acc_metric, num_heads=8, d_model=512, dim_feedforward=1024, max_sequence=2048, keys=True):
+    def __init__(self, music_transformer, acc_metric, lr=1, num_heads=8, d_model=512, dim_feedforward=1024, max_sequence=2048, keys=True):
         super(MusicTransformerCoCon, self).__init__(acc_metric)
         print('Generatin CoCon model')
         # Key is always the first token if enabled
