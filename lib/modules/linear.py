@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-from conv1d import Conv1D
+from .conv1d import Conv1D
 
 
 class MLP(nn.Module):

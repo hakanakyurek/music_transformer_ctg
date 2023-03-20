@@ -2,8 +2,8 @@ import torch.nn as nn
 import torch
 import math
 
-from conv1d import *
-from linear import MLP
+from .conv1d import *
+from .linear import MLP
 
 class CoconBlock(nn.Module):
     def __init__(self, d_model, dim_feedforward, num_heads=8, max_sequence=2048, 

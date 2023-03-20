@@ -5,7 +5,7 @@
 from torch.nn import Module
 from typing import Optional, Any, Union, Callable
 from torch import Tensor
-from torch import functional as F
+from torch.nn import functional as F
 import torch
 from torch.nn.init import xavier_uniform_
 
