@@ -24,12 +24,16 @@ def create_model_for_training(args, loss_func):
                                                 lr=LR_DEFAULT_START)
     elif args.arch == 1:
         if args.key and args.cocon:
-            temp = args.key
-            args.key = False
-            vocab['size'] = VOCAB_SIZE_NORMAL
-            music_transformer = create_model_for_generation(args, args.cocon_ms_path)
-            vocab['size'] = VOCAB_SIZE_KEYS
-            args.key = temp
+            music_transformer = MusicTransformerEncoder(n_layers=args.n_layers, 
+                                            num_heads=args.num_heads,
+                                            d_model=args.d_model, 
+                                            dim_feedforward=args.dim_feedforward, 
+                                            dropout=args.dropout,
+                                            max_sequence=args.max_sequence, 
+                                            rpr=args.rpr, 
+                                            acc_metric=MusicAccuracy, 
+                                            loss_fn=loss_func,
+                                            lr=LR_DEFAULT_START)
             
             model = MusicTransformerCoCon(music_transformer, 
                                          acc_metric=MusicAccuracy, num_heads=args.num_heads,
