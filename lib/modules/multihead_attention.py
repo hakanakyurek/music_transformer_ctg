@@ -168,8 +168,8 @@ def multi_head_attention_forward_rpr(query,                       # type: Tensor
 
     # type: (...) -> Tuple[Tensor, Optional[Tensor]]
 
-    qkv_same = torch.equal(query, key) and torch.equal(key, value)
-    kv_same = torch.equal(key, value)
+    qkv_same = query is key and key is value
+    kv_same = key is value
 
     tgt_len, bsz, embed_dim = query.size()
     assert embed_dim == embed_dim_to_check

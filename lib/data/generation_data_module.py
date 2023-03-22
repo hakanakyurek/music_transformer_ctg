@@ -30,10 +30,11 @@ class MidiDataModule(pl.LightningDataModule):
             
             return x, tgt_input, tgt_output
         elif self.model_arch == 1:
-            model_input = []
-            model_input.append(zip(*batch))
+            model_input = list(zip(*batch))
             for i in range(len(model_input)):
                 model_input[i] = torch.stack(model_input[i])
+            
+            return model_input
 
     def train_dataloader(self):
         self.train = MidiDataset(f'{self.data_dir}train/', self.model_arch, self.max_seq, self.random_seq, 

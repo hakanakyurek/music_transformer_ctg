@@ -20,6 +20,8 @@ class MusicTransformerCoCon(MusicTransformerBase):
         self.keys = keys
         self.lr = lr
         self.cs_len = 1
+        self.d_model = d_model
+        
         
         self.music_transformer = music_transformer
         self.cocon_block  = CoconBlock(d_model, dim_feedforward, num_heads, max_sequence)

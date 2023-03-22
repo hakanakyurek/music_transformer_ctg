@@ -69,12 +69,13 @@ class MusicTransformerEncoder(MusicTransformerBase):
 
         A prediction at one index is the "next" prediction given all information seen previously.
         """
+        if mask is True:
+            mask = self.transformer.generate_square_subsequent_mask(x.shape[1]).to(get_device())
+        else:
+            mask = None
+        
         if start_layer == 0:
-            if(mask is True):
-                mask = self.transformer.generate_square_subsequent_mask(x.shape[1]).to(get_device())
-            else:
-                mask = None
-
+            
             x = self.embedding(x)
             x *= torch.sqrt(torch.tensor(self.d_model).float())
             # Input shape is (max_seq, batch_size, d_model)
