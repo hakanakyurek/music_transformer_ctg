@@ -75,6 +75,7 @@ class MusicTransformerCoCon(MusicTransformerBase):
         # x input, c context 
         hidden_x = self.music_transformer(x, mask=mask, stop_layer=1)
         hidden_c = self.music_transformer(c, mask=mask, stop_layer=1)
+        hidden_c = hidden_c[:,0,:]
 
         # No start of sentence already
         # History sequence doesn't exist as we aren't doing self supervised learning

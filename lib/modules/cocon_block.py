@@ -3,7 +3,9 @@ import torch
 import math
 
 from .conv1d import *
-from .linear import MLP
+from torch.nn import Linear, Dropout
+import torch.functional as F
+
 
 class CoconBlock(nn.Module):
     def __init__(self, d_model, dim_feedforward, num_heads=8, max_sequence=2048, 
@@ -17,7 +19,9 @@ class CoconBlock(nn.Module):
 
         self.cocon_attn = CoconAttention(d_model, num_heads, max_sequence, output_attn, scale)
         self.ln_2 = nn.LayerNorm(d_model)
-        self.mlp = MLP(d_model, dim_feedforward)
+        self.linear1 = Linear(d_model, dim_feedforward)
+        self.dropout = Dropout(dropout)
+        self.linear2 = Linear(dim_feedforward, d_model)
         self.instance_norm = nn.InstanceNorm1d(d_model, affine=False, track_running_stats=False)
 
         self.attn_dropout = nn.Dropout(dropout)
@@ -45,10 +49,11 @@ class CoconBlock(nn.Module):
             else:
                 cocon_attn_input = history_seq
         elif x is not None:
-            history_seq_len = 0
-            batch_size = x.shape[0]
-            sos_h = self.sos_h.view(1, 1, -1).expand(batch_size, -1, -1)
-            cocon_attn_input = torch.cat([sos_h, x], dim=1)
+            # history_seq_len = 0
+            # batch_size = x.shape[0]
+            # sos_h = self.sos_h.view(1, 1, -1).expand(batch_size, -1, -1)
+            # cocon_attn_input = torch.cat([sos_h, x], dim=1)
+            cocon_attn_input = x
 
         x = cocon_attn_input
 
@@ -70,7 +75,7 @@ class CoconBlock(nn.Module):
 
         x_ln_2 = self.ln_2(x)
         x_2_output = x_ln_2
-        m = self.mlp(x_2_output)
+        m = self.linear2(self.dropout(F.silu(self.linear1(x_2_output))))
         # H^L
         x = x + m
 
@@ -80,7 +85,6 @@ class CoconBlock(nn.Module):
             cocon_output = x[:, 1:, :]
 
         return cocon_output
-
 
     def init_weights(self):
         """ Initialize weights if needed. """
