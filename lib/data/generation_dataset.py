@@ -115,7 +115,7 @@ class MidiDataset(Dataset):
             elif self.cocon:
                 c = torch.full((self.max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
                 c[0] = token_key
-                return c, x, tgt
+                return c, x[1:], tgt[1:]
             else:
                 return x, tgt
 
