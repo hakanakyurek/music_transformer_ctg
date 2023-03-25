@@ -81,9 +81,9 @@ class MusicTransformerCoCon(MusicTransformerBase):
         # History sequence doesn't exist as we aren't doing self supervised learning
         cocon_output = self.cocon_block(hidden_x, context_seq=hidden_c, include_sos_output=True)
 
-        cocon_lm_tail_input = torch.cat([hidden_x[:, :-1], cocon_output], dim=1)
+        # cocon_lm_tail_input = torch.cat([hidden_x[:, :-1], cocon_output], dim=1)
 
-        cocon_lm_tail_output = self.music_transformer(cocon_lm_tail_input, start_layer=2, 
+        cocon_lm_tail_output = self.music_transformer(cocon_output, start_layer=2, 
                                                       stop_layer=self.music_transformer.nlayers)
 
         return cocon_lm_tail_output

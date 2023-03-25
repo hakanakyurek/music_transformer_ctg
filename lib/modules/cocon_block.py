@@ -4,7 +4,7 @@ import math
 
 from .conv1d import *
 from torch.nn import Linear, Dropout
-import torch.functional as F
+from torch.nn import functional as F
 
 
 class CoconBlock(nn.Module):
@@ -49,7 +49,7 @@ class CoconBlock(nn.Module):
             else:
                 cocon_attn_input = history_seq
         elif x is not None:
-            # history_seq_len = 0
+            history_seq_len = 0
             # batch_size = x.shape[0]
             # sos_h = self.sos_h.view(1, 1, -1).expand(batch_size, -1, -1)
             # cocon_attn_input = torch.cat([sos_h, x], dim=1)
