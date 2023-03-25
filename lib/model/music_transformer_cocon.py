@@ -76,6 +76,7 @@ class MusicTransformerCoCon(MusicTransformerBase):
         hidden_x = self.music_transformer(x, mask=mask, stop_layer=1)
         hidden_c = self.music_transformer(c, mask=mask, stop_layer=1)
         hidden_c = hidden_c[:,0,:]
+        hidden_c = hidden_c.unsqueeze(1)
 
         # No start of sentence already
         # History sequence doesn't exist as we aren't doing self supervised learning
