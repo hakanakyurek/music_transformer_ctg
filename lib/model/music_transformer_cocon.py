@@ -22,7 +22,7 @@ class MusicTransformerCoCon(MusicTransformerBase):
         self.lr = lr
         self.cs_len = 1
         self.d_model = d_model
-        
+        self.loss_fn = loss_fn
         
         self.music_transformer = music_transformer
         self.cocon_block  = CoconBlock(d_model, dim_feedforward, num_heads, max_sequence)
