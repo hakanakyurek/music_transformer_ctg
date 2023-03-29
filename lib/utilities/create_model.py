@@ -24,21 +24,17 @@ def create_model_for_training(args, loss_func):
                                                 lr=LR_DEFAULT_START)
     elif args.arch == 1:
         if args.key and args.cocon:
-            music_transformer = MusicTransformerEncoder(n_layers=args.n_layers, 
-                                            num_heads=args.num_heads,
-                                            d_model=args.d_model, 
-                                            dim_feedforward=args.dim_feedforward, 
-                                            dropout=args.dropout,
-                                            max_sequence=args.max_sequence, 
-                                            rpr=args.rpr, 
-                                            acc_metric=MusicAccuracy, 
-                                            loss_fn=loss_func,
-                                            lr=LR_DEFAULT_START)
+            music_transformer = MusicTransformerEncoder(n_layers=args.n_layers, num_heads=args.num_heads,
+                            d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                            max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
+
+            music_transformer.load_state_dict(torch.load(args.cocon_ms_path, map_location=get_device())['state_dict'])
+
             
             model = MusicTransformerCoCon(music_transformer, 
                                          acc_metric=MusicAccuracy, num_heads=args.num_heads,
                                          d_model=args.d_model, dim_feedforward=args.dim_feedforward,
-                                         max_sequence=args.max_sequence, lr=args.lr, keys=args.key, loss_fn=loss_func,)
+                                         max_sequence=args.max_sequence, lr=LR_DEFAULT_START, keys=args.key, loss_fn=loss_func,)
         elif args.key:
             model = MusicTransformerCTRL(n_layers=args.n_layers, 
                                     num_heads=args.num_heads,
