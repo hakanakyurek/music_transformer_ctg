@@ -44,15 +44,14 @@ class MusicTransformerCoCon(MusicTransformerBase):
         num_primer = len(primer)
         gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
 
-
         # print("primer:",primer)
         # print(gen_seq.shape)
         # Here cur_i is the current token index
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            y = self.Wout(self.forward(gen_seq[..., :cur_i], context))
-            y = self.softmax(y / temperature)[..., :TOKEN_END]
+            y = self.music_transformer.Wout(self.forward(gen_seq[..., :cur_i], context[..., :cur_i]))
+            y = self.music_transformer.softmax(y / temperature)[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
             # next_token = torch.argmax(token_probs)
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)
