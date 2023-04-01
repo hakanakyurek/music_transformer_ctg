@@ -71,7 +71,16 @@ def create_model_for_generation(args, model_weights):
 
         model.load_state_dict(torch.load(model_weights, map_location=get_device())['state_dict'])
     elif args.arch == 1:
-        if args.key:
+        if args.cocon & args.key:
+
+            music_transformer = MusicTransformerEncoder(n_layers=args.n_layers, num_heads=args.num_heads,
+                                    d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                                    max_sequence=args.max_sequence, rpr=args.rpr).to(get_device())
+            model = MusicTransformerCoCon(music_transformer, 
+                                         acc_metric=MusicAccuracy, num_heads=args.num_heads,
+                                         d_model=args.d_model, dim_feedforward=args.dim_feedforward,
+                                         max_sequence=args.max_sequence, lr=LR_DEFAULT_START, keys=args.key)
+        elif args.key:
             model = MusicTransformerCTRL(n_layers=args.n_layers, num_heads=args.num_heads,
                         d_model=args.d_model, dim_feedforward=args.dim_feedforward,
                         max_sequence=args.max_sequence, rpr=args.rpr, keys=args.key).to(get_device())

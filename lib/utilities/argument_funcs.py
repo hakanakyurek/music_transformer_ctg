@@ -245,6 +245,7 @@ def parse_test_args():
     parser.add_argument('--top_k', type=int, default=0, help='Top k for the filtering')
     parser.add_argument('--top_p', type=float, default=0.0, help='Top p for the filtering')
     parser.add_argument('--key', action='store_true', help='Enable generation with keys')
+    parser.add_argument('--cocon', action='store_true', help='Enable training with cocon')
     # Model parameters
     parser.add_argument("--rpr", action="store_true", help="Use a modified Transformer for Relative Position Representations")
     parser.add_argument("--max_sequence", type=int, default=2048, help="Maximum midi sequence to consider")

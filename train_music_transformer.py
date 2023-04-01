@@ -27,7 +27,7 @@ def main():
 
     args = parse_train_args()
     print_train_args(args)
-    vocab['size'] = VOCAB_SIZE_KEYS if args.key else VOCAB_SIZE_NORMAL
+    vocab['size'] = VOCAB_SIZE_KEYS
 
     if (args.run_id and not args.checkpoint_path) or (not args.run_id and args.checkpoint_path):
         print('Run id and Checkpoint path should be given together!')

@@ -68,9 +68,14 @@ def test(piece, output_dir, args):
     # GENERATION
     generator.eval()
     with torch.set_grad_enabled(False) and NoStdOut():
-        rand_seq = generator.generate(primer[:args.num_prime], args.target_seq_length, 
-                                  temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)   
-
+        if args.cocon:
+            c = torch.full((args.max_seq, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE)
+            c[0] = token_key
+            rand_seq = generator.generate(primer[:args.num_prime], c, args.target_seq_length, 
+                                    temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)   
+        else:
+            rand_seq = generator.generate(primer[:args.num_prime], args.target_seq_length, 
+                                    temperature=args.temperature, top_k=args.top_k, top_p=args.top_p) 
         f_path = os.path.join(output_dir, "rand.mid")
         if args.key:
             classes['model'] = torch.argmax(classifier(rand_seq)[1]).item()

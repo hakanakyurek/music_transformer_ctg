@@ -13,7 +13,7 @@ from .music_transformer_base import MusicTransformerBase
 # MusicTransformer
 class MusicTransformerCoCon(MusicTransformerBase):
 
-    def __init__(self, music_transformer, acc_metric, loss_fn, lr=1.0, num_heads=8, d_model=512, dim_feedforward=1024, 
+    def __init__(self, music_transformer, acc_metric, loss_fn=None, lr=1.0, num_heads=8, d_model=512, dim_feedforward=1024, 
                  max_sequence=2048, keys=True):
         super(MusicTransformerCoCon, self).__init__(acc_metric)
         print('Generatin CoCon model')
@@ -29,7 +29,7 @@ class MusicTransformerCoCon(MusicTransformerBase):
         
 
     # generate
-    def generate(self, primer=None, target_seq_length=1024, temperature=1.0, top_p=0.0, top_k=0):
+    def generate(self, primer, context, target_seq_length=1024, temperature=1.0, top_p=0.0, top_k=0):
         """
         Generates midi given a primer sample. Music can be generated using a probability distribution over
         the softmax probabilities (recommended) or by using a beam search.
@@ -51,7 +51,7 @@ class MusicTransformerCoCon(MusicTransformerBase):
         cur_i = num_primer
         while(cur_i < target_seq_length):
             # gen_seq_batch     = gen_seq.clone()
-            y = self.Wout(self.forward(gen_seq[..., :cur_i]))
+            y = self.Wout(self.forward(gen_seq[..., :cur_i], context))
             y = self.softmax(y / temperature)[..., :TOKEN_END]
             token_probs = y[:, cur_i-1, :]
             # next_token = torch.argmax(token_probs)
