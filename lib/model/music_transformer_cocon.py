@@ -40,7 +40,6 @@ class MusicTransformerCoCon(MusicTransformerBase):
         print(f"Generating sequence of max length: {target_seq_length}")
 
         gen_seq = torch.full((1,target_seq_length), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
-        context = context.unsqueeze(1)
         num_primer = len(primer)
         gen_seq[..., :num_primer] = primer.type(TORCH_LABEL_TYPE).to(get_device())
 

@@ -70,8 +70,9 @@ def test(piece, output_dir, args):
     generator.eval()
     with torch.set_grad_enabled(False) and NoStdOut():
         if args.cocon:
-            c = torch.full((args.max_sequence, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
+            c = torch.full((args.target_seq_length, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
             c[0] = token_key
+            context = context.unsqueeze(1)
             rand_seq = generator.generate(primer[:args.num_prime], c, args.target_seq_length, 
                                     temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)   
         else:
