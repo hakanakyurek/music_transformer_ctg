@@ -59,7 +59,7 @@ def test(piece, output_dir, args):
         key_primer = my_score.analyze('Krumhansl')
         classes['primer'] = KEY_DICT[str(key_primer)]
         
-        key_targets = closely_related_keys(key_primer)
+        key_targets = closely_related_keys(str(key_primer))
         key_target = np.random.choice(key_targets)
         
         if key_target == 'D-':
