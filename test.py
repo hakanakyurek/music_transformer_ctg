@@ -18,26 +18,6 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 import traceback
 
-def closely_related_keys(key):
-    related_keys = {
-        'C': ['Am', 'G', 'Em', 'F', 'Dm'],
-        'G': ['Em', 'D', 'Bm', 'C', 'Am'],
-        'D': ['Bm', 'A', 'F#m', 'G', 'Em'],
-        'A': ['F#m', 'E', 'C#m', 'D', 'Bm'],
-        'E': ['C#m', 'B', 'G#m', 'A', 'F#m'],
-        'B': ['G#m', 'F#', 'D#m', 'E', 'C##m'],
-        'F#': ['D#m', 'C#', 'A#m', 'B', 'G#m'],
-        'C#': ['A#m', 'G#', 'Fm', 'F#', 'D#m'],
-        'F': ['Dm', 'B-', 'Gm', 'G#', 'C'],
-        'B-': ['Gm', 'E-', 'Cm', 'F', 'Dm'],
-        'E-': ['Cm', 'A-', 'Fm', 'B-', 'Gm'],
-        'A-': ['Fm', 'D-', 'B-m', 'E-', 'Cm'],
-        'D-': ['B-m', 'G-', 'E-m', 'A-', 'Fm'],
-        'G-': ['E-m', 'C-', 'A-m', 'D-', 'B-m'],
-        'C-': ['A-m', 'F-', 'D-m', 'G-', 'E-m']
-    }
-    return related_keys[key]
-
 # main
 def test(piece, output_dir, args):
     """
@@ -59,8 +39,9 @@ def test(piece, output_dir, args):
         key_primer = my_score.analyze('Krumhansl')
         classes['primer'] = KEY_DICT[str(key_primer)]
         
-        key_targets = closely_related_keys(key_primer)
-        key_target = np.random.choice(key_targets)
+        intervals = [interval.Interval('P4'), interval.Interval('P5')]
+        inter = np.random.choice(intervals)
+        key_target = str(inter.transposePitch(key_primer.tonic))
         
         if key_target == 'D-':
             key_target = 'C#'
@@ -91,7 +72,7 @@ def test(piece, output_dir, args):
         if args.cocon:
             c = torch.full((args.target_seq_length, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
             c[0] = token_key
-            c = c.unsqueeze(0)
+            context = context.unsqueeze(1)
             rand_seq = generator.generate(primer[:args.num_prime], c, args.target_seq_length, 
                                     temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)   
         else:
