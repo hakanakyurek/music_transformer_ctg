@@ -1,7 +1,7 @@
 import torch
 import os
 import music21
-from music21 import interval
+from music21 import interval, converter, scale, note, chord
 from tqdm import tqdm
 from joblib import load
 
@@ -17,26 +17,8 @@ from lib.data.midi_processing import *
 from sklearn.metrics import accuracy_score
 import numpy as np
 import traceback
+from torchtext.data.metrics import bleu_score
 
-def closely_related_keys(key):
-    related_keys = {
-        'C': ['Am', 'G', 'Em', 'F', 'Dm'],
-        'G': ['Em', 'D', 'Bm', 'C', 'Am'],
-        'D': ['Bm', 'A', 'F#m', 'G', 'Em'],
-        'A': ['F#m', 'E', 'C#m', 'D', 'Bm'],
-        'E': ['C#m', 'B', 'G#m', 'A', 'F#m'],
-        'B': ['G#m', 'F#', 'D#m', 'E', 'C##m'],
-        'F#': ['D#m', 'C#', 'A#m', 'B', 'G#m'],
-        'C#': ['A#m', 'G#', 'Fm', 'F#', 'D#m'],
-        'F': ['Dm', 'B-', 'Gm', 'G#', 'C'],
-        'B-': ['Gm', 'E-', 'Cm', 'F', 'Dm'],
-        'E-': ['Cm', 'A-', 'Fm', 'B-', 'Gm'],
-        'A-': ['Fm', 'D-', 'B-m', 'E-', 'Cm'],
-        'D-': ['B-m', 'G-', 'E-m', 'A-', 'Fm'],
-        'G-': ['E-m', 'C-', 'A-m', 'D-', 'B-m'],
-        'C-': ['A-m', 'F-', 'D-m', 'G-', 'E-m']
-    }
-    return related_keys[key]
 
 # main
 def test(piece, output_dir, args):
@@ -52,31 +34,49 @@ def test(piece, output_dir, args):
         print(f"Error: No midi messages in primer file: {piece}")
         return
     raw_mid = torch.tensor(raw_mid, dtype=TORCH_LABEL_TYPE)
-
+    my_score: music21.stream.Score = music21.converter.parse(piece)
+    key_primer = my_score.analyze('Krumhansl')
+    classes['primer'] = KEY_DICT[str(key_primer)]
     # Class condition to perfect 4th or perfect 5th
     if args.key:
-        my_score: music21.stream.Score = music21.converter.parse(piece)
-        key_primer = my_score.analyze('Krumhansl')
-        classes['primer'] = KEY_DICT[str(key_primer)]
-        
-        key_targets = closely_related_keys(key_primer)
-        key_target = np.random.choice(key_targets)
-        
-        if key_target == 'D-':
-            key_target = 'C#'
-        if key_target == 'G#':
-            key_target = 'A-'
+        intervals = [interval.Interval('P4'), interval.Interval('P5'), interval.Interval('P1')]
+        relative_intervals = [interval.Interval('M6'), interval.Interval('P1')]
+        inter = np.random.choice(intervals)
+        relative_inter = np.random.choice(relative_intervals)
+        key_target = str(inter.transposePitch(key_primer.tonic))
+        key_target = str(relative_inter.transposePitch(key_primer.tonic))
 
         if key_target.isupper():
-            key_target += ' major'
+            if relative_intervals == interval.Interval('P1'):
+                key_target += ' major'
+            else:
+                key_target = key_target.lower()
+                key_target += ' minor'
         else:
-            key_target += ' minor'
+            if relative_intervals == interval.Interval('P1'):
+                key_target += ' minor'
+            else:
+                key_target = key_target.upper()
+                key_target += ' major'
 
+        tonic_name = key_target.split(' ')[0]
+        if tonic_name == 'D-':
+            key_target = 'C# major'
+        if tonic_name == 'G#':
+            key_target = 'A- major'
+        if tonic_name == 'a-':
+            key_target = 'g# minor'
+        if tonic_name == 'a#':
+            key_target = 'b- minor'
+        if tonic_name == 'd#':
+            key_target = 'e- minor'
         token_key = KEY_DICT[str(key_target)]
 
-        classes['target'] = token_key
     else:
-        token_key = None
+        key_target = str(key_primer)
+        token_key = KEY_DICT[str(key_primer)]
+
+    classes['target'] = token_key
 
     primer, _  = process_midi(raw_mid, args.num_prime, random_seq=False, token_key=token_key)
 
@@ -92,24 +92,23 @@ def test(piece, output_dir, args):
             c = torch.full((args.target_seq_length, ), TOKEN_PAD, dtype=TORCH_LABEL_TYPE, device=get_device())
             c[0] = token_key
             c = c.unsqueeze(0)
+
             rand_seq = generator.generate(primer[:args.num_prime], c, args.target_seq_length, 
                                     temperature=args.temperature, top_k=args.top_k, top_p=args.top_p)   
         else:
             rand_seq = generator.generate(primer[:args.num_prime], args.target_seq_length, 
                                     temperature=args.temperature, top_k=args.top_k, top_p=args.top_p) 
         f_path = os.path.join(output_dir, "rand.mid")
-        if args.key:
-            classes['model'] = torch.argmax(classifier(rand_seq)[1]).item()
+        classes['model'] = torch.argmax(classifier(rand_seq)[1]).item()
 
         decode_midi(rand_seq[0].cpu().numpy(), file_path=f_path)        
 
-        if args.key:
-            my_score: music21.stream.Score = music21.converter.parse(f_path)
-            key_rand = my_score.analyze('Krumhansl')
-            classes['algo'] = KEY_DICT[str(key_rand)]
+        my_score: music21.stream.Score = music21.converter.parse(f_path)
+        key_rand = my_score.analyze('Krumhansl')
+        classes['algo'] = KEY_DICT[str(key_rand)]
         
-
-    return raw_mid.cpu().numpy(), rand_seq[0].cpu().numpy(), classes
+    print(classes)
+    return raw_mid.cpu().numpy(), rand_seq[0].cpu().numpy(), classes, key_target
 
 
 if __name__ == "__main__":
@@ -126,20 +125,15 @@ if __name__ == "__main__":
 
     os.makedirs(args.output_dir, exist_ok=True)
 
-    n_classes = 0
-    if args.key:
-        n_classes = len(KEY_DICT)
+    n_classes = len(KEY_DICT)
 
     vocab['size'] = VOCAB_SIZE_NORMAL
 
     classifier = create_model_for_classification_test(args, n_classes)
 
-    vocab['size'] = VOCAB_SIZE_KEYS if args.key else VOCAB_SIZE_NORMAL
+    vocab['size'] = VOCAB_SIZE_KEYS
 
-    if args.key:
-        generator = create_model_for_generation(args, args.model_weights)
-    else:
-        generator = classifier.backbone
+    generator = create_model_for_generation(args, args.model_weights)
 
     pieces = []
 
@@ -153,12 +147,10 @@ if __name__ == "__main__":
 
     print(f"Found {len(pieces)} pieces")
 
-    # Metrics
-    # overall_acc = 0
-    # per_piece_accuracy = []
     # Key arrays
     keys_dict = {'primer': [], 'algo': [], 'model': [], 'target': []}
-
+    bleu_scores = []
+    note_persistency_scores = []
 
     # Can be None, an integer index to dataset
     if(args.primer_index is None):
@@ -166,7 +158,7 @@ if __name__ == "__main__":
             try:
                 output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
                 os.makedirs(output_dir, exist_ok=True)
-                raw_mid, rand_seq, classes = test(piece, output_dir, args)
+                raw_mid, rand_seq, classes, key_target = test(piece, output_dir, args)
                 # p_acc = accuracy_score(raw_mid, rand_seq) 
                 # per_piece_accuracy.append(p_acc)
                 
@@ -174,6 +166,37 @@ if __name__ == "__main__":
                 keys_dict['algo'].append(classes['algo'])
                 keys_dict['model'].append(classes['model'])
                 keys_dict['target'].append(classes['target'])
+
+                # Get the notes of the target key
+
+                output_file = os.path.join(output_dir, "rand.mid")
+                midi_file = converter.parse(output_file)
+                
+                target_scale = scale.MajorScale(key_target.split(' ')[0])
+                notes_in_scale = [str(p)[:-1][:2] for p in target_scale.getPitches()][:-1]
+                # print(key_target, notes_in_scale)
+                total_notes_count = 0
+                scale_notes_count = 0
+
+                for ele in midi_file.flat.getElementsByClass(['Note', 'Chord']):
+                    if isinstance(ele, note.Note):
+                        if str(ele.pitch.name) in notes_in_scale:
+                            scale_notes_count += 1
+                        total_notes_count += 1
+                    elif isinstance(ele, chord.Chord):
+                        for pitch in ele.pitches:
+                            if str(pitch.name) in notes_in_scale:
+                                scale_notes_count += 1
+                            total_notes_count += 1
+                #print(scale_notes_count / total_notes_count)
+                note_persistency_scores.append(scale_notes_count / total_notes_count)
+
+                # add bleu score, generation vs original
+                bleu = bleu_score(np.expand_dims(rand_seq.astype(str), axis=0).tolist(), 
+                                  np.expand_dims(np.expand_dims(raw_mid[:len(rand_seq)].astype(str), axis=0), axis=0).tolist())
+                #print(bleu)
+                bleu_scores.append(bleu)
+
             except Exception as e:
                 print(traceback.format_exc())
                 continue
@@ -182,7 +205,7 @@ if __name__ == "__main__":
         output_dir = os.path.join(args.output_dir, piece.split('/')[-1])
         os.makedirs(output_dir, exist_ok=True)        
         print(f"Using primer file: {piece}")
-        raw_mid, rand_seq, classes = test(piece, output_dir, args)
+        raw_mid, rand_seq, classes, key_target = test(piece, output_dir, args)
         # p_acc = accuracy_score(raw_mid, rand_seq) 
         # per_piece_accuracy.append(p_acc)
     
@@ -199,27 +222,32 @@ if __name__ == "__main__":
     # print(f'Overall accuracy: {overall_acc}')
     # print(SEPERATOR)
 
-    if args.key:
-        # Check how much of the output keys are matching with the target according to the classifier
-        mt_key_acc = accuracy_score(keys_dict['target'], keys_dict['model'])
-        # Check how much of the output keys are matching with the target according to the algorithm
-        at_key_acc = accuracy_score(keys_dict['target'], keys_dict['algo'])
-        # Check how much of the output keys are matching with the target according to the algorithm
-        ma_key_acc = accuracy_score(keys_dict['model'], keys_dict['algo'])
-        # Check how much of the primer keys are matching with the target according to the algorithm
-        # This metric is for checking whether the baseline model can continue the primer in its key
-        # For cclm this doesn't makes sense as we expect it to not follow it
-        pt_key_acc = accuracy_score(keys_dict['target'], keys_dict['primer'])
-        print('Key Accuracies:')
-        print(SEPERATOR)
-        print('Classifier-Target Key Accuracy')
-        print(f'Accuracy: {mt_key_acc}')
-        print(SEPERATOR)
-        print('Classifier-Algo Key Accuracy')
-        print(f'Accuracy: {ma_key_acc}')
-        print(SEPERATOR)
-        print('Algorithm-Target Key Accuracy')
-        print(f'Accuracy: {at_key_acc}')
-        print(SEPERATOR)
-        print('Primer-Target Key Accuracy')
-        print(f'Accuracy: {pt_key_acc}')
+    # Check how much of the output keys are matching with the target according to the classifier
+    mt_key_acc = accuracy_score(keys_dict['target'], keys_dict['model'])
+    # Check how much of the output keys are matching with the target according to the algorithm
+    at_key_acc = accuracy_score(keys_dict['target'], keys_dict['algo'])
+    # Check how much of the output keys are matching with the target according to the algorithm
+    ma_key_acc = accuracy_score(keys_dict['model'], keys_dict['algo'])
+    # Check how much of the primer keys are matching with the target according to the algorithm
+    # This metric is for checking whether the baseline model can continue the primer in its key
+    # For cclm this doesn't makes sense as we expect it to not follow it
+    pt_key_acc = accuracy_score(keys_dict['target'], keys_dict['primer'])
+    print('Key Accuracies:')
+    print(SEPERATOR)
+    print('Classifier-Target Key Accuracy')
+    print(f'Accuracy: {mt_key_acc}')
+    print(SEPERATOR)
+    print('Classifier-Algo Key Accuracy')
+    print(f'Accuracy: {ma_key_acc}')
+    print(SEPERATOR)
+    print('Algorithm-Target Key Accuracy')
+    print(f'Accuracy: {at_key_acc}')
+    print(SEPERATOR)
+    print('Primer-Target Key Accuracy')
+    print(f'Accuracy: {pt_key_acc}')
+    print(SEPERATOR)
+    print('Mean Bleu Score')
+    print(f'Score: {np.mean(bleu_scores)}')
+    print(SEPERATOR)
+    print('Mean Note Persistency')
+    print(f'Score: {np.mean(note_persistency_scores)}')
