@@ -1,6 +1,6 @@
 import argparse
 import os
-from joblib import dump
+from joblib import dump, load
 import json
 import random
 
@@ -11,6 +11,7 @@ import music21
 import pretty_midi
 
 import pandas as pd
+import numpy as np
 
 
 def key_custom_midi(pieces, output_dir):
@@ -49,7 +50,6 @@ def key_custom_midi(pieces, output_dir):
 
 
 def time_split(mid, enc, max_seq, task='keys_ctrl', full_seq=False):
-    
     encodings = []
     # Get the end time of the whole midi
     max_end_time = mid.get_end_time()
@@ -98,7 +98,8 @@ def time_split(mid, enc, max_seq, task='keys_ctrl', full_seq=False):
     return encodings
 
 
-def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, max_seq=1024, task='keys_ctrl', full_seq=False):
+def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, max_seq=1024, 
+                     task='keys_ctrl', full_seq=False, key_distro=None):
     """
 
     Author: Corentin Nelias
@@ -111,7 +112,11 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
     if full_seq:
         output_dir = os.path.join(output_dir, "full_seq", task)
     else:
-        output_dir = os.path.join(output_dir, "random_seq", task) 
+        if key_distro:
+            output_dir = os.path.join(output_dir, "random_seq_with_equal_keys", task) 
+            key_distro = load(key_distro)
+        else:
+            output_dir = os.path.join(output_dir, "random_seq", task) 
 
     train_dir = os.path.join(output_dir, "train")
     os.makedirs(train_dir, exist_ok=True)
@@ -120,12 +125,13 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
     test_dir = os.path.join(output_dir, "test")
     os.makedirs(test_dir, exist_ok=True)
     
-
     total_count = 0
     train_count = 0
     val_count   = 0
     test_count  = 0
     
+    key_distro_max = max(key_distro.values())
+
     pieces = []
 
     for subdir, dirs, files in os.walk(custom_midi_root):
@@ -139,7 +145,7 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
     artist_df = pd.read_csv(os.path.join(custom_midi_root, 'maestro-v3.0.0/maestro-v3.0.0.csv'))
 
     for piece in tqdm(pieces):
-        print(piece)
+        # print(piece)
         #deciding whether the data should be part of train, valid or test dataset
         is_train = True if random.random() > valid_p else False
         if not is_train:
@@ -154,10 +160,8 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
         f_name = piece.split('/')[-1].split('.')[0] + ".pickle"
         try:
             # Key operations
-            if task == 'key' or task == 'keys_ctrl':
-                my_score: music21.stream.Score = music21.converter.parse(piece)
-                y = my_score.analyze('Krumhansl')
-            elif task == 'artist':
+            
+            if task == 'artist':
                 # Only for maestro
                 artist = artist_df[artist_df['midi_filename'].str.contains(piece.split('/')[-1])]['canonical_composer']
                 if len(artist) != 0:
@@ -175,8 +179,15 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
                     y = 'classical'
                 elif dataset == 'adl-piano-midi':
                     y = piece.split('/')[3].lower()
+                else:
+                    continue
             else:
                 y = None
+
+            my_score: music21.stream.Score = music21.converter.parse(piece)
+            midi_key = my_score.analyze('Krumhansl')
+            if task == 'key' or task == 'keys_ctrl':
+                y = midi_key
 
             mid = pretty_midi.PrettyMIDI(midi_file=piece)
             earliest_note_start = min(note.start for inst in mid.instruments for note in inst.notes)
@@ -185,10 +196,18 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
                 [setattr(note, 'start', note.start - earliest_note_start) for note in inst.notes]
                 [setattr(note, 'end', note.end - earliest_note_start) for note in inst.notes]
             enc = encode_midi(mid)
-            encodings = time_split(mid, enc, max_seq, task, full_seq)
+            if not full_seq:
+                n_encodings = round(key_distro_max / key_distro[str(midi_key)])
+                random_max_seq = lambda: np.random.randint(max_seq)
+            else:
+                n_encodings = 1
+                random_max_seq = lambda: max_seq
+
+            for i in range(n_encodings):
+                encodings = time_split(mid, enc, random_max_seq(), task, full_seq)
+
             if encodings is None:
-                continue
-        
+                continue     
 
         except Exception as e:
             print(e)
@@ -228,7 +247,8 @@ def parse_args():
     parser.add_argument('--max_seq', type=int, default=1024, help='Max sequence length for each data')
     parser.add_argument("--task", type=str, default='normal_lm', help="What should be the class data: key, artist(for maestro), genre")
     parser.add_argument("--full_seq", action='store_true', help="Encode full sequence data")
-
+    parser.add_argument("--key_distro", type=str, help="key distribution for random splitting")
+    
 
     return parser.parse_args()
 
@@ -246,7 +266,7 @@ def main():
     random.seed(10)
 
     print(f"Preprocessing midi files and saving to {output_dir}")
-    prep_custom_midi(root, output_dir, max_seq=args.max_seq, task=args.task, full_seq=args.full_seq)
+    prep_custom_midi(root, output_dir, max_seq=args.max_seq, task=args.task, full_seq=args.full_seq, key_distro=args.key_distro)
     print("Done!")
     
 
