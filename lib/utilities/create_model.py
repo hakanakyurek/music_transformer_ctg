@@ -95,14 +95,9 @@ def create_model_for_generation(args, model_weights):
 
 
 def create_model_for_classification(args, loss_func, n_classes):
-    try:
-        temp = args.key
-        args.key = False
-        music_transformer = create_model_for_generation(args, args.model_weights)
-        args.key = temp
-    except:
-        args.key = False
-        music_transformer = create_model_for_generation(args, args.model_weights)
+    args.cocon = False
+    args.key = False
+    music_transformer = create_model_for_generation(args, args.model_weights)
 
     model = MusicTransformerClassifier(music_transformer=music_transformer,
                                        n_classes=n_classes,

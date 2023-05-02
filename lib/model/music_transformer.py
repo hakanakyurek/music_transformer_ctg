@@ -13,6 +13,19 @@ from ..modules.transformer import Transformer
 
 from .music_transformer_base import MusicTransformerBase
 
+def repetition_penalty(logits, penalty_factor):
+    """
+    Penalizes repeated tokens in the logits tensor by adding a penalty factor
+    to the logits of tokens that have already been generated in the sequence.
+    """
+    batch_size, sequence_length, vocab_size = logits.shape
+    previous_tokens = torch.argmax(logits, dim=-1)
+    for i in range(batch_size):
+        for j in range(1, sequence_length):
+            if previous_tokens[i, j] == previous_tokens[i, j-1]:
+                logits[i, j, previous_tokens[i, j]] /= penalty_factor
+    return logits
+
 
 # MusicTransformer
 class MusicTransformerEncoder(MusicTransformerBase):
@@ -122,7 +135,10 @@ class MusicTransformerEncoder(MusicTransformerBase):
             # gen_seq_batch     = gen_seq.clone()
             y = self.Wout(self.forward(gen_seq[..., :cur_i]))
             y = self.softmax(y / temperature)[..., :TOKEN_END]
+
+            y = repetition_penalty(y, 2)
             token_probs = y[:, cur_i-1, :]
+            
             # next_token = torch.argmax(token_probs)
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)
             next_token = distrib.sample()

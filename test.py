@@ -18,6 +18,7 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 import traceback
 from torchtext.data.metrics import bleu_score
+from torchmetrics.text.rouge import  ROUGEScore
 
 
 # main
@@ -28,7 +29,6 @@ def test(piece, output_dir, args):
 
     """
     classes = {'primer': None, 'algo': None, 'model': None, 'target': None}
-
     raw_mid = encode_midi(piece)
     if(len(raw_mid) == 0):
         print(f"Error: No midi messages in primer file: {piece}")
@@ -38,7 +38,7 @@ def test(piece, output_dir, args):
     key_primer = my_score.analyze('Krumhansl')
     classes['primer'] = KEY_DICT[str(key_primer)]
     # Class condition to perfect 4th or perfect 5th
-    if args.key:
+    if False:
         intervals = [interval.Interval('P4'), interval.Interval('P5'), interval.Interval('P1')]
         relative_intervals = [interval.Interval('M6'), interval.Interval('P1')]
         inter = np.random.choice(intervals)
@@ -127,11 +127,9 @@ if __name__ == "__main__":
 
     n_classes = len(KEY_DICT)
 
-    vocab['size'] = VOCAB_SIZE_NORMAL
+    vocab['size'] = VOCAB_SIZE_KEYS
 
     classifier = create_model_for_classification_test(args, n_classes)
-
-    vocab['size'] = VOCAB_SIZE_KEYS
 
     generator = create_model_for_generation(args, args.model_weights)
 
@@ -151,6 +149,9 @@ if __name__ == "__main__":
     keys_dict = {'primer': [], 'algo': [], 'model': [], 'target': []}
     bleu_scores = []
     note_persistency_scores = []
+    rouge_scores = []
+
+    rouge_scorer = ROUGEScore()
 
     # Can be None, an integer index to dataset
     if(args.primer_index is None):
@@ -196,6 +197,10 @@ if __name__ == "__main__":
                                   np.expand_dims(np.expand_dims(raw_mid[:len(rand_seq)].astype(str), axis=0), axis=0).tolist())
                 #print(bleu)
                 bleu_scores.append(bleu)
+                rouge = rouge_scorer(' '.join(rand_seq.astype(str).tolist()), 
+                                   ' '.join(raw_mid[:len(rand_seq)].astype(str).tolist()))
+                
+                rouge_scores.append(rouge)
 
             except Exception as e:
                 print(traceback.format_exc())
@@ -232,22 +237,26 @@ if __name__ == "__main__":
     # This metric is for checking whether the baseline model can continue the primer in its key
     # For cclm this doesn't makes sense as we expect it to not follow it
     pt_key_acc = accuracy_score(keys_dict['target'], keys_dict['primer'])
-    print('Key Accuracies:')
-    print(SEPERATOR)
-    print('Classifier-Target Key Accuracy')
-    print(f'Accuracy: {mt_key_acc}')
-    print(SEPERATOR)
-    print('Classifier-Algo Key Accuracy')
-    print(f'Accuracy: {ma_key_acc}')
-    print(SEPERATOR)
-    print('Algorithm-Target Key Accuracy')
-    print(f'Accuracy: {at_key_acc}')
-    print(SEPERATOR)
-    print('Primer-Target Key Accuracy')
-    print(f'Accuracy: {pt_key_acc}')
-    print(SEPERATOR)
-    print('Mean Bleu Score')
-    print(f'Score: {np.mean(bleu_scores)}')
-    print(SEPERATOR)
-    print('Mean Note Persistency')
-    print(f'Score: {np.mean(note_persistency_scores)}')
+    with open(output_dir + 'out.txt', 'w') as f:
+        print('Key Accuracies:', file=f)
+        print(SEPERATOR, file=f)
+        print('Classifier-Target Key Accuracy', file=f)
+        print(f'Accuracy: {mt_key_acc}', file=f)
+        print(SEPERATOR, file=f)
+        print('Classifier-Algo Key Accuracy', file=f)
+        print(f'Accuracy: {ma_key_acc}', file=f)
+        print(SEPERATOR, file=f)
+        print('Algorithm-Target Key Accuracy', file=f)
+        print(f'Accuracy: {at_key_acc}', file=f)
+        print(SEPERATOR, file=f)
+        print('Primer-Target Key Accuracy', file=f)
+        print(f'Accuracy: {pt_key_acc}', file=f)
+        print(SEPERATOR, file=f)
+        print('Mean Bleu Score', file=f)
+        print(f'Score: {np.mean(bleu_scores)}', file=f)
+        print(SEPERATOR, file=f)
+        print('Mean ROUGE Score', file=f)
+        print(f'Score: {np.mean(rouge_scores)}', file=f)
+        print(SEPERATOR, file=f)
+        print('Mean Note Persistency', file=f)
+        print(f'Score: {np.mean(note_persistency_scores)}', file=f)

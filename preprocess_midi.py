@@ -197,17 +197,20 @@ def prep_custom_midi(custom_midi_root, output_dir, valid_p = 0.1, test_p = 0.2, 
                 [setattr(note, 'end', note.end - earliest_note_start) for note in inst.notes]
             enc = encode_midi(mid)
             if not full_seq:
-                n_encodings = round(key_distro_max / key_distro[str(midi_key)])
+                n_encodings = round(key_distro_max / key_distro[str(y)])
                 random_max_seq = lambda: np.random.randint(max_seq)
             else:
                 n_encodings = 1
                 random_max_seq = lambda: max_seq
-
+            encodings = []
             for i in range(n_encodings):
-                encodings = time_split(mid, enc, random_max_seq(), task, full_seq)
-
-            if encodings is None:
-                continue     
+                splits = time_split(mid, enc, random_max_seq(), task, full_seq)
+                if splits is None:
+                    break    
+                for split in splits:
+                    encodings.append(split)
+            if len(encodings) == 0:
+                continue
 
         except Exception as e:
             print(e)

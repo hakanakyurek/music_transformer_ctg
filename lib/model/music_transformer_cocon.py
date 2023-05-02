@@ -9,6 +9,18 @@ from torch.optim.lr_scheduler import LambdaLR
 from lib.utilities.lr_scheduling import LrStepTracker
 from .music_transformer_base import MusicTransformerBase
 
+def repetition_penalty(logits, penalty_factor):
+    """
+    Penalizes repeated tokens in the logits tensor by adding a penalty factor
+    to the logits of tokens that have already been generated in the sequence.
+    """
+    batch_size, sequence_length, vocab_size = logits.shape
+    previous_tokens = torch.argmax(logits, dim=-1)
+    for i in range(batch_size):
+        for j in range(1, sequence_length):
+            if previous_tokens[i, j] == previous_tokens[i, j-1]:
+                logits[i, j, previous_tokens[i, j]] /= penalty_factor
+    return logits
 
 # MusicTransformer
 class MusicTransformerCoCon(MusicTransformerBase):
@@ -51,7 +63,9 @@ class MusicTransformerCoCon(MusicTransformerBase):
             # gen_seq_batch     = gen_seq.clone()
             y = self.music_transformer.Wout(self.forward(gen_seq[..., :cur_i], context[..., :cur_i]))
             y = self.music_transformer.softmax(y / temperature)[..., :TOKEN_END]
+            y = repetition_penalty(y, 2)
             token_probs = y[:, cur_i-1, :]
+            #token_probs = torch.topk(token_probs, 8)
             # next_token = torch.argmax(token_probs)
             distrib = torch.distributions.categorical.Categorical(probs=token_probs)
             next_token = distrib.sample()
@@ -72,8 +86,8 @@ class MusicTransformerCoCon(MusicTransformerBase):
 
     def forward(self, x, c, mask=True):
         # x input, c context 
-        hidden_x = self.music_transformer(x, mask=mask, stop_layer=1)
-        hidden_c = self.music_transformer(c, mask=mask, stop_layer=1)
+        hidden_x = self.music_transformer(x, mask=mask, stop_layer=2)
+        hidden_c = self.music_transformer(c, mask=mask, stop_layer=2)
         hidden_c = hidden_c[:,0,:]
         hidden_c = hidden_c.unsqueeze(1)
 
